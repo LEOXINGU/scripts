@@ -1,0 +1,1 @@
+{"ALG_DESC": "Esta ferramenta tem como finalidade gerar pontos cotados a partir de um MDT.", "Escala": "Escala adequada aos pontos gerados.", "ALG_CREATOR": "Leandro Fran\u00e7a", "Saida": "Arquivo shapefile de pontos com os valores das cotas.", "ALG_VERSION": "Vers\u00e3o 2.1", "ALG_HELP_CREATOR": "", "MDT": "Modelo Digital do Terreno (MDT) no formato raster."}
