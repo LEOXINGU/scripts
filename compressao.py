@@ -52,7 +52,7 @@ result = os.system(comando)
 # Gerando piramides
 if Criar_Piramides and result==0:
     progress.setInfo('<b>Criando piramides...</b><br/>')
-    comando = 'gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average '+ Saida + ' 2 4 8 16'
+    comando = 'gdaladdo -ro --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average '+ Saida + ' 2 4 8 16'
     result = os.system(comando)
 
 if result==0:
