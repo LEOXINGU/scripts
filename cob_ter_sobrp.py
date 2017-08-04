@@ -101,18 +101,18 @@ for i in range(tam-1):
         if A.overlaps(B) or A.equals(B):
             C = A.intersection(B)
             if C.asPolygon() != []:
-                cont +=1
                 att = [cont, lista[i][1], lista[j][1]]
                 if C.area() > tol:
+                    cont +=1
                     fet.setGeometry(C)
                     fet.setAttributes(att)
                     writer.addFeature(fet)
             elif C.asMultiPolygon() != []:
                 for pol in C.asMultiPolygon():
-                    cont +=1
                     att = [cont, lista[i][1], lista[j][1]]
                     geom = QgsGeometry.fromPolygon(pol)
                     if geom.area()>tol:
+                        cont +=1
                         fet.setGeometry(geom)
                         fet.setAttributes(att)
                         writer.addFeature(fet)

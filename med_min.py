@@ -214,6 +214,41 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                     feat.setGeometry(c)
                     feat.setAttributes([cont, problema, area, min_area, nome, id])
                     writer.addFeature(feat)
+        for feature in layer.getFeatures():
+            geom= feature.geometry()
+            id = feature.id()
+            # Buffer negativo
+            buffNeg = geom.buffer( -0.99*min_larg/2 , 5)
+            # Buffer positivo
+            if buffNeg.area() > 0:
+                buffPos = buffNeg.buffer(1.9*min_larg/2, 5)
+                # Diferenca
+                Difer = geom.difference(buffPos)
+                # Pegar centroides do(s) poligono(s) da diferenca
+                lista = Difer.asMultiPolygon()
+                if lista:
+                    for pol in lista:
+                        poligono = QgsGeometry.fromPolygon(pol)
+                        c = poligono.centroid()
+                        cont +=1
+                        problema = 'Largura menor que a largura minima'
+                        feat.setGeometry(c)
+                        feat.setAttributes([cont, problema, None, min_larg, nome, id])
+                        writer.addFeature(feat)
+                elif Difer.asPolygon():
+                    c = Difer.centroid()
+                    cont +=1
+                    problema = 'Largura menor que a largura minima'
+                    feat.setGeometry(c)
+                    feat.setAttributes([cont, problema, None, min_larg, nome, id])
+                    writer.addFeature(feat)
+            else:
+                c = geom.centroid()
+                cont +=1
+                problema = 'Largura menor que a largura minima'
+                feat.setGeometry(c)
+                feat.setAttributes([cont, problema, None, min_larg, nome, id])
+                writer.addFeature(feat)
     if nome in min_lin:
         min_comp = min_lin[nome][escala]
         for feature in layer.getFeatures():
