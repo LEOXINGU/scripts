@@ -413,8 +413,7 @@ def VerificarSeEntao(camada, teste):
                  writer.addFeature(feature)
 
 
-
-# ADMINISTRACAO PUBLICA
+progress.setInfo('<br/><b>1. ADMINISTRACAO PUBLICA...</b><br/>')
 
 # adm_area_pub_civil_a
 camada = 'adm_area_pub_civil_a'
@@ -555,7 +554,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 
-# ABASTECIMENTO DE AGUA E SANEAMENTO BASICO
+progress.setInfo('<b>2. ABASTECIMENTO DE AGUA E SANEAMENTO BASICO...</b><br/>')
 
 # asb_area_abast_agua_a
 camada = 'asb_area_abast_agua_a'
@@ -731,6 +730,9 @@ if layerList:
  # Verificar condicao Outros
  teste = ['tipoedifsaneam', 'nome']
  VerificaOutros(layer, teste)
+
+
+progress.setInfo('<b>3. ESTRUTURA ECONOMICA...</b><br/>')
 
 # eco_area_comerc_serv_a
 camada = 'eco_area_comerc_serv_a'
@@ -974,7 +976,7 @@ if layerList:
  VerificaMisto(layer, teste)
 
 
-# EDUCACAO E CULTURA
+progress.setInfo('<b>4. EDUCACAO E CULTURA...</b><br/>')
 
 # edu_area_ensino_a
 camada = 'edu_area_ensino_a'
@@ -1241,7 +1243,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 
-# ENERGIA E COMUNICACOES
+progress.setInfo('<b>5. ENERGIA E COMUNICACOES...</b><br/>')
 
 # enc_antena_comunic_p
 camada = 'enc_antena_comunic_p'
@@ -1480,7 +1482,8 @@ if layerList:
  VerificaMisto(layer, teste)
 
 
-# HIDROGRAFIA
+progress.setInfo('<b>6. HIDROGRAFIA...</b><br/>')
+
 # hid_area_umida_a
 camada = 'hid_area_umida_a'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
@@ -1881,7 +1884,8 @@ if layerList:
  VerificaOutros(layer, teste)
 
 
-# LIMITES
+progress.setInfo('<b>7. LIMITES...</b><br/>')
+
 # lim_area_de_litigio_a
 camada = 'lim_area_de_litigio_a'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
@@ -2075,7 +2079,8 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 
-# LOCALIDADES
+progress.setInfo('<b>8. LOCALIDADES...</b><br/>')
+
 # loc_aglom_rural_de_ext_urbana_p
 camada = 'loc_aglom_rural_de_ext_urbana_p'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
@@ -2251,7 +2256,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 
-# PONTOS DE REFERENCIA
+progress.setInfo('<b>9. PONTOS DE REFERENCIA...</b><br/>')
 
 # pto_area_est_med_fenom_a
 camada = 'pto_area_est_med_fenom_a'
@@ -2299,7 +2304,7 @@ if layerList:
  VerificarAtributos(layer, teste)
  
 # pto_pto_ref_geod_topo_p
-camada = 'pto_pto_est_med_fenomenos_p'
+camada = 'pto_pto_ref_geod_topo_p'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
@@ -2311,7 +2316,7 @@ if layerList:
  VerificarAtributos(layer, teste)
  
 
-# RELEVO
+progress.setInfo('<b>10. RELEVO...</b><br/>')
 
 # rel_alter_fisiog_antropica_a
 camada = 'rel_alter_fisiog_antropica_a'
@@ -2324,7 +2329,6 @@ if layerList:
  # verificar atributos
  teste = [['tipoalterantrop', [27,28,25,26,29,24]]]
  VerificarAtributos(layer, teste)
-
 
 # rel_alter_fisiog_antropica_l
 camada = 'rel_alter_fisiog_antropica_l'
@@ -2493,7 +2497,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 
-# SAUDE E SERVICO SOCIAL
+progress.setInfo('<b>11. SAUDE E SERVICO SOCIAL...</b><br/>')
 
 # sau_area_saude_a
 camada = 'sau_area_saude_a'
@@ -2586,7 +2590,7 @@ if layerList:
  VerificaMisto(layer, teste)
 
 
-# TRANSPORTES
+progress.setInfo('<b>12. TRANSPORTES...</b><br/>')
 
 # tra_area_estrut_transporte_a
 camada = 'tra_area_estrut_transporte_a'
@@ -2835,7 +2839,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1], ['matconstr', 97]]
+ forcado = [['geometriaaproximada', 1], ['matconstr', 0]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrod',[13,99,10,9,14,15,8,12]],['administracao',[15,12,3,11,5,2,98,6,10,4,1,7,9]]]
@@ -3262,7 +3266,7 @@ if layerList:
  VerificarSeEntao(layer, teste)
  teste = [['tipotrechorod', [1]], ['jurisdicao',[8,9,3,11,12,10,1,2,6]]]
  VerificarSeEntao(layer, teste)
-  teste = [['tipotrechorod', [3]], ['administracao',[0,6]]]
+ teste = [['tipotrechorod', [3]], ['administracao',[0,6]]]
  VerificarSeEntao(layer, teste)
  teste = [['tipotrechorod', [2,4]], ['administracao',[15,12,3,11,5,2,98,10,4,1,7,9]]]
  VerificarSeEntao(layer, teste)
@@ -3306,8 +3310,7 @@ if layerList:
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste) 
 
-
-# VEGETACAO
+progress.setInfo('<b>13. VEGETACAO...</b><br/><br/>')
 
 # veg_brejo_pantano_a
 camada = 'veg_brejo_pantano_a'

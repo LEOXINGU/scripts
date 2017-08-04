@@ -265,6 +265,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                     feat.setAttributes([cont, problema, comp, min_comp, nome, id])
                     writer.addFeature(feat)
 
+
 del writer
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')

@@ -57,7 +57,6 @@ CT = [  'hid_massa_dagua_a',
 canvas = iface.mapCanvas()
 epsg = int((canvas.mapRenderer().destinationCrs().authid()).split(':')[1])
 
-
 # Varrer camadas e pegar as geometrias das classes que compoe a cobertura terrestre
 # Carregar cada feicao na camada temporaria
 lista = []
