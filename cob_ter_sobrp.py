@@ -98,7 +98,7 @@ for i in range(tam-1):
     for j in range(i+1, tam):
         A = QgsGeometry.fromPolygon(lista[i][0])
         B = QgsGeometry.fromPolygon(lista[j][0])
-        if A.overlaps(B):
+        if A.overlaps(B) or A.equals(B):
             C = A.intersection(B)
             if C.asPolygon() != []:
                 cont +=1

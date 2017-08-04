@@ -24,7 +24,7 @@
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.3;9.4;9.5;9.6
 ##Renomear_BD_de_Saida=boolean False
-##Novo_nome_para_BD_de_saida=string
+##Novo_nome_para_BD_de_saida=optional string
 
 # Inputs
 database = str(Nome_do_BD)
