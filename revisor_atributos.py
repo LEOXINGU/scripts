@@ -363,6 +363,22 @@ def VerificaMisto(camada, teste):
                  feature.setAttributes(att)
                  writer.addFeature(feature)
 
+def VerificarAtributosCond(camada, teste):
+    atributo = teste[0]
+    atributoObr = teste[1]
+    for feat in camada.getFeatures():
+         if (feat[atributo] in teste[2]) and (feat[atributoObr]==None or feat[atributoObr] == '' or len(feat[atributoObr])<2):
+             nome = camada.name()
+             ID = feat.id()
+             correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Outros.\n'
+             att = [nome, ID, atributoObr, correcao]
+             geom = feat.geometry()
+             if geom:
+                 c = geom.centroid()
+                 feature.setGeometry(c)
+                 feature.setAttributes(att)
+                 writer.addFeature(feature)
+
 def VerificarCartaImpress(camada, campo):
     for feat in camada.getFeatures():
         if feat[campo]==None or feat[campo] == '':
@@ -1130,9 +1146,6 @@ if layerList:
  # Verificar condicao Outros
  teste = ['tipoclassecnae', 'nome']
  VerificaOutros(layer, teste)
- # Verificar condicao Misto
- teste = ['tipoclassecnae', 'nome']
- VerificaMisto(layer, teste)
 
 # edu_edif_ensino_p
 camada = 'edu_edif_ensino_p'
@@ -1148,9 +1161,6 @@ if layerList:
  # Verificar condicao Outros
  teste = ['tipoclassecnae', 'nome']
  VerificaOutros(layer, teste)
- # Verificar condicao Misto
- teste = ['tipoclassecnae', 'nome']
- VerificaMisto(layer, teste)
 
 # edu_edif_religiosa_a
 camada = 'edu_edif_religiosa_a'
@@ -1163,9 +1173,6 @@ if layerList:
  # verificar atributos
  teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
  VerificarAtributos(layer, teste)
- # Verificar condicao Outros
- teste = ['tipoedifrelig', 'nome']
- VerificaOutros(layer, teste)
 
 # edu_edif_religiosa_p
 camada = 'edu_edif_religiosa_p'
@@ -1178,9 +1185,6 @@ if layerList:
  # verificar atributos
  teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
  VerificarAtributos(layer, teste)
- # Verificar condicao Outros
- teste = ['tipoedifrelig', 'nome']
- VerificaOutros(layer, teste)
  
 # edu_piscina_a
 camada = 'edu_piscina_a'
@@ -1519,7 +1523,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [99,3,1,2]] ]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [97,99,3,1,2]] ]
  VerificarAtributos(layer, teste)
  # Verificar condicao Outros
  teste = ['matconstr', 'nome']
@@ -1536,7 +1540,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [99,3,1,2]] ]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [97,99,3,1,2]] ]
  VerificarAtributos(layer, teste)
  # Verificar condicao Outros
  teste = ['matconstr', 'nome']
@@ -1553,7 +1557,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [99,3,1,2]] ]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['matconstr', [99,1,26,4,23,3,7,6,5,8,25,2]], ['usoprincipal', [97,99,3,1,2]] ]
  VerificarAtributos(layer, teste)
  # Verificar condicao Outros
  teste = ['matconstr', 'nome']
@@ -1853,8 +1857,8 @@ if layerList:
  # verificar atributos
  teste = [['eixoprincipal', [1,2]], ['regime', [1,6,4,3,2,5]], ['compartilhado', [1,2]], ['coincidecomdentrode',[10,14,2,9,11,19,15,1,97,12,13,16]], ['dentrodepoligono', [1,2]] ]
  VerificarAtributos(layer, teste)
- campo = 'nome'
- VerificarCartaImpress(layer, campo)
+# campo = 'nome'
+# VerificarCartaImpress(layer, campo)
  # verificar condicao
  teste = [['regime', [5]], ['coincidecomdentrode',[97]]]
  VerificarSeEntao(layer, teste)
@@ -2093,7 +2097,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome','string']]
+ teste = [['nome','string'], ['tipoaglomrurisol',[7,5,6]]]
  VerificarAtributos(layer, teste)
 
 # loc_area_edificada_a
@@ -3246,8 +3250,24 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['codtrechorodov','string'], ['revestimento', [4,1,2,3]], ['tipotrechorod',[4,2,1,3]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,10)], ['nrfaixas', (1,8)], ['jurisdicao', [9,3,11,12,10,1,2,6,8]], ['administracao', [15,12,3,11,5,2,98,6,10,4,1,7,9]], ['trafego',[1,2]], ['canteirodivisorio',[1,2]]]
+ teste = [['revestimento', [4,1,2,3]], ['tipotrechorod',[4,2,1,3]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,10)], ['nrfaixas', (1,8)], ['trafego',[1,2]], ['canteirodivisorio',[1,2]]]
  VerificarAtributos(layer, teste)
+ # Teste de Obrigacao de atributos relativos
+ teste = ['tipotrechorod', 'codtrechorodov', [2,4]]
+ VerificarAtributosCond(layer, teste)
+ # Verificar Condicao
+ teste = [['tipotrechorod', [3]], ['jurisdicao',[0,8]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [2,4]], ['jurisdicao',[9,3,11,12,10,1,2,6]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [1]], ['jurisdicao',[8,9,3,11,12,10,1,2,6]]]
+ VerificarSeEntao(layer, teste)
+  teste = [['tipotrechorod', [3]], ['administracao',[0,6]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [2,4]], ['administracao',[15,12,3,11,5,2,98,10,4,1,7,9]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [1]], ['administracao', [15,12,3,11,5,2,98,6,10,4,1,7,9]]]
+ VerificarSeEntao(layer, teste)
 
 # tra_trilha_picada_l
 camada = 'tra_trilha_picada_l'
