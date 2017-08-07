@@ -77,8 +77,8 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
         layer.commitChanges()
 
 progress.setInfo('<b><font  color="#ff0000">Suas altera&ccedil;&otilde;es ser&atilde;o salvas e seu Projeto QGIS ser&aacute; fechado em 9 segundos.</b><br/><br/>')
-progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
+progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da com sucesso!</b><br/><br/>')
+progress.setInfo('<b>3&ordm; CGEO</b><br/>')
 progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
 iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
 time.sleep(9)

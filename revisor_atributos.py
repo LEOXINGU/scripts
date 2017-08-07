@@ -404,7 +404,7 @@ def VerificarSeEntao(camada, teste):
              nome = camada.name()
              ID = feat.id()
              correcao = 'Atributos "' + att1 + '" e "' + att2 + '" n\xe3o s\xe3o compat\xedveis.\n'
-             att = [nome, ID, att1 + '" e "' + att2, correcao]
+             att = [nome, ID, att1 + ' e ' + att2, correcao]
              geom = feat.geometry()
              if geom:
                  c = geom.centroid()
@@ -3442,8 +3442,8 @@ if layerList:
 
 del writer
 
-progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
+progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da com sucesso!</b><br/><br/>')
+progress.setInfo('<b>3&ordm; CGEO</b><br/>')
 progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
 iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
 time.sleep(8)

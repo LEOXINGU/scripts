@@ -22,7 +22,7 @@
 ##Nome_do_BD=string
 ##Local_para_salvar_o_backup=folder
 ##Host=string localhost
-##Versao_do_PostgreSQL=selection 9.3;9.4;9.5;9.6
+##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
 ##Renomear_BD_de_Saida=boolean False
 ##Novo_nome_para_BD_de_saida=optional string
 
@@ -30,7 +30,7 @@
 database = str(Nome_do_BD)
 local = str(Local_para_salvar_o_backup)
 host = str(Host)
-lista = [9.3,9.4,9.5,9.6]
+lista = [9.5,9.3,9.4,9.6]
 version = str(lista[Versao_do_PostgreSQL])
 
 import os

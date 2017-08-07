@@ -21,11 +21,11 @@
 ##LF1) PostGIS=group
 ##Arquivo_SQL=file
 ##Host=string localhost
-##Versao_do_PostgreSQL=selection 9.3;9.4;9.5;9.6
+##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
 
 # Inputs
 host = Host
-lista = [9.3,9.4,9.5,9.6]
+lista = [9.5,9.3,9.4,9.6]
 version = str(lista[Versao_do_PostgreSQL])
 
 import os
