@@ -26,7 +26,7 @@
 ##Criar_Piramides=boolean False
 
 # Inputs
-lista = ['JPEG', 'PHOTOMETRIC']
+lista = ['JPEG+PHOTOMETRIC','JPEG', 'PHOTOMETRIC']
 compress = lista[Tipo_de_Compressao]
 lista = ['75%', '65%', '85%']
 qualidade = lista[Qualidade_JPEG][0:2]
@@ -42,17 +42,21 @@ version = qgis.utils.QGis.QGIS_VERSION # Melhorar  aqui e deixar para qualquer v
 path = 'C:/Program Files/QGIS 2.14/bin' # Melhorar  aqui e deixar para qualquer versao do QGIS
 os.chdir(path)
 
-if compress == 'JPEG':
+if compress == 'JPEG+PHOTOMETRIC':
+    comando = 'gdal_translate -of GTiff -ot Byte -co PHOTOMETRIC=YCBCR -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
+elif compress == 'JPEG':
     comando = 'gdal_translate -of GTiff -ot Byte -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
 elif compress == 'PHOTOMETRIC':
     comando = 'gdal_translate -co COMPRESS=JPEG -co PHOTOMETRIC=YCBCR -co TILED=YES '+Entrada+' '+Saida
+
 # Realizando a compressao
 progress.setInfo('<b>Iniciando processo de Compressao da Imagem...</b><br/>')
 result = os.system(comando)
+
 # Gerando piramides
 if Criar_Piramides and result==0:
     progress.setInfo('<b>Criando piramides...</b><br/>')
-    comando = 'gdaladdo -ro --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average '+ Saida + ' 2 4 8 16'
+    comando = 'gdaladdo -ro --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average '+ Saida + ' 2 4 8 16 32 64'
     result = os.system(comando)
 
 if result==0:
