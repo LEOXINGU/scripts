@@ -278,7 +278,7 @@ def VerificarAtributos(camada, teste):
              if feat[atributo] == None or feat[atributo] == '' or len(feat[atributo])<2:
                  nome = camada.name()
                  ID = feat.id()
-                 correcao = 'Atributo "' + atributo +'" deve ser preenchido.\n'
+                 correcao = 'Atributo "' + atributo +'" deve ser preenchido.'
                  att = [nome, ID, atributo, correcao]
                  geom = feat.geometry()
                  if geom:
@@ -293,7 +293,7 @@ def VerificarAtributos(camada, teste):
              if not(feat[atributo] >= minimo and feat[atributo] <= maximo):
                  nome = camada.name()
                  ID = feat.id()
-                 correcao = 'Valor de "' + atributo + '" deve estar entre ' + str(minimo) +' e ' + str(maximo) + '.\n'
+                 correcao = 'Valor de "' + atributo + '" deve estar entre ' + str(minimo) +' e ' + str(maximo) + '.'
                  att = [nome, ID, atributo, correcao]
                  geom = feat.geometry()
                  if geom:
@@ -310,7 +310,7 @@ def VerificarAtributos(camada, teste):
                  for val in condicao:
                      valores += '"' + dominios[atributoDom][val] +'", '
                  valores = valores[:-2]
-                 correcao = 'Atributo "' +atributo+ '" deve ser: ' + (valores).decode('utf-8') + '.\n'
+                 correcao = 'Atributo "' +atributo+ '" deve ser: ' + (valores).decode('utf-8') + '.'
                  att = [nome, ID, atributo, correcao]
                  geom = feat.geometry()
                  if geom:
@@ -326,7 +326,7 @@ def VerificaOutros(camada, teste):
      if feat[atributo] == 99 and (feat[atributoObr]==None or feat[atributoObr] == '' or len(feat[atributoObr])<2):
          nome = camada.name()
          ID = feat.id()
-         correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Outros.\n'
+         correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Outros.'
          att = [nome, ID, atributoObr, correcao]
          geom = feat.geometry()
          if geom:
@@ -342,7 +342,7 @@ def VerificaMisto(camada, teste):
      if feat[atributo] == 98 and (feat[atributoObr]==None or feat[atributoObr] == '' or len(feat[atributoObr])<2):
          nome = camada.name()
          ID = feat.id()
-         correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Misto.\n'
+         correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Misto.'
          att = [nome, ID, atributoObr, correcao]
          geom = feat.geometry()
          if geom:
@@ -354,7 +354,7 @@ def VerificaMisto(camada, teste):
          if len((feat[atributoObr]).split(','))<2:
              nome = camada.name()
              ID = feat.id()
-             correcao = 'Atributo "' + atributoObr + '" deve conter mais de um elemento separado por "," quando "' +atributo+ '" \xe9 Misto.\n'
+             correcao = 'Atributo "' + atributoObr + '" deve conter mais de um elemento separado por "," quando "' +atributo+ '" \xe9 Misto.'
              att = [nome, ID, atributoObr, correcao]
              geom = feat.geometry()
              if geom:
@@ -370,7 +370,7 @@ def VerificarAtributosCond(camada, teste):
          if (feat[atributo] in teste[2]) and (feat[atributoObr]==None or feat[atributoObr] == '' or len(feat[atributoObr])<2):
              nome = camada.name()
              ID = feat.id()
-             correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 Outros.\n'
+             correcao = 'Atributo "' + atributoObr + '" deve ser preenchido quando "' +atributo+ '" \xe9 ' +dominios[atributo][feat[atributo]] +'.'
              att = [nome, ID, atributoObr, correcao]
              geom = feat.geometry()
              if geom:
@@ -384,7 +384,7 @@ def VerificarCartaImpress(camada, campo):
         if feat[campo]==None or feat[campo] == '':
              nome = camada.name()
              ID = feat.id()
-             correcao = 'Verificar se o atributo "' + campo + '" consta na Carta Impressa.\n'
+             correcao = 'Verificar se o atributo "' + campo + '" consta na Carta Impressa.'
              att = [nome, ID, campo, correcao]
              geom = feat.geometry()
              if geom:
@@ -403,7 +403,7 @@ def VerificarSeEntao(camada, teste):
          if not(feat[att2] in lista2):
              nome = camada.name()
              ID = feat.id()
-             correcao = 'Atributos "' + att1 + '" e "' + att2 + '" n\xe3o s\xe3o compat\xedveis.\n'
+             correcao = 'Atributos "' + att1 + '" e "' + att2 + '" n\xe3o s\xe3o compat\xedveis.'
              att = [nome, ID, att1 + ' e ' + att2, correcao]
              geom = feat.geometry()
              if geom:
