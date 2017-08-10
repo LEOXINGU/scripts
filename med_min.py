@@ -22,6 +22,7 @@
 ##Moldura=vector
 ##Escala=selection 1:25.000;1:50.000
 ##Tolerancia_em_metros=number 50
+##Verificar_Trecho_de_Drenagem=boolean False
 ##Saida=output vector
 
 lista = [0, 1]
@@ -132,7 +133,6 @@ min_lin = {'edu_pista_competicao_l': [125, 250],
 'hid_foz_maritima_l': [20, 40],
 'hid_ilha_l': [20, 40],
 'hid_quebramar_molhe_l': [20, 40],
-'hid_trecho_drenagem_l': [500, 1000],
 'rel_alter_fisiog_antropica_l': [100, 200],
 'rel_elemento_fisiog_natural_l': [250, 500],
 'tra_arruamento_l': [50, 100],
@@ -150,6 +150,8 @@ min_lin = {'edu_pista_competicao_l': [125, 250],
 'tra_trilha_picada_l': [250, 500],
 'tra_tunel_l': [125, 250]}
 
+if Verificar_Trecho_de_Drenagem:
+    min_lin['hid_trecho_drenagem_l'] = [500, 1000]
 
 # Funcao que retorna valores maximo e minimo de Bbox
 def XYmaxmin(bbox):
