@@ -1877,6 +1877,14 @@ if layerList:
  # verificar condicao
  #teste = [['regime', [5]], ['coincidecomdentrode',[97]]]
  #VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [1]], ['navegabilidade',[0]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [97]], ['navegabilidade',[2]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [1]], ['regime',[1,3,5]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [97]], ['regime',[5]]]
+ VerificarSeEntao(layer, teste)
 
 # hid_trecho_massa_dagua_a
 camada = 'hid_trecho_massa_dagua_a'
@@ -1884,7 +1892,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ #forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['tipotrechomassa', [2,1,99,9,10]], ['regime', [1,6,4,3,2,5]], ['salinidade', [1,2]] ]
@@ -2619,7 +2627,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ forcado = [['geometriaaproximada', 1], ['revestimento', 0], ['operacional', 0], ['situacaofisica', 0], ['trafego', 0]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['canteirodivisorio', [1,2]]]
@@ -3284,6 +3292,12 @@ if layerList:
  VerificarSeEntao(layer, teste)
  teste = [['tipotrechorod', [1]], ['administracao', [15,12,3,11,5,2,98,6,10,4,1,7,9]]]
  VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['nrpistas',[1]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['nrfaixas',[1]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['revestimento',[1]]]
+ VerificarSeEntao(layer, teste)
 
 # tra_trilha_picada_l
 camada = 'tra_trilha_picada_l'
@@ -3397,6 +3411,11 @@ if layerList:
  # verificar atributos
  teste = [['caracteristicafloresta', [1,2,3]], ['classificacaoporte', [1,98,2,3]]]
  VerificarAtributos(layer, teste)
+ teste = [['caracteristicafloresta', [2]], ['classificacaoporte',[98]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['caracteristicafloresta', [1]], ['classificacaoporte',[1]]]
+ VerificarSeEntao(layer, teste)
+ 
 
 # veg_macega_chavascal_a
 camada = 'veg_macega_chavascal_a'
