@@ -53,9 +53,11 @@ CT = [  'hid_massa_dagua_a',
             'veg_vegetacao_a',
             'veg_veg_cultivada_a']
 
-# Pegando o EPSG do projeto
-canvas = iface.mapCanvas()
-epsg = int((canvas.mapRenderer().destinationCrs().authid()).split(':')[1])
+# Pegando o SRC da camada trecho de drenagem
+layerList = QgsMapLayerRegistry.instance().mapLayersByName('hid_trecho_drenagem_l')
+if layerList:
+ layer = layerList[0]
+ SRC = layer.crs()
 
 # Varrer camadas e pegar as geometrias das classes que compoe a cobertura terrestre
 # Carregar cada feicao na camada temporaria
@@ -83,11 +85,9 @@ fields = QgsFields()
 fields.append(QgsField('id', QVariant.Int))
 fields.append(QgsField('camada1', QVariant.String))
 fields.append(QgsField('camada2', QVariant.String))
-CRS = QgsCoordinateReferenceSystem()
-CRS.createFromSrid(epsg)
 encoding = 'utf-8'
 formato = 'ESRI Shapefile'
-writer = QgsVectorFileWriter(saida, encoding, fields, QGis.WKBPolygon, CRS, formato)
+writer = QgsVectorFileWriter(saida, encoding, fields, QGis.WKBPolygon, SRC, formato)
 
 # Verificar Sobreposicao
 fet =QgsFeature()
@@ -97,7 +97,7 @@ for i in range(tam-1):
     for j in range(i+1, tam):
         A = QgsGeometry.fromPolygon(lista[i][0])
         B = QgsGeometry.fromPolygon(lista[j][0])
-        if A.overlaps(B) or A.equals(B):
+        if A.intersects(B) or A.equals(B):
             C = A.intersection(B)
             if C.asPolygon() != []:
                 att = [cont, lista[i][1], lista[j][1]]
@@ -116,7 +116,7 @@ for i in range(tam-1):
                         fet.setAttributes(att)
                         writer.addFeature(fet)
     progress.setPercentage(int(((i+1)/float(tam))*100))
-        
+
 del writer
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
