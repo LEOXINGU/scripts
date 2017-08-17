@@ -21,12 +21,12 @@
 ##LF5) Raster=group
 ##Entrada=raster
 ##Saida=output raster
-##Tipo_de_Compressao=selection JPEG;Photometric
+##Tipo_de_Compressao=selection JPEG_PHOTOMETRIC;JPEG;Photometric
 ##Qualidade_JPEG=selection 75%;65%;85%
 ##Criar_Piramides=boolean False
 
 # Inputs
-lista = ['JPEG+PHOTOMETRIC','JPEG', 'PHOTOMETRIC']
+lista = ['JPEG_PHOTOMETRIC','JPEG', 'PHOTOMETRIC']
 compress = lista[Tipo_de_Compressao]
 lista = ['75%', '65%', '85%']
 qualidade = lista[Qualidade_JPEG][0:2]
@@ -42,12 +42,12 @@ version = qgis.utils.QGis.QGIS_VERSION # Melhorar  aqui e deixar para qualquer v
 path = 'C:/Program Files/QGIS 2.14/bin' # Melhorar  aqui e deixar para qualquer versao do QGIS
 os.chdir(path)
 
-if compress == 'JPEG+PHOTOMETRIC':
-    comando = 'gdal_translate -of GTiff -ot Byte -co PHOTOMETRIC=YCBCR -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
+if compress == 'JPEG_PHOTOMETRIC':
+    comando = 'gdal_translate --config GDAL_NUM_THREADS ALL_CPUS -of GTiff -ot Byte -co PHOTOMETRIC=YCBCR -co TILED=YES -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
 elif compress == 'JPEG':
-    comando = 'gdal_translate -of GTiff -ot Byte -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
+    comando = 'gdal_translate --config GDAL_NUM_THREADS ALL_CPUS -of GTiff -ot Byte -co COMPRESS=JPEG -co JPEG_QUALITY='+qualidade+' '+Entrada+' '+Saida
 elif compress == 'PHOTOMETRIC':
-    comando = 'gdal_translate -co COMPRESS=JPEG -co PHOTOMETRIC=YCBCR -co TILED=YES '+Entrada+' '+Saida
+    comando = 'gdal_translate --config GDAL_NUM_THREADS ALL_CPUS -co COMPRESS=JPEG -co PHOTOMETRIC=YCBCR -co TILED=YES '+Entrada+' '+Saida
 
 # Realizando a compressao
 progress.setInfo('<b>Iniciando processo de Compressao da Imagem...</b><br/>')
