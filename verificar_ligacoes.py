@@ -433,11 +433,11 @@ if moldA.name()=='aux_moldura_a' and moldB.name()=='aux_moldura_a' and nomeA != 
     del writer
 
     progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da com sucesso!</b><br/><br/>')
-    progress.setInfo('<b>3&ordm; CGEO</b><br/>')
-    progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
-    iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
+    progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
     time.sleep(5)
+    iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
 else:
     progress.setInfo('<br/><b><font  color="#ff0000">Escolha duas camadas de moldura de bancos distintos.</b><br/><br/>')
-    iface.messageBar().pushMessage(u'Problema', "Verifique as camadas de moldura de entrada.", level=QgsMessageBar.WARNING, duration=10)
     time.sleep(7)
+    iface.messageBar().pushMessage(u'Problema', "Verifique as camadas de moldura de entrada.", level=QgsMessageBar.WARNING, duration=10)
+    

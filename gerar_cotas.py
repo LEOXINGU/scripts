@@ -185,6 +185,5 @@ for poly in lista:
 del writer
 
 progress.setInfo('<b>Cotas geradas com sucesso!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
-progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 iface.messageBar().pushMessage(u'Informacao', "Cotas geradas com sucesso", level=QgsMessageBar.INFO, duration=10) #  PODE SER TAMBEM :WARNING, CRITICAL OU INFO

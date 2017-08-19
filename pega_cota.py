@@ -88,4 +88,6 @@ else:
             myDataProvider.changeAttributeValues(newAttributesValuesMap)
 
 progress.setInfo('Cotas obtidas com sucesso!')
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
+time.sleep(4)
 iface.messageBar().pushMessage(u'Informacao', "Cotas obtidas com sucesso", level=QgsMessageBar.INFO, duration=10) #  PODE SER TAMBEM :WARNING, CRITICAL OU INFO

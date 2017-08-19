@@ -38,8 +38,10 @@ from qgis.core import *
 import time
 import qgis.utils
 from qgis.utils import iface
-version = qgis.utils.QGis.QGIS_VERSION # Melhorar  aqui e deixar para qualquer versao do QGIS
-path = 'C:/Program Files/QGIS 2.14/bin' # Melhorar  aqui e deixar para qualquer versao do QGIS
+version = qgis.utils.QGis.QGIS_VERSION
+version = version.split('.')
+version = version[0]+'.'+version[1]
+path = 'C:/Program Files/QGIS '+ version+'/bin'
 os.chdir(path)
 
 if compress == 'JPEG+PHOTOMETRIC':

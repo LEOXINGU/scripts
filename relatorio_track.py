@@ -289,8 +289,7 @@ arquivo.close()
 
 
 progress.setInfo('<b>Relatorio gerado com sucesso!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
-progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 iface.messageBar().pushMessage(u'Situacao', "Relatorio gerado com Sucesso!", level=QgsMessageBar.INFO, duration=10) 
 time.sleep(4)
 
