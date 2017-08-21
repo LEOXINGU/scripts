@@ -127,5 +127,6 @@ for k in range(len(lista)):
     arquivo.write("|%d|%s|%d\n" %(k+1, (lista[k][0]).encode('utf-8'), lista[k][1]))
 
 arquivo.close()
-iface.messageBar().pushMessage(u'Informacao', "Relatorio criado com sucesso", level=QgsMessageBar.INFO, duration=4)
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 time.sleep(4)
+iface.messageBar().pushMessage(u'Informacao', "Relatorio criado com sucesso", level=QgsMessageBar.INFO, duration=4)

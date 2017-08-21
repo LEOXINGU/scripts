@@ -62,10 +62,9 @@ def ExecutarCmdo(database, host, local):
     result = os.system(comando)
     if result==0:
         progress.setInfo('<b>Operacao concluida com sucesso!</b><br/><br/>')
-        iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
-        progress.setInfo('<b>3 CGEO</b><br/>')
-        progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
+        progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
         time.sleep(4)
+        iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
         iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 

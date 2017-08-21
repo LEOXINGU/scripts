@@ -12,7 +12,7 @@
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation.                              *
+ *   the Free Software Foundation.                             *
  *                                                                         *
  ***************************************************************************/
 """
@@ -583,8 +583,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['tipocemiterio', [1,5,2,3,4]], ['denominacaoassociada',[5,6,7]]]
+ teste = [['tipocemiterio', [1,5,2,3,4]], ['denominacaoassociada',[5,6,7]]]
  VerificarAtributos(layer, teste)
+ teste = ['tipocemiterio', 'nome',[1,2,3,4]]
+ VerificarAtributosCond(layer, teste)
 
 # asb_cemiterio_p
 camada = 'asb_cemiterio_p'
@@ -596,8 +598,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['tipocemiterio', [1,5,2,3,4]], ['denominacaoassociada',[5,6,7]]]
+ teste = [['tipocemiterio', [1,5,2,3,4]], ['denominacaoassociada',[5,6,7]]]
  VerificarAtributos(layer, teste)
+ teste = ['tipocemiterio', 'nome',[1,2,3,4]]
+ VerificarAtributosCond(layer, teste)
 
 # asb_dep_abast_agua_a
 camada = 'asb_dep_abast_agua_a'
@@ -1143,8 +1147,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr', 97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoclassecnae', [35,16,32,21,28,7,8,19,13,18,17,10,12,27,34,30,24,11,9,6,15,5,26,14,25,99,33,4,98,1,20,2,23,22,31,29]] ]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoclassecnae', [35,16,32,21,28,7,8,19,13,18,17,10,12,27,34,30,24,11,9,6,15,5,26,14,25,99,33,4,98,1,20,2,23,22,31,29]] ]
  VerificarAtributos(layer, teste)
+ teste = ['situacaofisica','nome', [5]]
+ VerificarAtributosCond(layer, teste)
  # Verificar condicao Outros
  teste = ['tipoclassecnae', 'nome']
  VerificaOutros(layer, teste)
@@ -1158,8 +1164,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr', 97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoclassecnae', [35,16,32,21,28,7,8,19,13,18,17,10,12,27,34,30,24,11,9,6,15,5,26,14,25,99,33,4,98,1,20,2,23,22,31,29]] ]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoclassecnae', [35,16,32,21,28,7,8,19,13,18,17,10,12,27,34,30,24,11,9,6,15,5,26,14,25,99,33,4,98,1,20,2,23,22,31,29]] ]
  VerificarAtributos(layer, teste)
+ teste = ['situacaofisica','nome', [5]]
+ VerificarAtributosCond(layer, teste)
  # Verificar condicao Outros
  teste = ['tipoclassecnae', 'nome']
  VerificaOutros(layer, teste)
@@ -1173,8 +1181,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr', 97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
  VerificarAtributos(layer, teste)
+ teste = ['nome', 'situacaofisica', [5]]
+ VerificarAtributosCond(layer, teste)
 
 # edu_edif_religiosa_p
 camada = 'edu_edif_religiosa_p'
@@ -1185,8 +1195,10 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr', 97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['nome', 'string'], ['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
+ teste = [['situacaofisica', [1,2,3,4,5]], ['operacional',[1,2]], ['tipoedifrelig', [4,5,1,6,2,3,99,7]], ['ensino',[1,2]], ['religiao', 'string']]
  VerificarAtributos(layer, teste)
+ teste = ['nome', 'situacaofisica', [5]]
+ VerificarAtributosCond(layer, teste)
  
 # edu_piscina_a
 camada = 'edu_piscina_a'
@@ -1863,7 +1875,15 @@ if layerList:
 # campo = 'nome'
 # VerificarCartaImpress(layer, campo)
  # verificar condicao
- teste = [['regime', [5]], ['coincidecomdentrode',[97]]]
+ #teste = [['regime', [5]], ['coincidecomdentrode',[97]]]
+ #VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [1]], ['navegabilidade',[0]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [97]], ['navegabilidade',[2]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [1]], ['regime',[1,3,5]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['coincidecomdentrode', [97]], ['regime',[5]]]
  VerificarSeEntao(layer, teste)
 
 # hid_trecho_massa_dagua_a
@@ -1872,7 +1892,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ #forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['tipotrechomassa', [2,1,99,9,10]], ['regime', [1,6,4,3,2,5]], ['salinidade', [1,2]] ]
@@ -2607,7 +2627,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ forcado = [['geometriaaproximada', 1], ['revestimento', 0], ['operacional', 0], ['situacaofisica', 0], ['trafego', 0]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['canteirodivisorio', [1,2]]]
@@ -2971,7 +2991,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipopassagviad',[6,5]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13]], ['largura', (1,100)]]
+ teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipopassagviad',[6,5]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13,97]], ['largura', (1,100)]]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste)
@@ -2987,7 +3007,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipopassagviad',[6,5]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13]], ['largura', (1,100)]]
+ teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipopassagviad',[6,5]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13,97]], ['largura', (1,100)]]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste)
@@ -3092,7 +3112,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipoponte',[1,2,3]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13]], ['largura', (1,100)]]
+ teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipoponte',[1,2,3]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13,97]], ['largura', (1,100)]]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste)
@@ -3108,7 +3128,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipoponte',[1,2,3]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13]], ['largura', (1,100)]]
+ teste = [['situacaofisica', [1,2,3,4,5]],['operacional',[1,2]],['tipoponte',[1,2,3]],['modaluso',[14,9,5,98,7,8,4,6]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['nrpistas',(1,6)], ['nrfaixas', (1,10)], ['posicaopista', [12,13,97]], ['largura', (1,100)]]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste)
@@ -3257,7 +3277,7 @@ if layerList:
  teste = [['revestimento', [4,1,2,3]], ['tipotrechorod',[4,2,1,3]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,10)], ['nrfaixas', (1,8)], ['trafego',[1,2]], ['canteirodivisorio',[1,2]]]
  VerificarAtributos(layer, teste)
  # Teste de Obrigacao de atributos relativos
- teste = ['tipotrechorod', 'codtrechorodov', [2,4]]
+ teste = ['administracao', 'codtrechorodov', [1,2]]
  VerificarAtributosCond(layer, teste)
  # Verificar Condicao
  teste = [['tipotrechorod', [3]], ['jurisdicao',[0,8]]]
@@ -3271,6 +3291,12 @@ if layerList:
  teste = [['tipotrechorod', [2,4]], ['administracao',[15,12,3,11,5,2,98,10,4,1,7,9]]]
  VerificarSeEntao(layer, teste)
  teste = [['tipotrechorod', [1]], ['administracao', [15,12,3,11,5,2,98,6,10,4,1,7,9]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['nrpistas',[1]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['nrfaixas',[1]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['tipotrechorod', [3]], ['revestimento',[1]]]
  VerificarSeEntao(layer, teste)
 
 # tra_trilha_picada_l
@@ -3291,7 +3317,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr',97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['tipotunel', [1,2]], ['modaluso', [14,9,5,98,7,8,4,6]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,8)], ['nrfaixas',(1,10)],['posicaopista',[12,13]] ]
+ teste = [['tipotunel', [1,2]], ['modaluso', [14,9,5,98,7,8,4,6]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,8)], ['nrfaixas',(1,10)],['posicaopista',[12,13,97]] ]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste)
@@ -3305,7 +3331,7 @@ if layerList:
  forcado = [['geometriaaproximada', 1], ['matconstr',97]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['tipotunel', [1,2]], ['modaluso', [14,9,5,98,7,8,4,6]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,8)], ['nrfaixas',(1,10)],['posicaopista',[12,13]] ]
+ teste = [['tipotunel', [1,2]], ['modaluso', [14,9,5,98,7,8,4,6]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['nrpistas', (1,8)], ['nrfaixas',(1,10)],['posicaopista',[12,13,97]] ]
  VerificarAtributos(layer, teste)
  teste = ['modaluso', 'nome']
  VerificaMisto(layer, teste) 
@@ -3385,6 +3411,11 @@ if layerList:
  # verificar atributos
  teste = [['caracteristicafloresta', [1,2,3]], ['classificacaoporte', [1,98,2,3]]]
  VerificarAtributos(layer, teste)
+ teste = [['caracteristicafloresta', [2]], ['classificacaoporte',[98]]]
+ VerificarSeEntao(layer, teste)
+ teste = [['caracteristicafloresta', [1]], ['classificacaoporte',[1]]]
+ VerificarSeEntao(layer, teste)
+ 
 
 # veg_macega_chavascal_a
 camada = 'veg_macega_chavascal_a'
@@ -3443,7 +3474,6 @@ if layerList:
 del writer
 
 progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da com sucesso!</b><br/><br/>')
-progress.setInfo('<b>3&ordm; CGEO</b><br/>')
-progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
-iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 time.sleep(8)
+iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)

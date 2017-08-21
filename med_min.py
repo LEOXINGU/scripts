@@ -21,12 +21,11 @@
 ##LF2) Revisao=group
 ##Moldura=vector
 ##Escala=selection 1:25.000;1:50.000
-##Tolerancia_em_metros=number 50
+##Verificar_Trecho_de_Drenagem=boolean False
 ##Saida=output vector
 
 lista = [0, 1]
 escala = lista[Escala]
-tol = Tolerancia_em_metros
 saida = Saida
 moldura = Moldura
 
@@ -132,7 +131,6 @@ min_lin = {'edu_pista_competicao_l': [125, 250],
 'hid_foz_maritima_l': [20, 40],
 'hid_ilha_l': [20, 40],
 'hid_quebramar_molhe_l': [20, 40],
-'hid_trecho_drenagem_l': [500, 1000],
 'rel_alter_fisiog_antropica_l': [100, 200],
 'rel_elemento_fisiog_natural_l': [250, 500],
 'tra_arruamento_l': [50, 100],
@@ -150,30 +148,17 @@ min_lin = {'edu_pista_competicao_l': [125, 250],
 'tra_trilha_picada_l': [250, 500],
 'tra_tunel_l': [125, 250]}
 
-
-# Funcao que retorna valores maximo e minimo de Bbox
-def XYmaxmin(bbox):
-    pedacos = bbox.asPolygon().replace(',', '').split(' ')
-    Xmin = float(pedacos[0])
-    Ymin = float(pedacos[1])
-    Xmax = float(pedacos[4])
-    Ymax = float(pedacos[3])
-    return [Xmin, Ymin, Xmax, Ymax]
-    
-# Funcao que diz se a feicao esta proxima a moldura
-def ProximoMoldura(MaxMin, frameMaxMin, tol):
-    sit1 = MaxMin[0] <= frameMaxMin[0] +tol
-    sit2 = MaxMin[1] <= frameMaxMin[1] +tol
-    sit3 = MaxMin[2] >= frameMaxMin[2] -tol
-    sit4 = MaxMin[3] >= frameMaxMin[3] -tol
-    return sit1 or sit2 or sit3 or sit4
+if Verificar_Trecho_de_Drenagem:
+    min_lin['hid_trecho_drenagem_l'] = [500, 1000]
 
 # Pegando o EPSG da moldura
 frame = processing.getObject(moldura)
 crs = frame.crs()
 feat = frame.getFeatures().next()
-bbox = feat.geometry().boundingBox()
-frameMaxMin = XYmaxmin(bbox)
+geom = feat.geometry()
+coord = geom.asMultiPolygon()
+geom = QgsGeometry.fromPolyline(coord[0][0])
+Buffer = geom.buffer(1,5)
 
 # Criar arquivo de pontos para armazenar as informacoes
 fields = QgsFields()
@@ -197,16 +182,16 @@ cont = 0
 feat = QgsFeature()
 for layer in QgsMapLayerRegistry.instance().mapLayers().values():
     nome = layer.name()
+    # AREA
     if nome in min_pol:
         min_area =  min_pol[nome][2*escala]
         min_larg = min_pol[nome][2*escala+1]
         for feature in layer.getFeatures():
+            # Area minima
             geom = feature.geometry()
             area = geom.area()
             if area < min_area:
-                bbox = feature.geometry().boundingBox()
-                MaxMin = XYmaxmin(bbox)
-                if not ProximoMoldura(MaxMin, frameMaxMin, tol):
+                if not geom.intersects(Buffer):
                     cont +=1
                     problema = 'Area menor que a area minima'
                     id = feature.id()
@@ -214,34 +199,36 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                     feat.setGeometry(c)
                     feat.setAttributes([cont, problema, area, min_area, nome, id])
                     writer.addFeature(feat)
-        for feature in layer.getFeatures():
-            geom= feature.geometry()
-            id = feature.id()
+            
+            # Largura Minima
+            
             # Buffer negativo
             buffNeg = geom.buffer( -0.99*min_larg/2 , 5)
             # Buffer positivo
             if buffNeg.area() > 0:
-                buffPos = buffNeg.buffer(1.9*min_larg/2, 5)
+                buffPos = buffNeg.buffer(2.1*min_larg/2, 5)
                 # Diferenca
                 Difer = geom.difference(buffPos)
-                # Pegar centroides do(s) poligono(s) da diferenca
-                lista = Difer.asMultiPolygon()
-                if lista:
-                    for pol in lista:
-                        poligono = QgsGeometry.fromPolygon(pol)
-                        c = poligono.centroid()
+                if Difer:
+                    # Pegar centroides do(s) poligono(s) da diferenca
+                    lista = Difer.asMultiPolygon()
+                    if lista:
+                        id = feature.id()
+                        for pol in lista:
+                            poligono = QgsGeometry.fromPolygon(pol)
+                            c = poligono.centroid()
+                            cont +=1
+                            problema = 'Largura menor que a largura minima'
+                            feat.setGeometry(c)
+                            feat.setAttributes([cont, problema, None, min_larg, nome, id])
+                            writer.addFeature(feat)
+                    elif Difer.asPolygon():
+                        c = Difer.centroid()
                         cont +=1
                         problema = 'Largura menor que a largura minima'
                         feat.setGeometry(c)
                         feat.setAttributes([cont, problema, None, min_larg, nome, id])
                         writer.addFeature(feat)
-                elif Difer.asPolygon():
-                    c = Difer.centroid()
-                    cont +=1
-                    problema = 'Largura menor que a largura minima'
-                    feat.setGeometry(c)
-                    feat.setAttributes([cont, problema, None, min_larg, nome, id])
-                    writer.addFeature(feat)
             else:
                 c = geom.centroid()
                 cont +=1
@@ -249,14 +236,16 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                 feat.setGeometry(c)
                 feat.setAttributes([cont, problema, None, min_larg, nome, id])
                 writer.addFeature(feat)
+    
+    # LINHA
     if nome in min_lin:
         min_comp = min_lin[nome][escala]
         for feature in layer.getFeatures():
-            comp = feature.geometry().length()
+            # Comprimento minimo
+            geom = feature.geometry()
+            comp = geom.length()
             if comp < min_comp:
-                bbox = feature.geometry().boundingBox()
-                MaxMin = XYmaxmin(bbox)
-                if not ProximoMoldura(MaxMin, frameMaxMin, tol):
+                if not geom.intersects(Buffer):
                     cont +=1
                     problema = 'Comprimento menor que o minimo'
                     id = feature.id()
@@ -269,7 +258,6 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
 del writer
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
-progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
-iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 time.sleep(3)
+iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)

@@ -117,8 +117,8 @@ for index, feature in enumerate(linhas.getFeatures()):
 DataProvider.deleteFeatures(deletar)
 del linhas
 
-#progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
-#progress.setInfo('<b>3 CGEO</b><br/>')
-#progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
-#time.sleep(3)
-#iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=7)
+progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
+
+progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
+time.sleep(3)
+iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=7)
