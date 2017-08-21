@@ -38,10 +38,11 @@ from qgis.core import *
 import time
 import qgis.utils
 from qgis.utils import iface
-version = qgis.utils.QGis.QGIS_VERSION
-version = version.split('.')
-version = version[0]+'.'+version[1]
-path = 'C:/Program Files/QGIS '+ version+'/bin'
+#version = qgis.utils.QGis.QGIS_VERSION
+#version = version.split('.')
+#version = version[0]+'.'+version[1]
+#path = 'C:/Program Files/QGIS '+ version+'/bin'
+path = qgis.core.QgsApplication.applicationDirPath().encode("utf-8")
 os.chdir(path)
 
 if compress == 'JPEG_PHOTOMETRIC':
