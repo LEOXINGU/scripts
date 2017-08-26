@@ -1,5 +1,5 @@
 # scripts
-Ferramentas do QGIS para Produção Cartográfica do 3º CGEO
+Ferramentas do QGIS para Produção Cartográfica
 
 The scripts are a set of tools for QGIS used for cartographic prodution in the 3th Brazilian Geoinformation Center.
 
