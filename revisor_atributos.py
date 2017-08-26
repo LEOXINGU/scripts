@@ -2505,7 +2505,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 # rel_terreno_exposto_a
-camada = 'rel_rocha_p'
+camada = 'rel_terreno_exposto_a'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
