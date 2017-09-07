@@ -21,7 +21,7 @@
 ##2. Retalhar Linhas=name
 ##LF4) Vetor=group
 ##Camada_de_Linhas=vector
-##Camada_de_Poligonos=vector
+##Camada_Recortante_Tipo_Linha_ou_Poligono=vector
 ##Saida=output vector
 
 from PyQt4.QtCore import *
@@ -31,7 +31,7 @@ from qgis.core import *
 import processing
 import time
 
-poligono = Camada_de_Poligonos
+poligono = Camada_Recortante_Tipo_Linha_ou_Poligono
 linha = Camada_de_Linhas
 saida = Saida
 
@@ -46,13 +46,13 @@ CRS = linhas.crs()
 encoding = 'utf-8'
 formato = 'ESRI Shapefile'
 writer = QgsVectorFileWriter(saida, encoding, fields, QGis.WKBLineString, CRS, formato)
-del writer
-recortado = QgsVectorLayer(saida, 'poligonos', 'ogr')
-DataProvider = recortado.dataProvider()
 
-# Gerar camada do anel exterior dos poligonos
-anel = processing.runalg('script:extrairanelexterior', poligonos, None)
-recortante = processing.getObject(anel['Saida'])
+if poligonos.geometryType() == QGis.Polygon:
+    # Gerar camada do anel exterior dos poligonos
+    anel = processing.runalg('script:extrairanelexterior', poligonos, None)
+    recortante = processing.getObject(anel['Saida'])
+else:
+    recortante = processing.getObject(poligono)
 
 # Funcao para recortar linhas
 def SplitLine(geom, cortador):
@@ -104,11 +104,10 @@ while len(lista_lin)>0:
     if cruzou == False:
         feature.setGeometry(linha)
         feature.setAttributes(lista_lin[0][1])
-        DataProvider.addFeatures([feature])
+        writer.addFeature(feature)
         del lista_lin[0]
-        
-del DataProvider, recortado
 
+del writer
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
 progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
