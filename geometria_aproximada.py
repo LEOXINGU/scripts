@@ -139,7 +139,6 @@ for feat in TrechoRodoviario.getFeatures():
 Outras = ['hid_trecho_drenagem_l',
                 'hid_massa_dagua_a',
                 'hid_trecho_massa_dagua_a',
-                'tra_trecho_rodoviario_l',
                 'rel_ponto_cotado_altimetrico_p',
                 'rel_curva_nivel_l',
                 'rel_elemento_fisiog_natural_l']
