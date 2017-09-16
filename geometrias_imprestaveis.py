@@ -19,7 +19,7 @@
 """
 # Identifica geometrias imprestaveis
 ##Geometrias Problematicas=name
-##LF7) Outros=group
+##LF8) Outros=group
 ##Arquivo_txt=output file
 
 if Arquivo_txt[-4:] != '.txt':

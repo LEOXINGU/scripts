@@ -1,7 +1,6 @@
 """
 /***************************************************************************
- 3 CGEO
-3th Brazilian Geoinformation Center
+ LEOXINGU
                               -------------------
         begin                : 2017-05-29
         copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer @ Brazilian Army
