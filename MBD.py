@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Metodo do Buffer Duplo
-##MBD- Metodo do Buffer Duplo=name
+##MBD - Metodo do Buffer Duplo=name
 ##LF7) Qualidade=group
 ##Camada_de_Referencia=vector
 ##Camada_de_Teste=vector
