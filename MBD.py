@@ -176,10 +176,10 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         for valor in valores[::-1]:
             discrep = DISCREP[cont]
             cont +=1
-            desvPad = std(discrep, ddof=1)
+            EMQ = sqrt((discrep*discrep).sum()/(len(discrep)-1))
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            if (sum(discrep<EM)/float(len(discrep)))>0.9 and (desvPad < EP):
+            if (sum(discrep<EM)/float(len(discrep)))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
@@ -188,7 +188,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
     progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %media)
-    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %std(DISCREP, ddof=1))
+    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)))
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -228,7 +228,7 @@ Refer&ecirc;ncia</span><br>
 &nbsp;&nbsp;&nbsp; c. erro-padr&atilde;o (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, DISCREP.std(), DISCREP.max(),DISCREP.min())
+&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)), DISCREP.max(),DISCREP.min())
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>

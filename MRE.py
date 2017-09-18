@@ -149,7 +149,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
     media = mean(DISCREP)
-    desvPad = std(DISCREP, ddof=1)
+    EMQ = sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)-1))
     # Escalas a serem avaliadas
     Escalas = []
     if Escala_1_1k:
@@ -176,7 +176,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         for valor in valores[::-1]:
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            if (sum(DISCREP<EM)/float(len(DISCREP)))>0.9 and (desvPad < EP):
+            if (sum(DISCREP<EM)/float(len(DISCREP)))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
@@ -185,7 +185,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
     progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %media)
-    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %desvPad)
+    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %EMQ)
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -226,7 +226,7 @@ Refer&ecirc;ncia</span><br>
 &nbsp;&nbsp;&nbsp; c. erro-padr&atilde;o (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, desvPad, max(DISCREP),min(DISCREP))
+&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, EMQ, max(DISCREP),min(DISCREP))
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>
