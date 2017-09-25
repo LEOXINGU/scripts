@@ -49,9 +49,9 @@ else:
         sentinela = True
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5) 
         progress.setInfo('<b>Verifique se a versao do PostgreSQL foi definida corretamente.</b><br/>')
         time.sleep(8)
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 if sentinela:
     arquivo = open('C:/Users/Public/muda.sql','w')
@@ -69,6 +69,6 @@ if sentinela:
         iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=10) 
         progress.setInfo('<b>Verifique se os parametros foram definidos corretamente.</b><br/>')
         time.sleep(8)
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=10) 

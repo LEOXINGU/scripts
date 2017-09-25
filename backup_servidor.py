@@ -2,7 +2,7 @@
 /***************************************************************************
  LEOXINGU
                               -------------------
-        begin                : 2017-04-11
+        begin                : 2017-09-25
         copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
         email                : geoleandro.franca@gmail.com
  ***************************************************************************/
@@ -15,17 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 """
-# RESTAURAR
-##1. RESTAURAR=name
+# BACKUP DE SERVIDOR
+##6. BACKUP DE SERVIDOR=name
 ##LF1) PostGIS=group
-##Arquivo_SQL=file
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
+##Arquivo_de_backup=output file
 
 # Inputs
-host = Host
+host = str(Host)
 lista = [9.5,9.3,9.4,9.6]
 version = str(lista[Versao_do_PostgreSQL])
+saida = Arquivo_de_backup
+if saida[-4:] != '.sql':
+    saida += '.sql'
 
 import os
 from PyQt4.QtCore import *
@@ -33,46 +36,33 @@ from qgis.gui import QgsMessageBar
 from qgis.utils import iface
 from qgis.core import *
 import time
-import shutil
 
-# Nome do arquivo e caminho
-def file_path(caminho):
-    quebrado = (caminho.replace('/','\\')).split('\\')
-    tam = len(quebrado)-2
-    filename = quebrado[-1]
-    caminho = ''
-    for i in range(tam):
-        caminho+=quebrado[i]+'\\'
-    caminho += quebrado[-2]
-    return caminho, filename
-
-# Copiar arquivo sql para um pasta no C:
-saida = file_path(Arquivo_SQL)
-if Arquivo_SQL[0] != 'C':
-    shutil.copy2(Arquivo_SQL, 'C:/Users/Public/'+saida[1])
-    path_name = 'C:/Users/Public/'+saida[1]
-else:
-    path_name = Arquivo_SQL
-
-pasta = 'C:/Program Files/PostgreSQL/'+version+'/bin'
+local = 'C:/Program Files/PostgreSQL/'+version+'/bin'
 sentinela = False
-if os.path.isdir(pasta):
-    os.chdir(pasta)
+if os.path.isdir(local):
+    os.chdir(local)
     sentinela = True
 else:
-    pasta = 'C:\Program Files (x86)/PostgreSQL/'+version+'/bin'
-    if os.path.isdir(pasta):
-        os.chdir(pasta)
+    local = 'C:\Program Files (x86)/PostgreSQL/'+version+'/bin'
+    if os.path.isdir(local):
+        os.chdir(local)
         sentinela = True
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
         progress.setInfo('<b>Verifique se a versao do PostgreSQL foi definida corretamente.</b><br/>')
         time.sleep(8)
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5) 
 
+if 'backup.file' in saida:
+    sentinela = False
+    progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
+    progress.setInfo('<b>Verifique se o nome do banco de dados foi escrito corretamente.</b><br/>')
+    time.sleep(8)
+    iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5)
+   
 if sentinela:
-    comando ='psql -d postgres -U postgres -h '+host+' -p 5432 -f '+path_name
-    progress.setInfo('<b>Iniciando processo de Restauracao do BD...</b><br/>')
+    comando = 'pg_dumpall -h %s -p 5432 -U postgres -v -f "%s"' %(host, saida)
+    progress.setInfo('<b>Realizando backup do servidor...</b><br/>')
     result = os.system(comando)
     if result==0:
         progress.setInfo('<b>Operacao concluida com sucesso!</b><br/><br/>')
@@ -84,6 +74,3 @@ if sentinela:
         progress.setInfo('<b>Verifique se os parametros foram definidos corretamente.</b><br/>')
         time.sleep(8)
         iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=10) 
-        
-if Arquivo_SQL[0] != 'C':
-    os.remove(path_name)

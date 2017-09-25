@@ -51,9 +51,9 @@ else:
         sentinela = True
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
         progress.setInfo('<b>Verifique se a versao do PostgreSQL foi definida corretamente.</b><br/>')
         time.sleep(8)
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 def ExecutarCmdo(database, host, local):
     comando = 'pg_dump -Fp -C -h ' +host+ ' -U postgres ' +database+ ' > ' +local+ '/'+database+'.sql'
@@ -66,9 +66,9 @@ def ExecutarCmdo(database, host, local):
         iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
     else:
         progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
         progress.setInfo('<b>Verifique se os parametros foram definidos corretamente.</b><br/>')
         time.sleep(8)
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 if sentinela:
     if not Renomear_BD_de_Saida:
