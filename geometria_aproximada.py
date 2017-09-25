@@ -1,6 +1,6 @@
 """
 /***************************************************************************
- LEOXINGU Geotecnologias
+ LEOXINGU
                               -------------------
         begin                : 2017-09-13
         copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
@@ -18,7 +18,7 @@
 # Atualizacao de Geometria Aproximada
 
 ##LF2) Revisao=group
-##14. Geometria Aproximada=name
+##15. Geometria Aproximada=name
 ##Banco_de_Dados_da_Reambulacao=string
 ##Banco_de_Dados_da_Vetorizacao=string
 ##Tolerancia_do_Buffer_em_metros=number 5.0

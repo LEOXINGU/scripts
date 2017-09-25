@@ -1,11 +1,10 @@
 """
 /***************************************************************************
- 3 CGEO
-3th Brazilian Geoinformation Center
+ LEOXINGU
                               -------------------
         begin                : 2017-06-13
-        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer @ Brazilian Army
-        email                : franca.leandro@eb.mil.br
+        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
+        email                : geoleandro.franca@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificar sobreposicao de todos os Pontos da lista de camadas
-##10. Sobrepos de Pontos=name
+##11. Sobrepos de Pontos=name
 ##LF2) Revisao=group
 ##Tolerancia=number 0.5
 ##Camada_de_sobreposicao=output vector

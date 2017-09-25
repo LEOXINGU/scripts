@@ -16,8 +16,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Consertar Linhas
-##1. Mergear na Direcao=name
+# Mesclar linhas na direcao
+##1. Mesclar na Direcao=name
 ##arquivo=vector
 ##tolerancia=number 10
 ##saida=output vector

@@ -1,11 +1,10 @@
 """
 /***************************************************************************
- 3 CGEO
-3th Brazilian Geoinformation Center
+ LEOXINGU
                               -------------------
         begin                : 2017-05-24
-        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer @ Brazilian Army
-        email                : franca.leandro@eb.mil.br
+        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
+        email                : geoleandro.franca@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificacao de cobertura terrestre (SOBREPOSICAO)
-##06. Cob Ter Sobreposicao=name
+##08. Cob Ter Sobreposicao=name
 ##LF2) Revisao=group
 ##Camada_de_Sobreposicao=output vector
 

@@ -1,11 +1,10 @@
 """
 /***************************************************************************
- 3 CGEO
-3th Brazilian Geoinformation Center
+ LEOXINGU
                               -------------------
         begin                : 2017-06-01
-        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer @ Brazilian Army
-        email                : franca.leandro@eb.mil.br
+        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
+        email                : geoleandro.franca@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificacao de medidas minimas
-##08. Medidas Minimas=name
+##09. Medidas Minimas=name
 ##LF2) Revisao=group
 ##Moldura=vector
 ##Escala=selection 1:25.000;1:50.000
