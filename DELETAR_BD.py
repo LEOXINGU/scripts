@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # DELETAR BD
-##4. DELETAR BD=name
+##5. DELETAR BD=name
 ##LF1) PostGIS=group
 ##Nome_do_Banco_de_Dados=string
 ##Host=string localhost
