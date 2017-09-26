@@ -3,8 +3,8 @@
  LEOXINGU
                               -------------------
         begin                : 2017-05-29
-        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer @ Brazilian Army
-        email                : franca.leandro@eb.mil.br
+        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
+        email                : geoleandro.franca@gmail.com
  ***************************************************************************/
 
 /***************************************************************************

@@ -21,7 +21,6 @@
 ##Camada_de_Referencia=vector
 ##Camada_de_Teste=vector
 ##Buffer_de_Relacionamento=number 30.0
-##Tamanho_Minimo=number 100.0
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False
 ##Escala_1_2k=boolean False
@@ -42,7 +41,6 @@ import processing
 from numpy import sqrt, pi, array, mean, std
 
 buf = Buffer_de_Relacionamento
-TamMin = Tamanho_Minimo
 
 # PEC-PCD
 PEC = {'1k': {'planim': {'A': {'EM': 0.28, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.3},'C': {'EM': 0.8, 'EP': 0.5},'D': {'EM': 1, 'EP': 0.6}}, 'altim': {'A': {'EM': 0.27, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.33},'C': {'EM': 0.6, 'EP': 0.4},'D': {'EM': 0.75, 'EP': 0.5}}},
@@ -94,14 +92,19 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     for index, item_ref in enumerate(list_ref):
         lin_ref = QgsGeometry.fromPolyline(item_ref[0])
         buf_ref = QgsGeometry.fromPolygon(item_ref[1])
-        sentinela = False
+        min_area = 1e9
+        relacao = []
         for item_teste in list_teste:
             lin_teste = QgsGeometry.fromPolyline(item_teste[0])
             buf_teste = QgsGeometry.fromPolygon(item_teste[1])
             if lin_ref.intersects(buf_teste):
                 if lin_ref.within(buf_teste) and lin_teste.within(buf_ref):
-                    Multilinha = QgsGeometry.fromMultiPolyline([item_ref[0], item_teste[0]])
+#                    Multilinha = QgsGeometry.fromMultiPolyline([item_ref[0], item_teste[0]])
+#                   
+#                    Poligono = 
+                    
                     if Multilinha.length() > TamMin:
+                        
                         RELACOES += [[item_ref[0], item_teste[0]]]
                     break
         progress.setPercentage(int((index/float(tam-1))*100))
