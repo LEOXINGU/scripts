@@ -62,6 +62,21 @@ teste = processing.getObject(Camada_de_Teste)
 # As duas camadas devem ser do tipo linha
 crs1 = ref.crs()
 crs2 = teste.crs()
+distance = QgsDistanceArea()
+
+# Funcao para Gerar Poligonos
+def GeraPoligono(lin1, lin2):
+    Pfim1 = lin1[-1]
+    Pini2 = lin2[0]
+    Pfim2 = lin2[-1]
+    m1 = distance.measureLine(Pfim1, Pini2)
+    m2 = distance.measureLine(Pfim1, Pfim2)
+    if m1<m2:
+        coord = [lin1+lin2+[lin1[0]]]
+    else:
+        coord = [lin1+lin2[::-1]+[lin1[0]]]
+    return coord
+
 if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Line and teste.geometryType() == QGis.Line:
     # Colocar linhas e seus buffers em uma lista
     list_ref = []
@@ -94,20 +109,21 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         buf_ref = QgsGeometry.fromPolygon(item_ref[1])
         min_area = 1e9
         relacao = []
+        sentinela = False
         for item_teste in list_teste:
             lin_teste = QgsGeometry.fromPolyline(item_teste[0])
             buf_teste = QgsGeometry.fromPolygon(item_teste[1])
             if lin_ref.intersects(buf_teste):
                 if lin_ref.within(buf_teste) and lin_teste.within(buf_ref):
-#                    Multilinha = QgsGeometry.fromMultiPolyline([item_ref[0], item_teste[0]])
-#                   
-#                    Poligono = 
-                    
-                    if Multilinha.length() > TamMin:
-                        
-                        RELACOES += [[item_ref[0], item_teste[0]]]
-                    break
-        progress.setPercentage(int((index/float(tam-1))*100))
+                    Poligono = QgsGeometry.fromPolygon(GeraPoligono(item_ref[0], item_teste[0]))
+                    Area = Poligono.area()
+                    if Area < min_area:
+                        sentinela = True
+                        min_area = Area
+                        relacao = [item_ref[0], item_teste[0]]
+        if sentinela:
+            RELACOES += [relacao]
+        progress.setPercentage(int(((index+1)/float(tam))*100))
     
     # Escalas a serem avaliadas
     Escalas = []
@@ -132,7 +148,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     
     # Aplicar o Metodo do Buffer Duplo
     DISCREP = []
-
+    
     for item in RELACOES:
         discrepItem = []
         for escala in Escalas:
@@ -167,31 +183,38 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         fet.setAttributes(DISCREP[index])
         writer.addFeature(fet)
     del writer
-
+    
+    # Comprimento das Linhas de Referencia
+    COMPR = []
+    for relacao in RELACOES:
+        geom = QgsGeometry.fromPolyline(relacao[0])
+        compr = geom.length()
+        COMPR += [compr]
+    
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
     DISCREP = DISCREP.transpose()
-    media = DISCREP.mean()
+    COMPR = array(COMPR)
     cont = 0
     RESULTADOS = {}
     for escala in Escalas:
         mudou = False
         for valor in valores[::-1]:
-            discrep = DISCREP[cont]
+            discrep = DISCREP[3-cont%4+4*cont/4]
             cont +=1
-            EMQ = sqrt((discrep*discrep).sum()/(len(discrep)-1))
+            EMQ = sqrt((discrep*discrep*COMPR).sum()/COMPR.sum())
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            if (sum(discrep<EM)/float(len(discrep)))>0.9 and (EMQ < EP):
+            if (sum((discrep<EM)*COMPR)/sum(COMPR))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
             RESULTADOS[escala] = 'R'
-
+    
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
-    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %media)
-    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)))
+    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %DISCREP.mean())
+    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)))
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -228,10 +251,10 @@ Refer&ecirc;ncia</span><br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
 &nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
 &nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. erro-padr&atilde;o (m): %.1f<br>
+&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)), DISCREP.max(),DISCREP.min())
+&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)), DISCREP.max(),DISCREP.min())
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>

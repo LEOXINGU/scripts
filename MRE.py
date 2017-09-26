@@ -21,7 +21,6 @@
 ##Camada_de_Referencia=vector
 ##Camada_de_Teste=vector
 ##Buffer_de_Relacionamento=number 30.0
-##Tamanho_Minimo=number 100.0
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False
 ##Escala_1_2k=boolean False
@@ -42,7 +41,6 @@ import processing
 from numpy import sqrt, array, mean, std
 
 buf = Buffer_de_Relacionamento
-TamMin = Tamanho_Minimo
 
 # PEC-PCD
 PEC = {'1k': {'planim': {'A': {'EM': 0.28, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.3},'C': {'EM': 0.8, 'EP': 0.5},'D': {'EM': 1, 'EP': 0.6}}, 'altim': {'A': {'EM': 0.27, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.33},'C': {'EM': 0.6, 'EP': 0.4},'D': {'EM': 0.75, 'EP': 0.5}}},
@@ -64,6 +62,21 @@ teste = processing.getObject(Camada_de_Teste)
 # As duas camadas devem ser do tipo linha
 crs1 = ref.crs()
 crs2 = teste.crs()
+distance = QgsDistanceArea()
+
+# Funcao para Gerar Poligonos
+def GeraPoligono(lin1, lin2):
+    Pfim1 = lin1[-1]
+    Pini2 = lin2[0]
+    Pfim2 = lin2[-1]
+    m1 = distance.measureLine(Pfim1, Pini2)
+    m2 = distance.measureLine(Pfim1, Pfim2)
+    if m1<m2:
+        coord = [lin1+lin2+[lin1[0]]]
+    else:
+        coord = [lin1+lin2[::-1]+[lin1[0]]]
+    return coord
+
 if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Line and teste.geometryType() == QGis.Line:
     # Colocar linhas e seus buffers em uma lista
     list_ref = []
@@ -94,35 +107,33 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     for index, item_ref in enumerate(list_ref):
         lin_ref = QgsGeometry.fromPolyline(item_ref[0])
         buf_ref = QgsGeometry.fromPolygon(item_ref[1])
+        min_area = 1e9
+        relacao = []
         sentinela = False
         for item_teste in list_teste:
             lin_teste = QgsGeometry.fromPolyline(item_teste[0])
             buf_teste = QgsGeometry.fromPolygon(item_teste[1])
             if lin_ref.intersects(buf_teste):
                 if lin_ref.within(buf_teste) and lin_teste.within(buf_ref):
-                    Multilinha = QgsGeometry.fromMultiPolyline([item_ref[0], item_teste[0]])
-                    if Multilinha.length() > TamMin:
-                        RELACOES += [[item_ref[0], item_teste[0]]]
-                    break
-        progress.setPercentage(int((index/float(tam-1))*100))
+                    Poligono = QgsGeometry.fromPolygon(GeraPoligono(item_ref[0], item_teste[0]))
+                    Area = Poligono.area()
+                    if Area < min_area:
+                        sentinela = True
+                        min_area = Area
+                        relacao = [item_ref[0], item_teste[0]]
+        if sentinela:
+            RELACOES += [relacao]
+        progress.setPercentage(int(((index+1)/float(tam))*100))
 
     # Aplicar o Metodo dos Retangulos Equivalentes
-    distance = QgsDistanceArea()
+    
     # Criar poligonos
     POLIGONOS = []
     for item in RELACOES:
         lin1 = item[0]
         lin2 = item[1]
-        Pfim1 = lin1[-1]
-        Pini2 = lin2[0]
-        Pfim2 = lin2[-1]
-        m1 = distance.measureLine(Pfim1, Pini2)
-        m2 = distance.measureLine(Pfim1, Pfim2)
-        if m1<m2:
-            coord = [lin1+lin2+[lin1[0]]]
-        else:
-            coord = [lin1+lin2[::-1]+[lin1[0]]]
-        POLIGONOS += [coord]
+        POLIGONOS += [GeraPoligono(lin1, lin2)]
+    
     # Calcular Discrepancias
     DISCREP = []
     for index, coord in enumerate(POLIGONOS):
@@ -132,7 +143,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         x1 = (p-sqrt(p*p-4*S))/2.0
         DISCREP += [float(x1)]
 
-    # Criar camada de Saida (Retangulos)
+    # Criar camada de Saida (Poligonos)
     fields = QgsFields()
     fields.append(QgsField("discrepanc", QVariant.Double))
     CRS = teste.crs()
@@ -145,11 +156,14 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         fet.setAttributes([DISCREP[index]])
         writer.addFeature(fet)
     del writer
-
-    # Gerar relatorio do metodo
-    DISCREP= array(DISCREP)
-    media = mean(DISCREP)
-    EMQ = sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)-1))
+    
+    # Comprimento das Linhas de Referencia
+    COMPR = []
+    for relacao in RELACOES:
+        geom = QgsGeometry.fromPolyline(relacao[0])
+        compr = geom.length()
+        COMPR += [compr]
+        
     # Escalas a serem avaliadas
     Escalas = []
     if Escala_1_1k:
@@ -170,13 +184,21 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         Escalas+=['250k']
 
     valores = ['A', 'B', 'C', 'D']
+    
+    # Gerar relatorio do metodo
+    DISCREP= array(DISCREP)
+    COMPR = array(COMPR)
+    EMQ = sqrt((DISCREP*DISCREP*COMPR).sum()/COMPR.sum())
+    print EMQ
+    media_Pond =sum(DISCREP*COMPR)/sum(COMPR)
     RESULTADOS = {}
     for escala in Escalas:
         mudou = False
         for valor in valores[::-1]:
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            if (sum(DISCREP<EM)/float(len(DISCREP)))>0.9 and (EMQ < EP):
+            print escala, valor, EM, EP, sum((DISCREP<EM)*COMPR)/sum(COMPR)
+            if (sum((DISCREP<EM)*COMPR)/sum(COMPR))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
@@ -184,8 +206,8 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
 
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
-    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %media)
-    progress.setInfo('<b>Erro-Padrao: %.1f m</b><br/><br/>' %EMQ)
+    progress.setInfo('<b>Media Ponderada das Discrepancias: %.1f m</b><br/>' %media_Pond)
+    progress.setInfo('<b>Desvio-Padrao Ponderado: %.1f m</b><br/><br/>' %EMQ)
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -222,11 +244,11 @@ Refer&ecirc;ncia</span><br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
 &nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
-&nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. erro-padr&atilde;o (m): %.1f<br>
+&nbsp;&nbsp;&nbsp; b. m&eacute;dia ponderada das discrep&acirc;ncias (m): %.1f<br>
+&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o ponderado (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media, EMQ, max(DISCREP),min(DISCREP))
+&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media_Pond, EMQ, max(DISCREP),min(DISCREP))
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>
