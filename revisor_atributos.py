@@ -1866,7 +1866,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ forcado = [['geometriaaproximada', 2]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['eixoprincipal', [1,2]], ['regime', [1,6,4,3,2,5]], ['compartilhado', [1,2]], ['coincidecomdentrode',[10,14,2,9,11,19,15,1,97,12,13,16]], ['dentrodepoligono', [1,2]] ]
@@ -1891,7 +1891,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- #forcado = [['geometriaaproximada', 1]]
+ forcado = [['geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['tipotrechomassa', [2,1,99,9,10]], ['regime', [1,6,4,3,2,5]], ['salinidade', [1,2]] ]
