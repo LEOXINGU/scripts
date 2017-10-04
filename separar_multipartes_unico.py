@@ -1,6 +1,6 @@
 """
 /***************************************************************************
- LEOXINGU Geotecnologias
+ LEOXINGU
                               -------------------
         begin                : 2017-09-11
         copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
