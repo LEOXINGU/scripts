@@ -189,7 +189,6 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     DISCREP= array(DISCREP)
     COMPR = array(COMPR)
     EMQ = sqrt((DISCREP*DISCREP*COMPR).sum()/COMPR.sum())
-    print EMQ
     media_Pond =sum(DISCREP*COMPR)/sum(COMPR)
     RESULTADOS = {}
     for escala in Escalas:
@@ -197,7 +196,6 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         for valor in valores[::-1]:
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            print escala, valor, EM, EP, sum((DISCREP<EM)*COMPR)/sum(COMPR)
             if (sum((DISCREP<EM)*COMPR)/sum(COMPR))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True

@@ -173,6 +173,8 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
         for valor in valores:
             nome = escala + '_PEC_' + valor
             fields.append(QgsField(nome, QVariant.Double))
+    fields.append(QgsField('media', QVariant.Double))
+    fields.append(QgsField('desPad', QVariant.Double))
     CRS = teste.crs()
     encoding = 'utf-8'
     formato = 'ESRI Shapefile'
@@ -180,7 +182,9 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     fet = QgsFeature()
     for index, coord in enumerate(RELACOES):
         fet.setGeometry(QgsGeometry.fromMultiPolyline(coord))
-        fet.setAttributes(DISCREP[index])
+        media = float((array(DISCREP[index])).mean())
+        DP = float((array(DISCREP[index])).std())
+        fet.setAttributes(DISCREP[index]+[media, DP])
         writer.addFeature(fet)
     del writer
     
