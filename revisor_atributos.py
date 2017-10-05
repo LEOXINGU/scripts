@@ -1886,8 +1886,6 @@ if layerList:
 # campo = 'nome'
 # VerificarCartaImpress(layer, campo)
  # verificar condicao
- #teste = [['regime', [5]], ['coincidecomdentrode',[97]]]
- #VerificarSeEntao(layer, teste)
  teste = [['coincidecomdentrode', [1]], ['navegabilidade',[0]]]
  VerificarSeEntao(layer, teste)
  teste = [['coincidecomdentrode', [97]], ['navegabilidade',[2]]]
