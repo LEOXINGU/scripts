@@ -260,12 +260,24 @@ def ForcarAtributos(SimNao, camada, forcado):
  if SimNao:
      DP = camada.dataProvider()
      for item in forcado:
-         att_column = layer.pendingFields().fieldNameIndex(item[0])
-         atributo = item[1]
-         newColumnValueMap = {att_column : atributo}
-         for feat in camada.getFeatures():
-             newAttributesValuesMap = {feat.id() : newColumnValueMap}
-             DP.changeAttributeValues(newAttributesValuesMap)
+         if len(item)==2: #lista, Ex: ['atributo ref', 'valor_novo']
+             att_column = layer.pendingFields().fieldNameIndex(item[0])
+             atributo = item[1]
+             newColumnValueMap = {att_column : atributo}
+             for feat in camada.getFeatures():
+                 newAttributesValuesMap = {feat.id() : newColumnValueMap}
+                 DP.changeAttributeValues(newAttributesValuesMap)
+         else:
+            for item in forcado: #lista, Ex: ['atributo ref', 'valor_ref', 'atributo_teste', 'valor_novo']
+                 att_ref = item[0]
+                 valor_ref = item[1]
+                 att_teste = layer.pendingFields().fieldNameIndex(item[2])
+                 valor_novo = item[3]
+                 newColumnValueMap = {att_teste : valor_novo}
+                 for feat in camada.getFeatures():
+                     if feat[att_ref] == valor_ref:
+                         newAttributesValuesMap = {feat.id() : newColumnValueMap}
+                         DP.changeAttributeValues(newAttributesValuesMap)
 
 def VerificarAtributos(camada, teste):
  for item in teste:
@@ -1866,7 +1878,7 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 2]]
+ forcado = [['geometriaaproximada', 2], ['coincidecomdentrode', 97,'geometriaaproximada', 1], ['coincidecomdentrode', 97,'eixoprincipal', 1], ['coincidecomdentrode', 97,'navegabilidade', 2], ['coincidecomdentrode', 97,'regime', 5], ['dentrodepoligono', 1,'geometriaaproximada', 1]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['eixoprincipal', [1,2]], ['regime', [1,6,4,3,2,5]], ['compartilhado', [1,2]], ['coincidecomdentrode',[10,14,2,9,11,19,15,1,97,12,13,16]], ['dentrodepoligono', [1,2]] ]
@@ -2471,13 +2483,12 @@ camada = 'rel_ponto_cotado_altimetrico_p'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
+  # forcar atributos
+ forcado = [['cotacomprovada', 1, 'geometriaaproximada',2], ['cotacomprovada', 2, 'geometriaaproximada',1]]
+ ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
  teste = [['cota', (1,5000)]]
  VerificarAtributos(layer, teste)
-# teste = [['cotacomprovada', [1]], ['geometriaaproximada',[2]]]
-# VerificarSeEntao(layer, teste)
-# teste = [['cotacomprovada', [2]], ['geometriaaproximada',[1]]]
-# VerificarSeEntao(layer, teste)
  
 # rel_rocha_a
 camada = 'rel_rocha_a'

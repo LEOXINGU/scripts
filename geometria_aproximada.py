@@ -51,9 +51,6 @@ obj_desc_lin = QgsVectorLayer(uriA.uri(), '', "postgres")
     # Objeto Desconhecido Area
 uriA.setDataSource("public","aux_objeto_desconhecido_a","geom","")
 obj_desc_pol = QgsVectorLayer(uriA.uri(), '', "postgres")
-    # Trecho de Drenagem
-uriA.setDataSource("cb","hid_trecho_drenagem_l","geom","")
-drenagem = QgsVectorLayer(uriA.uri(), '', "postgres")
     # Massa Dagua e Trecho de Massa Dagua
 uriA.setDataSource("cb","hid_massa_dagua_a","geom","")
 MassaDagua = QgsVectorLayer(uriA.uri(), '', "postgres")
@@ -144,9 +141,6 @@ Outras = ['hid_trecho_drenagem_l',
                 'rel_elemento_fisiog_natural_l']
 
 
-# Verificacao se os bancos existem
-
-
 for layer in QgsMapLayerRegistry.instance().mapLayers().values():
     if layer.type()==0 and (layer.source()).split("'")[1]==BD_Reamb:
         # Pontos
@@ -201,25 +195,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                                     newColumnValueMap = {att_column : 2} # Geometria aproximada nao
                                     newAttributesValuesMap = {feat.id() : newColumnValueMap}
                                     DP.changeAttributeValues(newAttributesValuesMap)
-        # Drenagem
-        if layer.name() == 'hid_trecho_drenagem_l':
-            att_column = layer.pendingFields().fieldNameIndex('geometriaaproximada')
-            if att_column !=-1:
-                DP = layer.dataProvider()
-                for feat in layer.getFeatures():
-                    geom = feat.geometry()
-                    if geom:
-                        comp = geom.length()
-                        for item in DRENAGEM:
-                            geomBuffer = QgsGeometry.fromPolygon(item)
-                            if geom.intersects(geomBuffer):
-                                intersecao = geom.intersection(geomBuffer)
-                                comp_inter = intersecao.length()
-                                if (comp_inter/comp) >= percentual:
-                                    newColumnValueMap = {att_column : 2} # Geometria aproximada nao
-                                    newAttributesValuesMap = {feat.id() : newColumnValueMap}
-                                    DP.changeAttributeValues(newAttributesValuesMap)
-                                    print layer.name(), feat.id()
+                                    
         # Rodovias
         if layer.name() == 'tra_trecho_rodoviario_l':
             att_column = layer.pendingFields().fieldNameIndex('geometriaaproximada')
@@ -238,7 +214,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                                     newColumnValueMap = {att_column : 2} # Geometria aproximada nao
                                     newAttributesValuesMap = {feat.id() : newColumnValueMap}
                                     DP.changeAttributeValues(newAttributesValuesMap)
-                                    print layer.name(), feat.id()
+                                    
         # Corpo Dagua
         if layer.name()  == 'hid_massa_dagua_a' or layer.name()  == 'hid_trecho_massa_dagua_a':
             att_column = layer.pendingFields().fieldNameIndex('geometriaaproximada')
@@ -259,7 +235,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                                     newColumnValueMap = {att_column : 2} # Geometria aproximada nao
                                     newAttributesValuesMap = {feat.id() : newColumnValueMap}
                                     DP.changeAttributeValues(newAttributesValuesMap)
-                                    print layer.name(), feat.id()
+
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
 progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
