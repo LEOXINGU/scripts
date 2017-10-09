@@ -41,11 +41,10 @@ validacao = True
 if tol >90 or tol <0:
     validacao = False
     progress.setInfo('<b>O valor da tolerancia deve estar entre 0 e 90 graus!</b><br/>')
-    time.sleep(6)
-    iface.messageBar().pushMessage(u'Situacao', "Problema nos parametros de entrada!", level=QgsMessageBar.WARNING, duration=5)
 if linhas.geometryType() != QGis.Line:
     validacao = False
     progress.setInfo('<b>A camada de entrada deve ser do tipo "Linha"!</b><br/>')
+if not validacao:
     time.sleep(6)
     iface.messageBar().pushMessage(u'Situacao', "Problema nos parametros de entrada!", level=QgsMessageBar.WARNING, duration=5)
 

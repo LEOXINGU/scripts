@@ -50,18 +50,23 @@ feat = QgsFeature(fields)
 for feature in poligonos.getFeatures():
     geom = feature.geometry()
     att = feature.attributes()
-    coord = geom.asPolygon()[0]
+    coord = geom.asPolygon()
     if coord == []:
-        coord = geom.asMultiPolygon()[0][0]
-    new_geom = QgsGeometry.fromPolyline(coord)
-    feat.setGeometry(new_geom)
-    feat.setAttributes(att)
-    DataProvider.addFeatures([feat])
+        coord = geom.asMultiPolygon()
+        for item in coord:
+            new_geom = QgsGeometry.fromPolyline(item[0])
+            feat.setGeometry(new_geom)
+            feat.setAttributes(att)
+            DataProvider.addFeatures([feat])
+    else:
+        new_geom = QgsGeometry.fromPolyline(coord[0])
+        feat.setGeometry(new_geom)
+        feat.setAttributes(att)
+        DataProvider.addFeatures([feat])
 
 del anel, DataProvider
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
-progress.setInfo('<b>3 CGEO</b><br/>')
-progress.setInfo('<b>Cap Leandro - Eng Cart</b><br/>')
-iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
+progress.setInfo('<b>Leandro Franca- Eng Cart</b><br/>')
 time.sleep(3)
+iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 

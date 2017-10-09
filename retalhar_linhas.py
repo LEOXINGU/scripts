@@ -39,6 +39,17 @@ saida = Saida
 poligonos = processing.getObject(poligono)
 # Camada de Linhas
 linhas = processing.getObject(linha)
+# Validacao dos parametros de entrada
+validacao = True
+if linhas.geometryType() != QGis.Line:
+    validacao = False
+    progress.setInfo('<b>A camada a ser recortada deve ser do tipo "Linha" !</b><br/>')
+if not (poligonos.geometryType() == QGis.Line or poligonos.geometryType() == QGis.Polygon):
+    validacao = False
+    progress.setInfo('<b>A camada recortante deve ser do tipo "Linha" ou "Poligono"!</b><br/>')
+if not validacao:
+    time.sleep(6)
+    iface.messageBar().pushMessage(u'Situacao', "Problema nos parametros de entrada!", level=QgsMessageBar.WARNING, duration=5)
 
 # Criar camada de Saida (linhas cortadas)
 fields = linhas.pendingFields()
@@ -71,10 +82,14 @@ def SplitLine(geom, cortador):
 lista_lin = []
 for lin in linhas.getFeatures():
     geom = lin.geometry()
+    att = lin.attributes()
     coord = geom.asPolyline()
     if coord == []:
-        coord = geom.asMultiPolyline()[0]
-    lista_lin += [(coord, lin.attributes())]
+        coord = geom.asMultiPolyline()
+        for item in coord:
+            lista_lin += [(item, att)]
+    else:
+        lista_lin += [(coord, att)]
 
 # Ober lista de poligonos
 lista_pol = []
@@ -82,9 +97,11 @@ for pol in recortante.getFeatures():
     geom = pol.geometry()
     coord = geom.asPolyline()
     if coord == []:
-        coord = geom.asMultiPolyline()[0]
-    lista_pol += [coord]
-
+        coord = geom.asMultiPolyline()
+        for item in coord:
+            lista_pol += [item]
+    else:
+        lista_pol += [coord]
 
 # Comecar o recorte
 feature = QgsFeature(fields)
