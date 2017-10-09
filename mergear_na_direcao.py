@@ -158,5 +158,5 @@ for index, coord in enumerate(nova_lista):
 del writer
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
 progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
-iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
 time.sleep(3)
+iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
