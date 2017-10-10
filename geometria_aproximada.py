@@ -18,7 +18,7 @@
 # Atualizacao de Geometria Aproximada
 
 ##LF2) Revisao=group
-##15. Geometria Aproximada=name
+##16. Geometria Aproximada=name
 ##Banco_de_Dados_da_Reambulacao=string
 ##Banco_de_Dados_da_Vetorizacao=string
 ##Tolerancia_do_Buffer_em_metros=number 5.0

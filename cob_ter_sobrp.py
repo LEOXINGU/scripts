@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificacao de cobertura terrestre (SOBREPOSICAO)
-##08. Cob Ter Sobreposicao=name
+##09. Cob Ter Sobreposicao=name
 ##LF2) Revisao=group
 ##Camada_de_Sobreposicao=output vector
 

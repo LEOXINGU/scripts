@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Sobreposicao de Poligonos Nao Cob Ter
-##12. Sobrepos de Poligonos=name
+##13. Sobrepos de Poligonos=name
 ##LF2) Revisao=group
 ##Camada_de_Sobreposicao=output vector
 

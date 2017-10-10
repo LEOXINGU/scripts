@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificacao de medidas minimas
-##09. Medidas Minimas=name
+##10. Medidas Minimas=name
 ##LF2) Revisao=group
 ##Moldura=vector
 ##Escala=selection 1:25.000;1:50.000
