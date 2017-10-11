@@ -267,17 +267,16 @@ def ForcarAtributos(SimNao, camada, forcado):
              for feat in camada.getFeatures():
                  newAttributesValuesMap = {feat.id() : newColumnValueMap}
                  DP.changeAttributeValues(newAttributesValuesMap)
-         else:
-            for item in forcado: #lista, Ex: ['atributo ref', 'valor_ref', 'atributo_teste', 'valor_novo']
-                 att_ref = item[0]
-                 valor_ref = item[1]
-                 att_teste = layer.pendingFields().fieldNameIndex(item[2])
-                 valor_novo = item[3]
-                 newColumnValueMap = {att_teste : valor_novo}
-                 for feat in camada.getFeatures():
-                     if feat[att_ref] == valor_ref:
-                         newAttributesValuesMap = {feat.id() : newColumnValueMap}
-                         DP.changeAttributeValues(newAttributesValuesMap)
+         else: #lista, Ex: ['atributo ref', 'valor_ref', 'atributo_teste', 'valor_novo']
+             att_ref = item[0]
+             valor_ref = item[1]
+             att_teste = layer.pendingFields().fieldNameIndex(item[2])
+             valor_novo = item[3]
+             newColumnValueMap = {att_teste : valor_novo}
+             for feat in camada.getFeatures():
+                 if feat[att_ref] == valor_ref:
+                     newAttributesValuesMap = {feat.id() : newColumnValueMap}
+                     DP.changeAttributeValues(newAttributesValuesMap)
 
 def VerificarAtributos(camada, teste):
  for item in teste:
