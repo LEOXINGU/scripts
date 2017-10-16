@@ -8,5 +8,7 @@ These tools are being created with the purpose to help data collecting (reambula
 Learn how to download and install these tools in QGIS through the link: https://www.youtube.com/watch?v=zXqCKXwENUY
 
 Leandro França
+
 Cartographic Engineer
+
 http://lattes.cnpq.br/8559852745183879
