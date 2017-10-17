@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificar sobreposicao de todos os Pontos da lista de camadas
-##12. Sobrepos de Pontos=name
+##13. Sobrepos de Pontos=name
 ##LF2) Revisao=group
 ##Tolerancia=number 0.5
 ##Camada_de_sobreposicao=output vector

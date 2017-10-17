@@ -17,7 +17,7 @@
 """
 # Verificar Auto-Intersecao
 ##LF2) Revisao=group
-##07. Verificar Auto Intersecoes=name
+##08. Verificar Auto Intersecoes=name
 ##Shapefile_de_Loops=output vector
 
 from PyQt4.QtCore import *
