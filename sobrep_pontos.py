@@ -81,7 +81,7 @@ for i in range(tam-1):
             fet.setGeometry(P)
             fet.setAttributes(att)
             writer.addFeature(fet)
-    progress.setPercentage(int((i/float(tam-1))*100))
+    progress.setPercentage(int((i+1/float(tam))*100))
 del writer
 
 progress.setInfo('<b>Operacao concluida!</b><br/><br/>')

@@ -80,10 +80,10 @@ if sentinela:
         time.sleep(4)
         iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5) 
     else:
-        progress.setInfo('<b>Problema(s) durante a execucao do backup.</b><br/>')
+        progress.setInfo('<b>Problema(s) durante a execucao do processo.</b><br/>')
         progress.setInfo('<b>Verifique se os parametros foram definidos corretamente.</b><br/>')
         time.sleep(8)
-        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=10) 
+        iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do processo.", level=QgsMessageBar.CRITICAL, duration=10) 
         
 if Arquivo_SQL[0] != 'C':
     os.remove(path_name)

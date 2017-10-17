@@ -43,9 +43,9 @@ tam = layer.featureCount()
 deletar = []
 
 if layer.crs().geographicFlag():
-    tol_area /= (111000)*(111000)
-    tol_dist /= 111000
-    tol_compr/= 111000
+    tol_area /= float((111000)*(111000))
+    tol_dist /= float(111000)
+    tol_compr/= float(111000)
 
 # Distancia unitaria
 def DistUnit(p1, p2):
