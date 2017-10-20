@@ -21,12 +21,12 @@
 ##Camada_de_entrada=vector
 ##Comprimento_minimo=number 0.001
 ##Area_minima=number 0.001
-##Tolerancia_entre_pontos=number 0
+##Tolerancia_entre_vertices=number 0
 ##Angulo_minimo=number 15.0
 
 tol_compr = Comprimento_minimo
 tol_area = Area_minima
-tol_dist = Tolerancia_entre_pontos
+tol_dist = Tolerancia_entre_vertices
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar
