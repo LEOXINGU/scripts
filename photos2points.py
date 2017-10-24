@@ -20,8 +20,6 @@
 ##Shapefile_de_Fotos=output vector
 ##LF3) GPS, Fotos e Midias=group
 
-# DICA: Nao deixar espacos depois do ##
-
 pasta = str(Escolha_uma_pasta_de_imagens)
 import os
 os.chdir(str(pasta))
@@ -120,7 +118,6 @@ for index, arquivo in enumerate(lista):
             writer.addFeature(feature)
         else:
             progress.setInfo('A imagem %s nao eh GEO!<br/>' %arquivo)
-            print 'A imagem %s nao eh GEO!' %arquivo
             if not ExistePasta:
                 shutil.copy2(pasta+'\\'+arquivo, pasta+'\\Nao GEO\\'+arquivo)
     progress.setPercentage(int((index/float(tam))*100))

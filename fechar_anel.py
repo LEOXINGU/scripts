@@ -20,6 +20,7 @@
 ##LF4) Vetor=group
 ##Camada_de_entrada=vector
 ##Tolerancia=number 10.0
+##Tipo_de_conexao=selection Ponto Medio;Ligar ultimo ao primeiro;Deslocar ultimo ao primeiro;Deslocar primeiro ao ultimo
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar
@@ -30,6 +31,23 @@ from processing.tools.vector import VectorWriter
 import time
 
 layer = processing.getObject(Camada_de_entrada)
+
+def Conectar(Tipo_de_conexao, coord_list):
+    if Tipo_de_conexao == 0:
+        P_ini=coord_list[0]
+        P_fim=coord_list[-1]
+        P_medio = QgsPoint(0.5*(P_ini.x()+P_fim.x()),0.5*(P_ini.y()+P_fim.y()))
+        coord_list[0] = P_medio
+        coord_list[-1] = P_medio
+    elif Tipo_de_conexao == 1:
+        coord_list += [coord_list[0]]
+    elif Tipo_de_conexao == 2:
+        P_ini=coord_list[0]
+        coord_list[-1] = P_ini
+    elif Tipo_de_conexao == 3:
+        P_fim=coord_list[-1]
+        coord_list[0] = P_fim
+    return coord_list
 
 if layer.crs().geographicFlag():
     Tolerancia/= float(111000)
@@ -76,12 +94,11 @@ if layer.type()==0 and layer.geometryType() == QGis.Line:
             if not(P_ini == P_fim):
                 # Atualizar a geometria da feicao com a geometria com apenas uma parte
                 if Multiparte:
-                    coord[0][0] = P_ini
-                    coord[0][-1] = P_ini
-                    new_geom = QgsGeometry.fromPolyline(coord)
+                    coord = coord[0]
+                    coord = Conectar(Tipo_de_conexao, coord)
+                    new_geom = QgsGeometry.fromMultiPolyline([coord])
                 else:
-                    coord[0] = P_ini
-                    coord[-1] = P_ini
+                    coord = Conectar(Tipo_de_conexao, coord)
                     new_geom = QgsGeometry.fromPolyline(coord)
                 newGeomMap = {feat.id() : new_geom}
                 ok = DP.changeGeometryValues(newGeomMap)
