@@ -3236,14 +3236,12 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1]]
+ forcado = [['geometriaaproximada', 1],  ['matconstr',0]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['tipotrechoduto', [1,2,3]], ['mattransp', [29,4,8,3,5,30,31,99,7,1,2,6,9]], ['matconstr',[99,1,26,4,23,3,7,6,5,8,25,2]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['ndutos', (1,50)] ]
+ teste = [['tipotrechoduto', [1,2,3]], ['mattransp', [29,4,8,3,5,30,31,99,7,1,2,6,9]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['ndutos', (1,50)] ]
  VerificarAtributos(layer, teste)
  teste = ['mattransp', 'nome']
- VerificaOutros(layer, teste)
- teste = ['matconstr', 'nome']
  VerificaOutros(layer, teste)
 
 # tra_trecho_ferroviario_l
