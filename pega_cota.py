@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Pega Cotas
-##2. Pega cotas=name
+# Pegar Cotas a partir do MDE
+##4. Calcular cotas=name
 ##LF6) Terreno=group
 ##Modelo_Digital_de_Elevacao=raster
 ##Camada_de_Cotas=vector

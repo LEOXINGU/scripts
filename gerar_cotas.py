@@ -16,7 +16,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-##1. Gerador de Cotas=name
+##3. Gerador de Cotas=name
 ##LF6) Terreno=group
 ##MDT=raster
 ##Saida=output vector
