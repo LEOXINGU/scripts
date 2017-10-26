@@ -22,7 +22,7 @@
 ##MDE=raster
 ##Linha_de_Referencia=vector
 ##Distancia_entre_Secoes=number 20.0
-##Tamanho_das_Secoes=number 300.0
+##Tamanho_das_Secoes=number 2000.0
 ##Distancia_entre_Pontos_nas_Secoes=number 30.0
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Cotas_Maximas=output vector
@@ -198,8 +198,8 @@ else:
         p2 = centro + array([-1*vetor[1], vetor[0]])*tamSec/2.0
         LIST_COORD += [[QgsPoint(float(p1[0]), float(p1[1])), QgsPoint(float(p2[0]), float(p2[1]))]]
         
-        # Para cada Secao Transversal pegar o ponto mais baixo
-        TALVEGUE =[]
+        # Para cada Secao Transversal pegar o ponto mais alto
+        CUMEADA =[]
         for coord in LIST_COORD:
             # Numero de Pontos e Nova Distancia
             NumPnts = floor(tamSec/distPnts)
@@ -214,27 +214,27 @@ else:
             for MultDist in dist:
                 ponto = point1 + vetor*MultDist
                 LIST_PNTS += [(float(ponto[0]), float(ponto[1]))]
-            # Identificar Minimo na Lista de Pontos
+            # Identificar Maximo na Lista de Pontos
             LIST_Z = []
             for pnt in LIST_PNTS:
                 X = pnt[0]
                 Y = pnt[1]
-                Z = Interpolar(X, Y, band, origem, resol_X, resol_Y, 'bicubic')
+                Z = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo)
                 LIST_Z += [Z]
-            # Verificar se ha apenas um minimo na secao
-            Minimo = (array(LIST_Z)).min()
-            cont_Min = (array(LIST_Z) == Minimo).sum()
-            if cont_Min == 1:
-                indice = LIST_Z.index(Minimo)
+            # Verificar se ha apenas um maximo na secao
+            Maximo = (array(LIST_Z)).max()
+            cont_Max = (array(LIST_Z) == Maximo).sum()
+            if cont_Max == 1:
+                indice = LIST_Z.index(Maximo)
                 pnt = QgsPoint(LIST_PNTS[indice][0],LIST_PNTS[indice][1])
                 geom = QgsGeometry.fromPoint(pnt)
                 feature.setGeometry(geom)
-                feature.setAttributes([ID, float(Minimo)])
+                feature.setAttributes([ID, float(Maximo)])
                 ID +=1
                 writer.addFeature(feature)
-                TALVEGUE += [pnt]
+                CUMEADA += [pnt]
         # Salvando a feicao do talvegue
-        geom = QgsGeometry.fromPolyline(TALVEGUE)
+        geom = QgsGeometry.fromPolyline(CUMEADA)
         fet.setGeometry(geom)
         fet.setAttributes([feat.id()])
         writer2.addFeature(fet)
