@@ -222,6 +222,38 @@ elif layer.geometryType() == QGis.Polygon:
                         else:
                             ind+=1
                     
+                    # Remocao de Pontas no ponto inicial
+                    while True:
+                        mudou = False
+                        p1 = pointList[-2]
+                        p2 = pointList[0]
+                        p3 = pointList[1]
+                        v1 = [p2.x()-p1.x(), p2.y()-p1.y()]
+                        v2 = [p3.x()-p2.x(), p3.y()-p2.y()]
+                        if CosAlfa(v1, v2) <=COS_ALFA:
+                            mudou = True
+                            del pointList[0]
+                            del pointList[-1]
+                            pointList +=[pointList[0]]
+                        if not mudou:
+                            break
+                    
+                    # Remocao de Pontas no ponto final
+                    while True:
+                        mudou = False
+                        p1 = pointList[-2]
+                        p2 = pointList[-1]
+                        p3 = pointList[1]
+                        v1 = [p2.x()-p1.x(), p2.y()-p1.y()]
+                        v2 = [p3.x()-p2.x(), p3.y()-p2.y()]
+                        if CosAlfa(v1, v2) <=COS_ALFA:
+                            mudou = True
+                            del pointList[-1]
+                            del pointList[0]
+                            pointList +=[pointList[0]]
+                        if not mudou:
+                            break
+                    
                     # Remocao de Pontas
                     while True:
                         mudou = False
@@ -239,7 +271,7 @@ elif layer.geometryType() == QGis.Polygon:
                                 ind+=1
                         if not mudou:
                             break
-                            
+                    
                     new_pol += [pointList]
                     
                 # Adicionando nova geometria a feicao
