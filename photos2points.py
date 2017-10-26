@@ -41,25 +41,28 @@ import shutil
 
 # Funcao para transformar os dados do EXIF em coordenadas em graus decimais
 def coordenadas(exif):
-    ref_lat = exif['GPSInfo'][1][0]
-    ref_lon = exif['GPSInfo'][3][0]
-    sinal_lat, sinal_lon = 0, 0
-    if ref_lat == 'S':
-        sinal_lat = -1
-    elif ref_lat == 'N':
-        sinal_lat = 1
-    if ref_lon == 'W':
-        sinal_lon = -1
-    elif ref_lon == 'E':
-        sinal_lon = 1
-    grausLat,grausLon = exif['GPSInfo'][2][0][0], exif['GPSInfo'][4][0][0]
-    minLat, minLon = exif['GPSInfo'][2][1][0], exif['GPSInfo'][4][1][0]
-    segLat = exif['GPSInfo'][2][2][0]/float(exif['GPSInfo'][2][2][1])
-    segLon = exif['GPSInfo'][4][2][0]/float(exif['GPSInfo'][4][2][1])
-    if sinal_lat!=0 and sinal_lon!=0:
-        lat = sinal_lat*(float(grausLat)+minLat/60.0+segLat/3600.0)
-        lon = sinal_lon*(float(grausLon)+minLon/60.0+segLon/3600.0)
-    return lat, lon
+    try:
+        ref_lat = exif['GPSInfo'][1][0]
+        ref_lon = exif['GPSInfo'][3][0]
+        sinal_lat, sinal_lon = 0, 0
+        if ref_lat == 'S':
+            sinal_lat = -1
+        elif ref_lat == 'N':
+            sinal_lat = 1
+        if ref_lon == 'W':
+            sinal_lon = -1
+        elif ref_lon == 'E':
+            sinal_lon = 1
+        grausLat,grausLon = exif['GPSInfo'][2][0][0], exif['GPSInfo'][4][0][0]
+        minLat, minLon = exif['GPSInfo'][2][1][0], exif['GPSInfo'][4][1][0]
+        segLat = exif['GPSInfo'][2][2][0]/float(exif['GPSInfo'][2][2][1])
+        segLon = exif['GPSInfo'][4][2][0]/float(exif['GPSInfo'][4][2][1])
+        if sinal_lat!=0 and sinal_lon!=0:
+            lat = sinal_lat*(float(grausLat)+minLat/60.0+segLat/3600.0)
+            lon = sinal_lon*(float(grausLon)+minLon/60.0+segLon/3600.0)
+        return lat, lon
+    except:
+        return 0,0
 
 # Funcao para gerar o padrao data-hora
 def data_hora(texto):
