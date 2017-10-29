@@ -150,11 +150,11 @@ else:
     fet = QgsFeature(fields)
     
     ID = 1
-    LIST_COORD = []
     for feat in layer.getFeatures():
         geom = feat.geometry()
         comprimento = geom.length()
         coord = geom.asPolyline()
+        LIST_COORD = []
         # Criar lista de pontos e distancias
         ListaDist = [0]
         soma = 0

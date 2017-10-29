@@ -22,7 +22,7 @@
 ##MDE=raster
 ##Linha_de_Referencia=vector
 ##Distancia_entre_Secoes=number 20.0
-##Tamanho_das_Secoes=number 2000.0
+##Tamanho_das_Secoes=number 500.0
 ##Distancia_entre_Pontos_nas_Secoes=number 30.0
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Cotas_Maximas=output vector
@@ -150,11 +150,11 @@ else:
     fet = QgsFeature(fields)
     
     ID = 1
-    LIST_COORD = []
     for feat in layer.getFeatures():
         geom = feat.geometry()
         comprimento = geom.length()
         coord = geom.asPolyline()
+        LIST_COORD = []
         # Criar lista de pontos e distancias
         ListaDist = [0]
         soma = 0
