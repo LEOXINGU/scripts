@@ -3236,10 +3236,10 @@ layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]
  # forcar atributos
- forcado = [['geometriaaproximada', 1],  ['matconstr',0]]
+ forcado = [['geometriaaproximada', 1],  ['matconstr',0], ['ndutos', None]]
  ForcarAtributos(SimNao, layer, forcado)
  # verificar atributos
- teste = [['tipotrechoduto', [1,2,3]], ['mattransp', [29,4,8,3,5,30,31,99,7,1,2,6,9]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]], ['ndutos', (1,50)] ]
+ teste = [['tipotrechoduto', [1,2,3]], ['mattransp', [29,4,8,3,5,30,31,99,7,1,2,6,9]], ['operacional',[1,2]],['situacaofisica', [1,2,3,4,5]] ]
  VerificarAtributos(layer, teste)
  teste = ['mattransp', 'nome']
  VerificaOutros(layer, teste)
