@@ -21,6 +21,7 @@
 ##Nome_do_Banco_de_Dados=string
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
+##Usuario=string postgres
 
 # Inputs
 nome = str(Nome_do_Banco_de_Dados)
@@ -41,7 +42,7 @@ os.chdir(local)
 arquivo = open('C:/Users/Public/drop.sql','w')
 arquivo.write('DROP DATABASE '+nome)
 arquivo.close()
-comando = 'psql -d postgres -U postgres -h '+host+' -p 5432 -f C:/Users/Public/drop.sql'
+comando = 'psql -d postgres -U '+Usuario+' -h '+host+' -p 5432 -f C:/Users/Public/drop.sql'
 progress.setInfo('<b>Deletando o Banco de Dados...</b><br/>')
 result = os.system(comando)
 os.remove('C:/Users/Public/drop.sql')

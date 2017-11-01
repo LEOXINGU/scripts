@@ -24,6 +24,7 @@
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
 ##Renomear_BD_de_Saida=boolean False
 ##Novo_nome_para_BD_de_saida=optional string
+##Usuario=string postgres
 
 # Inputs
 database = str(Nome_do_BD)
@@ -56,7 +57,7 @@ else:
         iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 def ExecutarCmdo(database, host, local):
-    comando = 'pg_dump -Fp -C -h ' +host+ ' -U postgres ' +database+ ' > ' +local+ '/'+database+'.sql'
+    comando = 'pg_dump -Fp -C -h ' +host+ ' -U '+Usuario+' ' +database+ ' > ' +local+ '/'+database+'.sql'
     progress.setInfo('<b>Iniciando processo de backup...</b><br/>')
     result = os.system(comando)
     if result==0:
@@ -78,9 +79,9 @@ if sentinela:
         nome_antigo = database
         novo_nome = Novo_nome_para_BD_de_saida
         versao = Versao_do_PostgreSQL
-        ok = processing.runalg('script:3renomearbd', nome_antigo, novo_nome, host, versao)
+        ok = processing.runalg('script:3renomearbd', nome_antigo, novo_nome, host, versao, Usuario)
         database = novo_nome
         ExecutarCmdo(database, host, local)
         # Voltar para o nome antigo
-        ok = processing.runalg('script:3renomearbd', novo_nome, nome_antigo, host, versao)
+        ok = processing.runalg('script:3renomearbd', novo_nome, nome_antigo, host, versao, Usuario)
         

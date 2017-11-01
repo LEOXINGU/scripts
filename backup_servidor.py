@@ -21,6 +21,7 @@
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
 ##Arquivo_de_backup=output file
+##Usuario=string postgres
 
 # Inputs
 host = str(Host)
@@ -61,7 +62,7 @@ if 'backup.file' in saida:
     iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5)
    
 if sentinela:
-    comando = 'pg_dumpall -h %s -p 5432 -U postgres -v -f "%s"' %(host, saida)
+    comando = 'pg_dumpall -h %s -p 5432 -U '+Usuario+' -v -f "%s"' %(host, saida)
     progress.setInfo('<b>Realizando backup do servidor...</b><br/>')
     result = os.system(comando)
     if result==0:

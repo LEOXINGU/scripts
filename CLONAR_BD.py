@@ -22,6 +22,7 @@
 ##Nome_do_BD_clonado=string
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
+##Usuario=string postgres
 
 # Inputs
 template = str(Nome_do_BD_original)
@@ -58,7 +59,7 @@ if sentinela:
     for item in novo.split(','):
         arquivo.write('CREATE DATABASE '+item.replace('-', '_')+' WITH TEMPLATE '+template+';\n')
     arquivo.close()
-    comando = 'psql -d postgres -U postgres -h '+host+' -p 5432 -f C:/Users/Public/muda.sql'
+    comando = 'psql -d postgres -U '+Usuario+' -h '+host+' -p 5432 -f C:/Users/Public/muda.sql'
     progress.setInfo('<b>Clonando o Banco de Dados...</b><br/>')
     result = os.system(comando)
     os.remove('C:/Users/Public/muda.sql')
