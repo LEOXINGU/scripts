@@ -42,6 +42,7 @@ uriA = QgsDataSourceURI()
 uriA.setConnection("localhost","5432", BD_Vetor, Usuario_PostGIS, Senha)
 
 # Abrir as camadas
+progress.setInfo('Abrindo as camadas...<br/>')
     # Objeto Desconhecido Ponto
 uriA.setDataSource("public","aux_objeto_desconhecido_p","geom","")
 obj_desc_pnt = QgsVectorLayer(uriA.uri(), '', "postgres")
@@ -60,6 +61,7 @@ TrechoMassaDagua = QgsVectorLayer(uriA.uri(), '', "postgres")
 uriA.setDataSource("cb","tra_trecho_rodoviario_l","geom","")
 TrechoRodoviario = QgsVectorLayer(uriA.uri(), '', "postgres")
 
+progress.setInfo('Criando lista de pontos das feicoes de referencia...<br/>')
 # Criar lista de Pontos com geometria Aproximada "NAO"
 PONTOS = []
 for feat in obj_desc_pnt.getFeatures():
@@ -91,16 +93,6 @@ for feat in obj_desc_pol.getFeatures():
         coord = geomBuffer.asPolygon()
         if coord:
             POLIGONOS += [coord]
-
-# Criar lista de Trecho de Drenagem com geometria Aproximada "NAO"
-DRENAGEM = []
-for feat in drenagem.getFeatures():
-    geom = feat.geometry()
-    if geom:
-        geomBuffer = geom.buffer(tol, 5)
-        coord = geomBuffer.asPolygon()
-        if coord:
-            DRENAGEM += [coord]
 
 # Criar lista de Massa Dagua com geometria Aproximada "NAO"
 MASSADAGUA = []
@@ -140,9 +132,10 @@ Outras = ['hid_trecho_drenagem_l',
                 'rel_curva_nivel_l',
                 'rel_elemento_fisiog_natural_l']
 
-
+progress.setInfo('Verificando Banco de Dados da Reambulacao...<br/>')
 for layer in QgsMapLayerRegistry.instance().mapLayers().values():
     if layer.type()==0 and (layer.source()).split("'")[1]==BD_Reamb:
+        progress.setInfo('  Classe: %s...<br/>' %layer.name())
         # Pontos
         if layer.geometryType() == QGis.Point and not(layer.name() in Outras):
             att_column = layer.pendingFields().fieldNameIndex('geometriaaproximada')
