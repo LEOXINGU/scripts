@@ -261,6 +261,7 @@ def ForcarAtributos(SimNao, camada, forcado):
      DP = camada.dataProvider()
      for item in forcado:
          if len(item)==2: #lista, Ex: ['atributo ref', 'valor_novo']
+            if item[0] != 'geometriaaproximada':
              att_column = layer.pendingFields().fieldNameIndex(item[0])
              atributo = item[1]
              newColumnValueMap = {att_column : atributo}
@@ -268,6 +269,7 @@ def ForcarAtributos(SimNao, camada, forcado):
                  newAttributesValuesMap = {feat.id() : newColumnValueMap}
                  DP.changeAttributeValues(newAttributesValuesMap)
          else: #lista, Ex: ['atributo ref', 'valor_ref', 'atributo_teste', 'valor_novo']
+            if item[0] != 'geometriaaproximada':
              att_ref = item[0]
              valor_ref = item[1]
              att_teste = layer.pendingFields().fieldNameIndex(item[2])
