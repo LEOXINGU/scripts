@@ -19,7 +19,7 @@
 ##Acuracia Absoluta de MDE=name
 ##LF7) Qualidade=group
 ##Camada_de_Pontos_de_Referencia=vector
-##Cota_em_metros=field
+##Cota_em_metros=field Camada_de_Pontos_de_Referencia
 ##Camada_Raster_de_Teste=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Relatorio_para_escalas=output html
@@ -37,6 +37,7 @@ interpolacao = ['bicubic', 'bilinear', 'nearest']
 metodo = interpolacao[Tipo_de_Interpolacao]
 MDE = Camada_Raster_de_Teste
 
+
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar
 from qgis.utils import iface
@@ -44,6 +45,7 @@ from qgis.core import *
 import time
 import processing
 from numpy import sqrt, array, mean, std
+from math import ceil, floor
 
 # PEC-PCD
 PEC = {'1k': {'planim': {'A': {'EM': 0.28, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.3},'C': {'EM': 0.8, 'EP': 0.5},'D': {'EM': 1, 'EP': 0.6}}, 'altim': {'A': {'EM': 0.27, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.33},'C': {'EM': 0.6, 'EP': 0.4},'D': {'EM': 0.75, 'EP': 0.5}}},
@@ -78,11 +80,14 @@ if Escala_1_250k:
 valores = ['A', 'B', 'C', 'D']
 
 # Funcao de Interpolacao
-def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
+def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo, nulo):
     if metodo == 'nearest':
-        linha = round((origem[1]-Y)/resol_Y - 0.5)
-        coluna = round((X - origem[0])/resol_X - 0.5)
-        return float(MDE[linha][coluna])
+        linha = int(round((origem[1]-Y)/resol_Y - 0.5))
+        coluna = int(round((X - origem[0])/resol_X - 0.5))
+        if MDE[linha][coluna] != nulo:
+            return float(MDE[linha][coluna])
+        else:
+            return nulo
     elif metodo == 'bilinear':
         nlin = len(MDE)
         ncol = len(MDE[0])
@@ -98,8 +103,11 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
             J=0
         if J>ncol-1:
             J=ncol-1
-        Z = (1-di)*(1-dj)*MDE[floor(I)][floor(J)] + (1-dj)*di*MDE[ceil(I)][floor(J)] + (1-di)*dj*MDE[floor(I)][ceil(J)] + di*dj*MDE[ceil(I)][ceil(J)]
-        return float(Z)
+        if (MDE[int(floor(I)):int(ceil(I))+1, int(floor(J)):int(ceil(J))+1] == nulo).sum() == 0:
+            Z = (1-di)*(1-dj)*MDE[int(floor(I))][int(floor(J))] + (1-dj)*di*MDE[int(ceil(I))][int(floor(J))] + (1-di)*dj*MDE[int(floor(I))][int(ceil(J))] + di*dj*MDE[int(ceil(I))][int(ceil(J))]
+            return float(Z)
+        else:
+            return nulo
     elif metodo == 'bicubic':
         nlin = len(MDE)
         ncol = len(MDE[0])
@@ -107,8 +115,8 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
         J = (X - origem[0])/resol_X - 0.5
         di = I - floor(I)
         dj = J - floor(J)
-        I=floor(I)
-        J=floor(J)
+        I=int(floor(I))
+        J=int(floor(J))
         if I<2:
             I=2
         if I>nlin-3:
@@ -117,37 +125,50 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
             J=2
         if J>ncol-3:
             J=ncol-3
-        MatrInv = (mat([[-1, 1, -1, 1], [0, 0, 0, 1], [1, 1, 1, 1], [8, 4, 2, 1]])).I # < Jogar para fora da funcao
-        MAT  = mat([[MDE[I-1, J-1],   MDE[I-1, J],   MDE[I-1, J+1],  MDE[I-2, J+2]],
-                             [MDE[I, J-1],      MDE[I, J],      MDE[I, J+1],      MDE[I, J+2]],
-                             [MDE[I+1, J-1],  MDE[I+1, J], MDE[I+1, J+1], MDE[I+1, J+2]],
-                             [MDE[I+2, J-1],  MDE[I+2, J], MDE[I+2, J+1], MDE[I+2, J+2]]])
-        coef = MatrInv*MAT.transpose()
-        # Horizontal
-        pi = coef[0,:]*pow(dj,3)+coef[1,:]*pow(dj,2)+coef[2,:]*dj+coef[3,:]
-        # Vertical
-        coef2 = MatrInv*pi.transpose()
-        pj = coef2[0]*pow(di,3)+coef2[1]*pow(di,2)+coef2[2]*di+coef2[3]
-        return float(pj)
+        if (MDE[I-1:I+3, J-1:J+3] == nulo).sum() == 0:
+            MatrInv = (mat([[-1, 1, -1, 1], [0, 0, 0, 1], [1, 1, 1, 1], [8, 4, 2, 1]])).I # < Jogar para fora da funcao
+            MAT  = mat([[MDE[I-1, J-1],   MDE[I-1, J],   MDE[I-1, J+1],  MDE[I-2, J+2]],
+                                 [MDE[I, J-1],      MDE[I, J],      MDE[I, J+1],      MDE[I, J+2]],
+                                 [MDE[I+1, J-1],  MDE[I+1, J], MDE[I+1, J+1], MDE[I+1, J+2]],
+                                 [MDE[I+2, J-1],  MDE[I+2, J], MDE[I+2, J+1], MDE[I+2, J+2]]])
+            coef = MatrInv*MAT.transpose()
+            # Horizontal
+            pi = coef[0,:]*pow(dj,3)+coef[1,:]*pow(dj,2)+coef[2,:]*dj+coef[3,:]
+            # Vertical
+            coef2 = MatrInv*pi.transpose()
+            pj = coef2[0]*pow(di,3)+coef2[1]*pow(di,2)+coef2[2]*di+coef2[3]
+            return float(pj)
+        else:
+            return nulo
         
 # Abrir camada de referencia
 ref = processing.getObject(Camada_de_Pontos_de_Referencia)
+# Verificar o tipo de campo para o valor da cota
+numerico = False
+for field in ref.pendingFields():
+    if field.name() == Cota_em_metros:
+        if field.typeName() in [u'Integer', u'Real', u'Double']:
+            numerico = True
 
 # Abrir camada raster de teste
 import gdal
 from osgeo import osr
 image = gdal.Open(MDE)
 band = image.GetRasterBand(1).ReadAsArray()
+NULO = image.GetRasterBand(1).GetNoDataValue()
 prj=image.GetProjection()
-geotransform = image.GetGeoTransform()
 # Number of rows and columns
 cols = image.RasterXSize # Number of columns
 rows = image.RasterYSize # Number of rows
-image=None # Close image
 # Origem e resolucao da imagem
-origem = (geotransform[0], geotransform[3])
-resol_X = abs(geotransform[1])
-resol_Y = abs(geotransform[5])
+ulx, xres, xskew, uly, yskew, yres  = image.GetGeoTransform()
+origem = (ulx, uly)
+resol_X = abs(xres)
+resol_Y = abs(yres)
+lrx = ulx + (cols * xres)
+lry = uly + (rows * yres)
+bbox = [ulx, lrx, lry, uly]
+image=None # Close image
 
 # Verificacoes
 # As duas camadas devem ter o mesmo SRC
@@ -155,84 +176,45 @@ resol_Y = abs(geotransform[5])
 crs = QgsCoordinateReferenceSystem()
 crs.createFromWkt(prj)
 # Verificar se as duas camadas tem o mesmo CRS e sao projetadas
-if crs != ref.crs() or ref.geometryType() != QGis.Point:
+if crs != ref.crs() or ref.geometryType() != QGis.Point or not(numerico):
     iface.messageBar().pushMessage(u'Erro', "Problema(s) com os parametros de entrada.", level=QgsMessageBar.CRITICAL, duration=5) 
     progress.setInfo('<b><font  color="#ff0000">Erro nos parametros de entrada. Possiveis erros:</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 1. A camada de referência é do tipo ponto.</b><br/>')
+    progress.setInfo('<b><font  color="#ff0000"> 1. A camada de referencia e do tipo ponto.</b><br/>')
     progress.setInfo('<b><font  color="#ff0000"> 2. As camadas devem ter o mesmo SRC.</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 3. O campo referente ao valor da cota deve ser do tipo numérico (em metros).</b><br/><br/>')
+    progress.setInfo('<b><font  color="#ff0000"> 3. O campo referente ao valor da cota deve ser do tipo numerico (em metros).</b><br/><br/>')
     time.sleep(8)
     iface.messageBar().pushMessage(u'Situacao', "Problema com os dados de entrada!", level=QgsMessageBar.WARNING, duration=8)
 
 else:
-    DISCREP = []    
+    DISCREP = []
+    total_nulos = 0
     # Para cada ponto
-        # determinar a cota Z
-        # calcular a discrepância em relacao ao MDE, caso nao haja pixel nulo
-        # armazenar nas somas para gerar (media, desvPad, EMQ, max, min, etc)
-    
-    
-    for item in RELACOES:
-        discrepItem = []
-        for escala in Escalas:
-            discrepEsc = []
-            for valor in valores:
-                buf = PEC[escala]['planim'][valor]['EM']
-                lin1 = QgsGeometry.fromPolyline(item[0])
-                lin2 = QgsGeometry.fromPolyline(item[1])
-                buf1 = lin1.buffer(buf, 5)
-                buf2 = lin2.buffer(buf, 5)
-                Difer = buf1.difference(buf2)
-                A_difer = Difer.area()
-                AB_LT = buf2.area()
-                dm = pi*buf*(A_difer/AB_LT)
-                discrepEsc += [dm]
-            discrepItem += discrepEsc
-        DISCREP += [discrepItem]
-
-    # Criar camada de Saida (Multilines)
-    fields = QgsFields()
-    for escala in Escalas:
-        for valor in valores:
-            nome = escala + '_PEC_' + valor
-            fields.append(QgsField(nome, QVariant.Double))
-    fields.append(QgsField('media', QVariant.Double))
-    fields.append(QgsField('desPad', QVariant.Double))
-    CRS = teste.crs()
-    encoding = 'utf-8'
-    formato = 'ESRI Shapefile'
-    writer = QgsVectorFileWriter(Discrepancias, encoding, fields, QGis.WKBLineString, CRS, formato)
-    fet = QgsFeature()
-    for index, coord in enumerate(RELACOES):
-        fet.setGeometry(QgsGeometry.fromMultiPolyline(coord))
-        media = float((array(DISCREP[index])).mean())
-        DP = float((array(DISCREP[index])).std())
-        fet.setAttributes(DISCREP[index]+[media, DP])
-        writer.addFeature(fet)
-    del writer
-    
-    # Comprimento das Linhas de Referencia
-    COMPR = []
-    for relacao in RELACOES:
-        geom = QgsGeometry.fromPolyline(relacao[0])
-        compr = geom.length()
-        COMPR += [compr]
-    
+        # calcular a discrepancia em relacao ao MDE, caso nao haja pixel nulo
+        # armazenar nas somas para gerar (media, desvPad, EMQ, max, min,). quantidade de pontos avaliados, qnt de pontos em pixel nulo
+    for feat in ref.getFeatures():
+        geom = feat.geometry()
+        pnt = geom.asPoint()
+        X = pnt.x()
+        Y = pnt.y()
+        if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
+            cotaRef = feat[Cota_em_metros]
+            cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
+            if cotaTest != NULO:
+                DISCREP += [cotaTest - cotaRef]
+            else:
+                total_nulos +=1
+        
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
-    DISCREP = DISCREP.transpose()
-    COMPR = array(COMPR)
+    EMQ = sqrt((DISCREP*DISCREP).sum()/len(DISCREP))
     cont = 0
     RESULTADOS = {}
     for escala in Escalas:
         mudou = False
         for valor in valores[::-1]:
-            discrep = DISCREP[3-cont%4+4*cont/4]
-            cont +=1
-            EMQ = sqrt((discrep*discrep*COMPR).sum()/COMPR.sum())
-            EM = PEC[escala]['planim'][valor]['EM']
-            EP = PEC[escala]['planim'][valor]['EP']
-            if (sum((discrep<EM)*COMPR)/sum(COMPR))>0.9 and (EMQ < EP):
+            EM = PEC[escala]['altim'][valor]['EM']
+            EP = PEC[escala]['altim'][valor]['EP']
+            if ((DISCREP<EM).sum()/float(len(DISCREP)))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
@@ -241,15 +223,16 @@ else:
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
     progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %DISCREP.mean())
-    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)))
+    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DISCREP.std())
+    progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %EMQ)
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
     
     progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
-    time.sleep(8)
+    time.sleep(12)
     
-    if Escalas:
+    if False: #Escalas:
         # Criacao do arquivo html com os resultados
         arq = open(Relatorio_para_escalas, 'w')
         texto = '''
