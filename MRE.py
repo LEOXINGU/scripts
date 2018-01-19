@@ -204,8 +204,10 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
 
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
+    progress.setInfo('<b>Media: %.1f m</b><br/><br/>' %DISCREP.mean())
     progress.setInfo('<b>Media Ponderada das Discrepancias: %.1f m</b><br/>' %media_Pond)
-    progress.setInfo('<b>Desvio-Padrao Ponderado: %.1f m</b><br/><br/>' %EMQ)
+    progress.setInfo('<b>EMQ Ponderado: %.1f m</b><br/><br/>' %EMQ)
+    progress.setInfo('<b>Desvio-padrao: %.1f m</b><br/><br/>' %DISCREP.std())
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -243,7 +245,7 @@ Refer&ecirc;ncia</span><br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
 &nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
 &nbsp;&nbsp;&nbsp; b. m&eacute;dia ponderada das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o ponderado (m): %.1f<br>
+&nbsp;&nbsp;&nbsp; c. EMQ ponderado (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
 &nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), media_Pond, EMQ, max(DISCREP),min(DISCREP))

@@ -20,7 +20,7 @@
 ##LF7) Qualidade=group
 ##Camada_de_Pontos_de_Referencia=vector
 ##Cota_em_metros=field Camada_de_Pontos_de_Referencia
-##Camada_Raster_de_Teste=raster
+##MDE_Avaliado=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False
@@ -35,7 +35,7 @@
 
 interpolacao = ['bicubic', 'bilinear', 'nearest']
 metodo = interpolacao[Tipo_de_Interpolacao]
-MDE = Camada_Raster_de_Teste
+MDE = MDE_Avaliado
 
 
 from PyQt4.QtCore import *
@@ -44,7 +44,7 @@ from qgis.utils import iface
 from qgis.core import *
 import time
 import processing
-from numpy import sqrt, array, mean, std
+from numpy import sqrt, array, mean, std, mat
 from math import ceil, floor
 
 # PEC-PCD
@@ -156,6 +156,8 @@ from osgeo import osr
 image = gdal.Open(MDE)
 band = image.GetRasterBand(1).ReadAsArray()
 NULO = image.GetRasterBand(1).GetNoDataValue()
+if NULO == None:
+    NULO =-1e6
 prj=image.GetProjection()
 # Number of rows and columns
 cols = image.RasterXSize # Number of columns
@@ -168,7 +170,8 @@ resol_Y = abs(yres)
 lrx = ulx + (cols * xres)
 lry = uly + (rows * yres)
 bbox = [ulx, lrx, lry, uly]
-image=None # Close image
+image=None # Fechar imagem
+teste = processing.getObject(MDE) # Para pegar nome da imagem
 
 # Verificacoes
 # As duas camadas devem ter o mesmo SRC
@@ -230,61 +233,78 @@ else:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
     
     progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
-    time.sleep(12)
+    time.sleep(8)
     
-    if False: #Escalas:
+    if Escalas:
         # Criacao do arquivo html com os resultados
         arq = open(Relatorio_para_escalas, 'w')
-        texto = '''
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+        texto = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>MRE</title>
+  <title>ACUR&Aacute;CIA ABSOLUTA</title>
 </head>
-<body  bgcolor="#e5e9a6">
+<body style="background-color: rgb(229, 233, 166);">
 <div style="text-align: center;"><span
- style="font-weight: bold; text-decoration: underline;">M&Eacute;TODO
-DO BUFFER DUPLO</span><br>
+ style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA
+POSICIONAL ABSOLUTA</span><br>
 </div>
 <br>
-<span style="font-weight: bold;">1. Camada de
-Refer&ecirc;ncia</span><br>
+<span style="font-weight: bold;">1. Camada de Pontos de
+Controle</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
-&nbsp;&nbsp;&nbsp; b. total de fei&ccedil;&otilde;es: %d<br>
+&nbsp;&nbsp;&nbsp; b. total de pontos de controle: %d<br>
+&nbsp;&nbsp;&nbsp; c. total de pontos sobre o MDE: %d<br>
 <br>
-<span style="font-weight: bold;">2. Camada de Teste</span><br>
+<span style="font-weight: bold;">2. Modelo Digital de
+Eleva&ccedil;&atilde;o Avaliado</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
-&nbsp;&nbsp;&nbsp; b. total de fei&ccedil;&otilde;es: %d<br>
+&nbsp;&nbsp;&nbsp; b. n&uacute;mero de pixels: %d<br>
+&nbsp;&nbsp;&nbsp; c. n&uacute;mero de pixels nulos: %d<br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
-&nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
-&nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
-&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)), DISCREP.max(),DISCREP.min())
-        texto += '''<table style="text-align: left; width: 100%;" border="1"
- cellpadding="2" cellspacing="2">
+&nbsp;&nbsp;&nbsp; a. n&uacute;mero de pontos
+utilizados: %d<br>
+&nbsp;&nbsp;&nbsp; b. n&uacute;mero de
+pontos&nbsp;pr&oacute;ximo/sobre pixel nulo: %d<br>
+&nbsp;&nbsp;&nbsp; b. m&eacute;dia das
+discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
+&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o: %.2f m<br>
+&nbsp;&nbsp;&nbsp; d. EMQ: %.2f m<br>
+&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia
+m&aacute;xima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia
+m&iacute;nima: %.2f m<br>
+<br>
+<span style="font-weight: bold;">4. Acur&aacute;cia
+Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
+<br>
+</span>
+<meta name="qrichtext" content="1">
+<meta http-equiv="Content-Type"
+ content="text/html; charset=utf-8">
+<style type="text/css">
+p, li { white-space: pre-wrap; }
+</style>
+<table style="margin: 0px;" border="1" cellpadding="2"
+ cellspacing="2">
   <tbody>
-    <tr>''' 
+    <tr>''' %(ref.name(), ref.featureCount(), total_nulos+len(DISCREP), teste.name(), cols*rows, (band==NULO).sum(), len(DISCREP), total_nulos, DISCREP.mean(), DISCREP.std(), EMQ, DISCREP.max(),DISCREP.min())
+
         for escala in Escalas:
-            texto += '    <td style="text-align: center; font-weight: bold;">%s</td>' %dicionario[escala]
+            texto += '<td><p style="margin: 0px; text-indent: 0px;"><span style="font-weight: 600;">%s</span></p></td>'  %dicionario[escala]
         texto +='''
     </tr>
     <tr>'''
         for escala in Escalas:
-            texto += '    <td style="text-align: center;">%s</td>' %RESULTADOS[escala]
-        texto +='''
-    </tr>
+            texto += '<td style="text-align: center;"><p style="margin: 0px; text-indent: 0px;">%s</p></td>'  %RESULTADOS[escala]
+        texto +='''</tr>
   </tbody>
 </table>
 <br>
-<br>
 <hr>
-<address><font size="+l">Leandro Fran&ccedil;a
-2017<br>
+<address><font size="+l">Leandro Fran&ccedil;a 2018<br>
 Eng. Cart&oacute;grafo<br>
 email: geoleandro.franca@gmail.com<br>
 </font>

@@ -218,7 +218,8 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
     progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %DISCREP.mean())
-    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)))
+    progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0]))))
+    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DISCREP.std())
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -235,7 +236,7 @@ if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Li
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>MRE</title>
+  <title>MBD</title>
 </head>
 <body  bgcolor="#e5e9a6">
 <div style="text-align: center;"><span
@@ -258,7 +259,7 @@ Refer&ecirc;ncia</span><br>
 &nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.1f<br>
 &nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
 &nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0])-1)), DISCREP.max(),DISCREP.min())
+&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), DISCREP.std(), DISCREP.max(),DISCREP.min())
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>
