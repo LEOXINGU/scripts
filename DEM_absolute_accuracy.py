@@ -268,13 +268,13 @@ Eleva&ccedil;&atilde;o Avaliado</span><br>
 utilizados: %d<br>
 &nbsp;&nbsp;&nbsp; b. n&uacute;mero de
 pontos&nbsp;pr&oacute;ximo/sobre pixel nulo: %d<br>
-&nbsp;&nbsp;&nbsp; b. m&eacute;dia das
+&nbsp;&nbsp;&nbsp; c. m&eacute;dia das
 discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
-&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o: %.2f m<br>
-&nbsp;&nbsp;&nbsp; d. EMQ: %.2f m<br>
-&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia
-m&aacute;xima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; d. desvio-padr&atilde;o: %.2f m<br>
+&nbsp;&nbsp;&nbsp; e. EMQ: %.2f m<br>
 &nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia
+m&aacute;xima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia
 m&iacute;nima: %.2f m<br>
 <br>
 <span style="font-weight: bold;">4. Acur&aacute;cia
