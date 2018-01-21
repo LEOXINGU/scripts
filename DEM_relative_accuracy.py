@@ -2,7 +2,7 @@
 /***************************************************************************
  LEOXINGU
                               -------------------
-        begin                : 2018-01-17
+        begin                : 2018-01-20
         copyright            : (C) 2018 by Leandro Franca - Cartographic Engineer
         email                : geoleandro.franca@gmail.com
  ***************************************************************************/
@@ -15,11 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Acuracia Absoluta de MDE
-##Acuracia Absoluta de MDE=name
+# Acuracia Relativa de MDE
+##Acuracia Relativa de MDE=name
 ##LF7) Qualidade=group
-##Camada_de_Pontos_de_Referencia=vector
-##Cota_em_metros=field Camada_de_Pontos_de_Referencia
+##MDE_de_Referencia=raster
 ##MDE_Avaliado=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Relatorio_para_escalas=output html
@@ -36,7 +35,6 @@
 interpolacao = ['bicubic', 'bilinear', 'nearest']
 metodo = interpolacao[Tipo_de_Interpolacao]
 MDE = MDE_Avaliado
-
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar
@@ -141,14 +139,6 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo, nulo):
         else:
             return nulo
         
-# Abrir camada de referencia
-ref = processing.getObject(Camada_de_Pontos_de_Referencia)
-# Verificar o tipo de campo para o valor da cota
-numerico = False
-for field in ref.pendingFields():
-    if field.name() == Cota_em_metros:
-        if field.typeName() in [u'Integer', u'Real', u'Double']:
-            numerico = True
 
 # Abrir camada raster de teste
 import gdal
@@ -173,36 +163,52 @@ bbox = [ulx, lrx, lry, uly]
 image=None # Fechar imagem
 teste = processing.getObject(MDE) # Para pegar nome da imagem
 
+# Abrir camada de referencia
+image = gdal.Open(MDE_de_Referencia)
+bandRef = image.GetRasterBand(1).ReadAsArray()
+nuloRef = image.GetRasterBand(1).GetNoDataValue()
+if nuloRef == None:
+    nuloRef =-1e6
+prjRef=image.GetProjection()
+# Number of rows and columns
+colsRef = image.RasterXSize # Number of columns
+rowsRef = image.RasterYSize # Number of rows
+# Origem e resolucao da imagem
+ulx, xres, xskew, uly, yskew, yres  = image.GetGeoTransform()
+origemRef = (ulx, uly)
+resol_XRef = abs(xres)
+resol_YRef = abs(yres)
+image=None # Fechar imagem
+ref = processing.getObject(MDE_de_Referencia)
+
 # Verificacoes
-crs = QgsCoordinateReferenceSystem()
-crs.createFromWkt(prj)
-if crs != ref.crs() or ref.geometryType() != QGis.Point or not(numerico):
+if prj != prjRef:
     iface.messageBar().pushMessage(u'Erro', "Problema(s) com os parametros de entrada.", level=QgsMessageBar.CRITICAL, duration=5) 
-    progress.setInfo('<b><font  color="#ff0000">Erro nos parametros de entrada. Possiveis erros:</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 1. A camada de referencia e do tipo ponto.</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 2. As camadas devem ter o mesmo SRC.</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 3. O campo referente ao valor da cota deve ser do tipo numerico (em metros).</b><br/><br/>')
+    progress.setInfo('<b><font  color="#ff0000">Erro nos parametros de entrada.</b><br/>')
+    progress.setInfo('<b><font  color="#ff0000">Verifique se os MDE tem o mesmo SRC.</b><br/>')
     time.sleep(8)
     iface.messageBar().pushMessage(u'Situacao', "Problema com os dados de entrada!", level=QgsMessageBar.WARNING, duration=8)
 
 else:
     DISCREP = []
     total_nulos = 0
-    # Para cada ponto
-        # calcular a discrepancia em relacao ao MDE, caso nao haja pixel nulo
-        # armazenar nas somas para gerar (media, desvPad, EMQ, max, min,). quantidade de pontos avaliados, qnt de pontos em pixel nulo
-    for feat in ref.getFeatures():
-        geom = feat.geometry()
-        pnt = geom.asPoint()
-        X = pnt.x()
-        Y = pnt.y()
-        if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
-            cotaRef = feat[Cota_em_metros]
-            cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
-            if cotaTest != NULO:
-                DISCREP += [cotaTest - cotaRef]
-            else:
-                total_nulos +=1
+    # Para cada pixel do MDE de referencia
+        # calcular a discrepancia em relacao ao MDE avaliado, caso nao haja pixel nulo
+        # armazenar discrepancias e qnt de pontos em pixel nulo
+    for lin in bandRef:
+        for col in bandRef[lin]:            
+            X = 
+            Y = 
+                # Determinar a coordenada do pixel da cota
+                #X = origem[0] + resol*(col_min+0.5+coord[1])
+                #Y = origem[1] - resol*(lin_min+0.5+coord[0])
+            cotaRef = bandRef[lin][col]
+            if cotaRef!=nuloRef and bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
+                cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
+                if cotaTest != NULO:
+                    DISCREP += [cotaTest - cotaRef]
+                else:
+                    total_nulos +=1
         
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
@@ -240,12 +246,12 @@ else:
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>ACUR&Aacute;CIA ABSOLUTA</title>
+  <title>ACUR&Aacute;CIA RELATIVA</title>
 </head>
 <body style="background-color: rgb(229, 233, 166);">
 <div style="text-align: center;"><span
  style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA
-POSICIONAL ABSOLUTA</span><br>
+POSICIONAL RELATIVA</span><br>
 </div>
 <br>
 <span style="font-weight: bold;">1. Camada de Pontos de
