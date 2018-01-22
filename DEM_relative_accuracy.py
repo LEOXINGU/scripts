@@ -191,28 +191,41 @@ if prj != prjRef:
 
 else:
     DISCREP = []
+    total_nulosRef = 0
     total_nulos = 0
+    total_foraBbox = 0
     # Para cada pixel do MDE de referencia
         # calcular a discrepancia em relacao ao MDE avaliado, caso nao haja pixel nulo
         # armazenar discrepancias e qnt de pontos em pixel nulo
-    for lin in bandRef:
-        for col in bandRef[lin]:            
-            X = 
-            Y = 
-                # Determinar a coordenada do pixel da cota
-                #X = origem[0] + resol*(col_min+0.5+coord[1])
-                #Y = origem[1] - resol*(lin_min+0.5+coord[0])
+    cont = 0
+    for lin in range(rowsRef):
+        for col in range(colsRef):
+            # Determinar a coordenada do pixel da cota
+            X = origemRef[0] + resol_XRef*(col+0.5)
+            Y = origemRef[1] - resol_YRef*(lin+0.5)
             cotaRef = bandRef[lin][col]
-            if cotaRef!=nuloRef and bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
-                cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
-                if cotaTest != NULO:
-                    DISCREP += [cotaTest - cotaRef]
+            if cotaRef!=nuloRef:
+                if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
+                   cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
+                   if cotaTest != NULO:
+                       DISCREP += [cotaTest - cotaRef]
+                   else:
+                       total_nulos +=1
                 else:
-                    total_nulos +=1
+                    total_foraBbox += 1
+            else:
+                total_nulosRef +=1
+        cont +=1
+        valor = int(100*float(cont)/float(rowsRef))
+        progress.setPercentage(valor)
         
     # Gerar relatorio do metodo
+    progress.setInfo('<b>Gerando relatorio dos resultados...</b><br/><br/>')
     DISCREP= array(DISCREP)
     EMQ = sqrt((DISCREP*DISCREP).sum()/len(DISCREP))
+    DP = DISCREP.std()
+    MEDIA = DISCREP.mean()
+    Num_DISCREP = len(DISCREP)
     cont = 0
     RESULTADOS = {}
     for escala in Escalas:
@@ -220,7 +233,7 @@ else:
         for valor in valores[::-1]:
             EM = PEC[escala]['altim'][valor]['EM']
             EP = PEC[escala]['altim'][valor]['EP']
-            if ((DISCREP<EM).sum()/float(len(DISCREP)))>0.9 and (EMQ < EP):
+            if ((DISCREP<EM).sum()/float(Num_DISCREP))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
@@ -228,8 +241,8 @@ else:
     
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
-    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %DISCREP.mean())
-    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DISCREP.std())
+    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %MEDIA)
+    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DP)
     progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %EMQ)
     if Escalas:
         for escala in Escalas:
@@ -250,38 +263,29 @@ else:
 </head>
 <body style="background-color: rgb(229, 233, 166);">
 <div style="text-align: center;"><span
- style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA
-POSICIONAL RELATIVA</span><br>
+ style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA POSICIONAL RELATIVA</span><br>
 </div>
 <br>
-<span style="font-weight: bold;">1. Camada de Pontos de
-Controle</span><br>
+<span style="font-weight: bold;">1. MDE de Refer&ecirc;ncia</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
-&nbsp;&nbsp;&nbsp; b. total de pontos de controle: %d<br>
-&nbsp;&nbsp;&nbsp; c. total de pontos sobre o MDE: %d<br>
+&nbsp;&nbsp;&nbsp; b. total de pixels: %d<br>
+&nbsp;&nbsp;&nbsp; c. total de pixels sobre o MDE: %d<br>
 <br>
-<span style="font-weight: bold;">2. Modelo Digital de
-Eleva&ccedil;&atilde;o Avaliado</span><br>
+<span style="font-weight: bold;">2. MDE Avaliado</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
 &nbsp;&nbsp;&nbsp; b. n&uacute;mero de pixels: %d<br>
 &nbsp;&nbsp;&nbsp; c. n&uacute;mero de pixels nulos: %d<br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
-&nbsp;&nbsp;&nbsp; a. n&uacute;mero de pontos
-utilizados: %d<br>
-&nbsp;&nbsp;&nbsp; b. n&uacute;mero de
-pontos&nbsp;pr&oacute;ximo/sobre pixel nulo: %d<br>
-&nbsp;&nbsp;&nbsp; c. m&eacute;dia das
-discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
+&nbsp;&nbsp;&nbsp; a. n&uacute;mero de pixels de refer&ecirc;ncia utilizados: %d<br>
+&nbsp;&nbsp;&nbsp; b. n&uacute;mero de pixels de refer&ecirc;ncia pr&oacute;ximo/sobre pixel nulo: %d<br>
+&nbsp;&nbsp;&nbsp; c. m&eacute;dia das discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
 &nbsp;&nbsp;&nbsp; d. desvio-padr&atilde;o: %.2f m<br>
 &nbsp;&nbsp;&nbsp; e. EMQ: %.2f m<br>
-&nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia
-m&aacute;xima: %.2f m<br>
-&nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia
-m&iacute;nima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia m&aacute;xima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia m&iacute;nima: %.2f m<br>
 <br>
-<span style="font-weight: bold;">4. Acur&aacute;cia
-Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
+<span style="font-weight: bold;">4. Acur&aacute;cia Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
 <br>
 </span>
 <meta name="qrichtext" content="1">
@@ -293,7 +297,7 @@ p, li { white-space: pre-wrap; }
 <table style="margin: 0px;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
-    <tr>''' %(ref.name(), ref.featureCount(), total_nulos+len(DISCREP), teste.name(), cols*rows, (band==NULO).sum(), len(DISCREP), total_nulos, DISCREP.mean(), DISCREP.std(), EMQ, DISCREP.max(),DISCREP.min())
+    <tr>''' %(ref.name(), rowsRef*colsRef , Num_DISCREP+total_nulos, teste.name(), cols*rows, (band==NULO).sum(), Num_DISCREP, total_nulos, MEDIA, DP, EMQ, DISCREP.max(),DISCREP.min())
 
         for escala in Escalas:
             texto += '<td><p style="margin: 0px; text-indent: 0px;"><span style="font-weight: 600;">%s</span></p></td>'  %dicionario[escala]
@@ -317,4 +321,3 @@ email: geoleandro.franca@gmail.com<br>
         arq.write(texto)
         arq.close()
     iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
-
