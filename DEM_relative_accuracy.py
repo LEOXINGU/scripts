@@ -42,7 +42,7 @@ from qgis.utils import iface
 from qgis.core import *
 import time
 import processing
-from numpy import sqrt, array, mean, std, mat
+from numpy import sqrt, array, mat, zeros
 from math import ceil, floor
 
 # PEC-PCD
@@ -190,14 +190,22 @@ if prj != prjRef:
     iface.messageBar().pushMessage(u'Situacao', "Problema com os dados de entrada!", level=QgsMessageBar.WARNING, duration=8)
 
 else:
-    DISCREP = []
     total_nulosRef = 0
     total_nulos = 0
     total_foraBbox = 0
     # Para cada pixel do MDE de referencia
         # calcular a discrepancia em relacao ao MDE avaliado, caso nao haja pixel nulo
         # armazenar discrepancias e qnt de pontos em pixel nulo
+    
+    # Calculo da Media (Tendencia)
+    progress.setInfo('<b>Calculo da Media das Discrepancias...</b><br/>')
+    somaMedia = 0
+    contMedia = 0
+    somaEMQ = 0
+    MAX = -1e7
+    MIN = 1e7
     cont = 0
+    DISCREP = zeros(rowsRef*colsRef, dtype='f')
     for lin in range(rowsRef):
         for col in range(colsRef):
             # Determinar a coordenada do pixel da cota
@@ -208,7 +216,15 @@ else:
                 if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
                    cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
                    if cotaTest != NULO:
-                       DISCREP += [cotaTest - cotaRef]
+                        difer = cotaTest-cotaRef
+                        somaMedia += float(difer)
+                        somaEMQ += float(difer*difer)
+                        DISCREP[contMedia] = difer
+                        contMedia+= 1
+                        if difer < MIN:
+                            MIN = difer
+                        if difer > MAX:
+                            MAX = difer
                    else:
                        total_nulos +=1
                 else:
@@ -218,32 +234,46 @@ else:
         cont +=1
         valor = int(100*float(cont)/float(rowsRef))
         progress.setPercentage(valor)
-        
+    
+    MEDIA = somaMedia/contMedia
+    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/><br/>' %MEDIA)
+    del band, bandRef
+    
+    # Calculo do EMQ, DP, MAX, MIN
+    progress.setInfo('<b>Calculo do EMQ, DP, Max e Min...</b><br/>')
+    somaDP = 0
+    Num_DISCREP = contMedia
+
+    for k in range(Num_DISCREP):
+        difer = DISCREP[k]
+        somaDP += float((difer - MEDIA)*(difer - MEDIA))
+        valor = int(100*float(k+1)/float(Num_DISCREP))
+        progress.setPercentage(valor)
+    
+    DP = sqrt(somaDP/Num_DISCREP)
+    EMQ = sqrt(somaEMQ/Num_DISCREP)
+    progress.setInfo('<br/><b>Desvio-Padrao: %.1f m</b><br/>' %DP)
+    progress.setInfo('<b>EMQ: %.1f m</b><br/>' %EMQ)
+    progress.setInfo('<b>Discrepancia Minima: %.1f m</b><br/>' %MIN)
+    progress.setInfo('<b>Discrepancia Maxima: %.1f m</b><br/><br/>' %MAX)
+    
     # Gerar relatorio do metodo
     progress.setInfo('<b>Gerando relatorio dos resultados...</b><br/><br/>')
-    DISCREP= array(DISCREP)
-    EMQ = sqrt((DISCREP*DISCREP).sum()/len(DISCREP))
-    DP = DISCREP.std()
-    MEDIA = DISCREP.mean()
-    Num_DISCREP = len(DISCREP)
-    cont = 0
     RESULTADOS = {}
     for escala in Escalas:
         mudou = False
         for valor in valores[::-1]:
             EM = PEC[escala]['altim'][valor]['EM']
             EP = PEC[escala]['altim'][valor]['EP']
-            if ((DISCREP<EM).sum()/float(Num_DISCREP))>0.9 and (EMQ < EP):
+            if ((DISCREP>EM).sum()/float(Num_DISCREP))<0.1 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
             RESULTADOS[escala] = 'R'
     
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
-    progress.setInfo('<b>RESULTADOS:</b><br/>')
-    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %MEDIA)
-    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DP)
-    progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %EMQ)
+    progress.setInfo('<b>RESULTADOS DO PEC-PCD:</b><br/>')
+
     if Escalas:
         for escala in Escalas:
             progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
@@ -297,7 +327,7 @@ p, li { white-space: pre-wrap; }
 <table style="margin: 0px;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
-    <tr>''' %(ref.name(), rowsRef*colsRef , Num_DISCREP+total_nulos, teste.name(), cols*rows, (band==NULO).sum(), Num_DISCREP, total_nulos, MEDIA, DP, EMQ, DISCREP.max(),DISCREP.min())
+    <tr>''' %(ref.name(), rowsRef*colsRef , Num_DISCREP+total_nulos, teste.name(), cols*rows, total_nulosRef, Num_DISCREP, total_nulos, MEDIA, DP, EMQ, MAX,MIN)
 
         for escala in Escalas:
             texto += '<td><p style="margin: 0px; text-indent: 0px;"><span style="font-weight: 600;">%s</span></p></td>'  %dicionario[escala]
