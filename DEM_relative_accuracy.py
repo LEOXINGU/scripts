@@ -182,7 +182,7 @@ image=None # Fechar imagem
 ref = processing.getObject(MDE_de_Referencia)
 
 # Verificacoes
-if prj != prjRef:
+if False: #prj != prjRef:
     iface.messageBar().pushMessage(u'Erro', "Problema(s) com os parametros de entrada.", level=QgsMessageBar.CRITICAL, duration=5) 
     progress.setInfo('<b><font  color="#ff0000">Erro nos parametros de entrada.</b><br/>')
     progress.setInfo('<b><font  color="#ff0000">Verifique se os MDE tem o mesmo SRC.</b><br/>')
@@ -205,6 +205,8 @@ else:
     MAX = -1e7
     MIN = 1e7
     cont = 0
+    valor2=0
+    valor3=-1
     DISCREP = zeros(rowsRef*colsRef, dtype='f')
     for lin in range(rowsRef):
         for col in range(colsRef):
@@ -212,19 +214,20 @@ else:
             X = origemRef[0] + resol_XRef*(col+0.5)
             Y = origemRef[1] - resol_YRef*(lin+0.5)
             cotaRef = bandRef[lin][col]
-            if cotaRef!=nuloRef:
+            if cotaRef<1e4: #cotaRef!=nuloRef:
                 if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
                    cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
                    if cotaTest != NULO:
                         difer = cotaTest-cotaRef
-                        somaMedia += float(difer)
-                        somaEMQ += float(difer*difer)
-                        DISCREP[contMedia] = difer
-                        contMedia+= 1
-                        if difer < MIN:
-                            MIN = difer
-                        if difer > MAX:
-                            MAX = difer
+                        if difer > - 800 and difer < 800:
+                            somaMedia += float(difer)
+                            somaEMQ += float(difer*difer)
+                            DISCREP[contMedia] = difer
+                            contMedia+= 1
+                            if difer < MIN:
+                                MIN = difer
+                            if difer > MAX:
+                                MAX = difer
                    else:
                        total_nulos +=1
                 else:
@@ -233,7 +236,10 @@ else:
                 total_nulosRef +=1
         cont +=1
         valor = int(100*float(cont)/float(rowsRef))
-        progress.setPercentage(valor)
+        if valor==valor2 and valor!=valor3:
+            valor2 +=1
+            valor3 = valor
+            progress.setPercentage(valor)
     
     MEDIA = somaMedia/contMedia
     progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/><br/>' %MEDIA)
@@ -243,12 +249,17 @@ else:
     progress.setInfo('<b>Calculo do EMQ, DP, Max e Min...</b><br/>')
     somaDP = 0
     Num_DISCREP = contMedia
+    valor2=0
+    valor3=-1
 
     for k in range(Num_DISCREP):
         difer = DISCREP[k]
         somaDP += float((difer - MEDIA)*(difer - MEDIA))
         valor = int(100*float(k+1)/float(Num_DISCREP))
-        progress.setPercentage(valor)
+        if valor==valor2 and valor!=valor3:
+            valor2 +=1
+            valor3 = valor
+            progress.setPercentage(valor)
     
     DP = sqrt(somaDP/Num_DISCREP)
     EMQ = sqrt(somaEMQ/Num_DISCREP)
