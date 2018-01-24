@@ -253,7 +253,7 @@ else:
     valor3=-1
     cont = 0
     while cont < Num_DISCREP:
-        difer = DISCREP[k]
+        difer = DISCREP[cont]
         somaDP += float((difer - MEDIA)*(difer - MEDIA))
         valor = int(100*float(k+1)/float(Num_DISCREP))
         cont +=1
