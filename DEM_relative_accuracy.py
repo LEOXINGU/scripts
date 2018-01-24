@@ -251,11 +251,12 @@ else:
     Num_DISCREP = contMedia
     valor2=0
     valor3=-1
-
-    for k in range(Num_DISCREP):
+    cont = 0
+    while cont < Num_DISCREP:
         difer = DISCREP[k]
         somaDP += float((difer - MEDIA)*(difer - MEDIA))
         valor = int(100*float(k+1)/float(Num_DISCREP))
+        cont +=1
         if valor==valor2 and valor!=valor3:
             valor2 +=1
             valor3 = valor
