@@ -44,7 +44,7 @@ if os.path.isdir(local):
     os.chdir(local)
     sentinela = True
 else:
-    local = 'C:\Program Files (x86)/PostgreSQL/'+version+'/bin'
+    local = 'C:/Program Files (x86)/PostgreSQL/'+version+'/bin'
     if os.path.isdir(local):
         os.chdir(local)
         sentinela = True
