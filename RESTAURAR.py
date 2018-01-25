@@ -72,7 +72,7 @@ else:
         iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 if sentinela:
-    comando ='psql -d postgres -U '+Usuario+' -h '+host+' -p 5432 -f '+path_name
+    comando ='psql -d postgres -U '+Usuario+' -h '+host+' -p 5432 -f '+ '"' + path_name + '"'
     progress.setInfo('<b>Iniciando processo de Restauracao do BD...</b><br/>')
     result = os.system(comando)
     if result==0:
