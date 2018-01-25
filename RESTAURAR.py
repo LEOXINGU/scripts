@@ -61,7 +61,7 @@ if os.path.isdir(pasta):
     os.chdir(pasta)
     sentinela = True
 else:
-    pasta = 'C:\Program Files (x86)/PostgreSQL/'+version+'/bin'
+    pasta = 'C:/Program Files (x86)/PostgreSQL/'+version+'/bin'
     if os.path.isdir(pasta):
         os.chdir(pasta)
         sentinela = True
