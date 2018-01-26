@@ -243,39 +243,30 @@ else:
   <title>ACUR&Aacute;CIA ABSOLUTA</title>
 </head>
 <body style="background-color: rgb(229, 233, 166);">
-<div style="text-align: center;"><span
- style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA
-POSICIONAL ABSOLUTA</span><br>
+<div style="text-align: center;"><span style="font-weight: bold; text-decoration: underline;">ACUR&Aacute;CIA POSICIONAL ABSOLUTA</span><br>
 </div>
 <br>
-<span style="font-weight: bold;">1. Camada de Pontos de
-Controle</span><br>
+<span style="font-weight: bold;">1. Camada de Pontos de Controle</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
 &nbsp;&nbsp;&nbsp; b. total de pontos de controle: %d<br>
 &nbsp;&nbsp;&nbsp; c. total de pontos sobre o MDE: %d<br>
 <br>
-<span style="font-weight: bold;">2. Modelo Digital de
-Eleva&ccedil;&atilde;o Avaliado</span><br>
+<span style="font-weight: bold;">2. Modelo Digital de Eleva&ccedil;&atilde;o Avaliado</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
 &nbsp;&nbsp;&nbsp; b. n&uacute;mero de pixels: %d<br>
 &nbsp;&nbsp;&nbsp; c. n&uacute;mero de pixels nulos: %d<br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
-&nbsp;&nbsp;&nbsp; a. n&uacute;mero de pontos
-utilizados: %d<br>
-&nbsp;&nbsp;&nbsp; b. n&uacute;mero de
-pontos&nbsp;pr&oacute;ximo/sobre pixel nulo: %d<br>
-&nbsp;&nbsp;&nbsp; c. m&eacute;dia das
-discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
+&nbsp;&nbsp;&nbsp; a. n&uacute;mero de pontos utilizados: %d<br>
+&nbsp;&nbsp;&nbsp; b. n&uacute;mero de pontos&nbsp;pr&oacute;ximo/sobre pixel nulo: %d<br>
+&nbsp;&nbsp;&nbsp; c. m&eacute;dia das discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
 &nbsp;&nbsp;&nbsp; d. desvio-padr&atilde;o: %.2f m<br>
 &nbsp;&nbsp;&nbsp; e. EMQ: %.2f m<br>
-&nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia
-m&aacute;xima: %.2f m<br>
-&nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia
-m&iacute;nima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia m&aacute;xima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia m&iacute;nima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; h. m&eacute;todo de interpola&ccedil;&atilde;o: %s<br>
 <br>
-<span style="font-weight: bold;">4. Acur&aacute;cia
-Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
+<span style="font-weight: bold;">4. Acur&aacute;cia Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
 <br>
 </span>
 <meta name="qrichtext" content="1">
@@ -287,7 +278,7 @@ p, li { white-space: pre-wrap; }
 <table style="margin: 0px;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
-    <tr>''' %(ref.name(), ref.featureCount(), total_nulos+len(DISCREP), teste.name(), cols*rows, (band==NULO).sum(), len(DISCREP), total_nulos, DISCREP.mean(), DISCREP.std(), EMQ, DISCREP.max(),DISCREP.min())
+    <tr>''' %(ref.name(), ref.featureCount(), total_nulos+len(DISCREP), teste.name(), cols*rows, (band==NULO).sum(), len(DISCREP), total_nulos, DISCREP.mean(), DISCREP.std(), EMQ, DISCREP.max(),DISCREP.min(), metodo)
 
         for escala in Escalas:
             texto += '<td><p style="margin: 0px; text-indent: 0px;"><span style="font-weight: 600;">%s</span></p></td>'  %dicionario[escala]

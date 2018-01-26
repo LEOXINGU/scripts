@@ -219,15 +219,14 @@ else:
                    cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
                    if cotaTest != NULO:
                         difer = cotaTest-cotaRef
-                        if difer > - 800 and difer < 800:
-                            somaMedia += float(difer)
-                            somaEMQ += float(difer*difer)
-                            DISCREP[contMedia] = difer
-                            contMedia+= 1
-                            if difer < MIN:
-                                MIN = difer
-                            if difer > MAX:
-                                MAX = difer
+                        somaMedia += float(difer)
+                        somaEMQ += float(difer*difer)
+                        DISCREP[contMedia] = difer
+                        contMedia+= 1
+                        if difer < MIN:
+                            MIN = difer
+                        if difer> MAX:
+                            MAX = difer
                    else:
                        total_nulos +=1
                 else:
@@ -247,8 +246,9 @@ else:
     
     # Calculo do EMQ, DP, MAX, MIN
     progress.setInfo('<b>Calculo do EMQ, DP, Max e Min...</b><br/>')
-    somaDP = 0
     Num_DISCREP = contMedia
+    
+    somaDP = 0
     valor2=0
     valor3=-1
     cont = 0
@@ -259,7 +259,7 @@ else:
         cont +=1
         if valor==valor2 and valor!=valor3:
             valor2 +=1
-            valor3 = valor
+           valor3 = valor
             progress.setPercentage(valor)
     
     DP = sqrt(somaDP/Num_DISCREP)
@@ -326,6 +326,7 @@ else:
 &nbsp;&nbsp;&nbsp; e. EMQ: %.2f m<br>
 &nbsp;&nbsp;&nbsp; f. discrep&acirc;ncia m&aacute;xima: %.2f m<br>
 &nbsp;&nbsp;&nbsp; g. discrep&acirc;ncia m&iacute;nima: %.2f m<br>
+&nbsp;&nbsp;&nbsp; h. m&eacute;todo de interpola&ccedil;&atilde;o: %s<br>
 <br>
 <span style="font-weight: bold;">4. Acur&aacute;cia Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
 <br>
@@ -339,7 +340,7 @@ p, li { white-space: pre-wrap; }
 <table style="margin: 0px;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
-    <tr>''' %(ref.name(), rowsRef*colsRef , Num_DISCREP+total_nulos, teste.name(), cols*rows, total_nulosRef, Num_DISCREP, total_nulos, MEDIA, DP, EMQ, MAX,MIN)
+    <tr>''' %(ref.name(), rowsRef*colsRef , Num_DISCREP+total_nulos, teste.name(), cols*rows, total_nulosRef, Num_DISCREP, total_nulos, MEDIA, DP, EMQ, MAX,MIN, metodo)
 
         for escala in Escalas:
             texto += '<td><p style="margin: 0px; text-indent: 0px;"><span style="font-weight: 600;">%s</span></p></td>'  %dicionario[escala]
