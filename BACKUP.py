@@ -46,7 +46,7 @@ if os.path.isdir(pasta):
     os.chdir(pasta)
     sentinela = True
 else:
-    pasta = 'C:\Program Files (x86)/PostgreSQL/'+version+'/bin'
+    pasta = 'C:/Program Files (x86)/PostgreSQL/'+version+'/bin'
     if os.path.isdir(pasta):
         os.chdir(pasta)
         sentinela = True
@@ -57,7 +57,7 @@ else:
         iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do backup.", level=QgsMessageBar.CRITICAL, duration=5) 
 
 def ExecutarCmdo(database, host, local):
-    comando = 'pg_dump -Fp -C -h ' +host+ ' -U '+Usuario+' ' +database+ ' > ' +local+ '/'+database+'.sql'
+    comando = 'pg_dump -Fp -C -h ' +host+ ' -U '+Usuario+' ' +database+ ' > "' +local+ '/'+database+'.sql"'
     progress.setInfo('<b>Iniciando processo de backup...</b><br/>')
     result = os.system(comando)
     if result==0:
