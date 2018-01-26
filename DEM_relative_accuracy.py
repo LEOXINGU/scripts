@@ -259,7 +259,7 @@ else:
         cont +=1
         if valor==valor2 and valor!=valor3:
             valor2 +=1
-           valor3 = valor
+            valor3 = valor
             progress.setPercentage(valor)
     
     DP = sqrt(somaDP/Num_DISCREP)
