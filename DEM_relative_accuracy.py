@@ -214,7 +214,7 @@ else:
             X = origemRef[0] + resol_XRef*(col+0.5)
             Y = origemRef[1] - resol_YRef*(lin+0.5)
             cotaRef = bandRef[lin][col]
-            if cotaRef<1e4: #cotaRef!=nuloRef:
+            if cotaRef!=nuloRef:
                 if bbox[0]<X and bbox[1]>X and bbox[2]<Y and bbox[3]>Y:
                    cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
                    if cotaTest != NULO:
@@ -255,7 +255,7 @@ else:
     while cont < Num_DISCREP:
         difer = DISCREP[cont]
         somaDP += float((difer - MEDIA)*(difer - MEDIA))
-        valor = int(100*float(k+1)/float(Num_DISCREP))
+        valor = int(100*float(cont+1)/float(Num_DISCREP))
         cont +=1
         if valor==valor2 and valor!=valor3:
             valor2 +=1
