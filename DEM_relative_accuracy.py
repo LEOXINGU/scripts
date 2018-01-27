@@ -18,8 +18,8 @@
 # Acuracia Relativa de MDE
 ##Acuracia Relativa de MDE=name
 ##LF7) Qualidade=group
-##MDE_de_Referencia=raster
 ##MDE_Avaliado=raster
+##MDE_de_Referencia=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False

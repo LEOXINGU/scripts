@@ -157,7 +157,7 @@ if False: #prj != prjRef:
     iface.messageBar().pushMessage(u'Situacao', "Problema com os dados de entrada!", level=QgsMessageBar.WARNING, duration=8)
 
 else:
-    progress.setInfo('<b>Calculo da Media das Discrepancias...</b><br/>')
+    progress.setInfo('<b>Iniciando processamento...</b><br/>')
     cont = 0
     valor2=0
     valor3=-1
