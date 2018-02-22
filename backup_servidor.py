@@ -62,7 +62,7 @@ if 'backup.file' in saida:
     iface.messageBar().pushMessage(u'Erro', "Problema(s) durante a execucao do comando.", level=QgsMessageBar.CRITICAL, duration=5)
    
 if sentinela:
-    comando = 'pg_dumpall -h %s -p 5432 -U '+Usuario+' -v -f "%s"' %(host, saida)
+    comando = 'pg_dumpall -h %s -p 5432 -U ' %host  +Usuario+ ' -v -f "%s"' %saida
     progress.setInfo('<b>Realizando backup do servidor...</b><br/>')
     result = os.system(comando)
     if result==0:
