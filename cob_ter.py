@@ -18,7 +18,7 @@
 """
 # Verificacao da Cob Ter (juntar todas as classes que compoe a Cob Ter)
 ##Cob Ter=name
-##LF8) Outros=group
+##LF9) Outros=group
 ##Moldura=vector
 ##Todas_os_poligonos_de_Cob_Ter=output vector
 

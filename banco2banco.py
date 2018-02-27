@@ -21,7 +21,7 @@
 ##Banco_de_Dados_de_Origem=string
 ##Banco_de_Dados_de_Destino=string
 ##Usuario_PostGIS=string postgres
-##Senha=string cgeo2017
+##Senha=string postgres
 
 
 from PyQt4.QtCore import *
@@ -55,10 +55,12 @@ def reprojetar(geom):
             for pnt in pnts:
                 newPnts += [xform.transform(pnt)]
             newGeom = QgsGeometry.fromMultiPoint(newPnts)
+            return newGeom
         else:
             pnt = geom.asPoint()
             newPnt = xform.transform(pnt)
             newGeom = QgsGeometry.fromPoint(newPnt)
+            return newGeom
     elif geom.type() == 1: #Linha
         if geom.isMultipart():
             linhas = geom.asMultiPolyline()
@@ -69,36 +71,40 @@ def reprojetar(geom):
                     newLine += [xform.transform(pnt)]
                 newLines += [newLine]
             newGeom = QgsGeometry.fromMultiPolyline(newLines)
+            return newGeom
         else:
             linha = geom.asPolyline()
             newLine =[]
             for pnt in linha:
                 newLine += [xform.transform(pnt)]
             newGeom = QgsGeometry.fromPolyline(newLine)
-    
+            return newGeom
     elif geom.type() == 2: #Poligono
         if geom.isMultipart():
             poligonos = geom.asMultiPolygon()
             newPolygons = []
-            for aneis in poligonos:
-                newAneis = []
-                for anel in aneis:
+            for pol in poligonos:
+                newPol = []
+                for anel in pol:
                     newAnel = []
                     for pnt in anel:
                         newAnel += [xform.transform(pnt)]
-                newAneis += [newAnel]
-            newPolygons += [newAneis]
+                    newPol += [newAnel]
+                newPolygons += [newPol]
             newGeom = QgsGeometry.fromMultiPolygon(newPolygons)
+            return newGeom
         else:
-            aneis = geom.asPolygon()
-            newAneis = []
-            for anel in aneis:
+            pol = geom.asPolygon()
+            newPol = []
+            for anel in pol:
                 newAnel = []
                 for pnt in anel:
                     newAnel += [xform.transform(pnt)]
-            newAneis += [newAnel]
-            newGeom = QgsGeometry.fromPolygon(newAneis)
-    return newGeom
+                newPol += [newAnel]
+            newGeom = QgsGeometry.fromPolygon(newPol)
+            return newGeom
+    else:
+        return None
 
 
 # Colar feicoes do banco de origem para o banco de destino reprojetando as coordenadas, se necessario
@@ -109,6 +115,7 @@ if SRC_origem == SRC_destino:
                 lyr_source = (layer.source()).split("'")[1]
                 if lyr_source == Banco_de_Dados_de_Origem:
                     layer_name = layer.name()
+                    progress.setInfo('<br/>Copiando dados da camada %s...' %layer_name)
                     uri.setDataSource("public", layer_name, "geom","")
                     camada = QgsVectorLayer(uri.uri(), '', "postgres")
                     DP = camada.dataProvider()
@@ -127,18 +134,22 @@ else:
                 lyr_source = (layer.source()).split("'")[1]
                 if lyr_source == Banco_de_Dados_de_Origem:
                     layer_name = layer.name()
+                    progress.setInfo('<br/>Copiando dados da camada %s...' %layer_name)
                     uri.setDataSource("public", layer_name, "geom","")
                     camada = QgsVectorLayer(uri.uri(), '', "postgres")
                     DP = camada.dataProvider()
                     newFeat = QgsFeature()
                     for feat in layer.getFeatures():
+                        geom = feat.geometry()
+                        newGeom = reprojetar(geom)
                         att = feat.attributes()
-                        newFeat.setGeometry(feat.geometry())
+                        newFeat.setGeometry(newGeom)
                         newFeat.setAttributes([None]+att[1:])
                         ok = DP.addFeatures([newFeat])
             except:
                 pass
-    
+
+progress.setInfo('<br/><br/><b>Operacao concluida com sucesso!</b>')
 progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 time.sleep(5)
 iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
