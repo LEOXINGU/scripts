@@ -48,11 +48,14 @@ import processing
 import time
 
 # Funcao de Interpolacao
-def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
+def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo, nulo):
     if metodo == 'nearest':
-        linha = round((origem[1]-Y)/resol_Y - 0.5)
-        coluna = round((X - origem[0])/resol_X - 0.5)
-        return float(MDE[linha][coluna])
+        linha = int(round((origem[1]-Y)/resol_Y - 0.5))
+        coluna = int(round((X - origem[0])/resol_X - 0.5))
+        if MDE[linha][coluna] != nulo:
+            return float(MDE[linha][coluna])
+        else:
+            return nulo
     elif metodo == 'bilinear':
         nlin = len(MDE)
         ncol = len(MDE[0])
@@ -68,8 +71,11 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
             J=0
         if J>ncol-1:
             J=ncol-1
-        Z = (1-di)*(1-dj)*MDE[floor(I)][floor(J)] + (1-dj)*di*MDE[ceil(I)][floor(J)] + (1-di)*dj*MDE[floor(I)][ceil(J)] + di*dj*MDE[ceil(I)][ceil(J)]
-        return float(Z)
+        if (MDE[int(floor(I)):int(ceil(I))+1, int(floor(J)):int(ceil(J))+1] == nulo).sum() == 0:
+            Z = (1-di)*(1-dj)*MDE[int(floor(I))][int(floor(J))] + (1-dj)*di*MDE[int(ceil(I))][int(floor(J))] + (1-di)*dj*MDE[int(floor(I))][int(ceil(J))] + di*dj*MDE[int(ceil(I))][int(ceil(J))]
+            return float(Z)
+        else:
+            return nulo
     elif metodo == 'bicubic':
         nlin = len(MDE)
         ncol = len(MDE[0])
@@ -77,8 +83,8 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
         J = (X - origem[0])/resol_X - 0.5
         di = I - floor(I)
         dj = J - floor(J)
-        I=floor(I)
-        J=floor(J)
+        I=int(floor(I))
+        J=int(floor(J))
         if I<2:
             I=2
         if I>nlin-3:
@@ -87,24 +93,30 @@ def Interpolar(X, Y, MDE, origem, resol_X, resol_Y, metodo):
             J=2
         if J>ncol-3:
             J=ncol-3
-        MatrInv = (mat([[-1, 1, -1, 1], [0, 0, 0, 1], [1, 1, 1, 1], [8, 4, 2, 1]])).I # < Jogar para fora da funcao
-        MAT  = mat([[MDE[I-1, J-1],   MDE[I-1, J],   MDE[I-1, J+1],  MDE[I-2, J+2]],
-                             [MDE[I, J-1],      MDE[I, J],      MDE[I, J+1],      MDE[I, J+2]],
-                             [MDE[I+1, J-1],  MDE[I+1, J], MDE[I+1, J+1], MDE[I+1, J+2]],
-                             [MDE[I+2, J-1],  MDE[I+2, J], MDE[I+2, J+1], MDE[I+2, J+2]]])
-        coef = MatrInv*MAT.transpose()
-        # Horizontal
-        pi = coef[0,:]*pow(dj,3)+coef[1,:]*pow(dj,2)+coef[2,:]*dj+coef[3,:]
-        # Vertical
-        coef2 = MatrInv*pi.transpose()
-        pj = coef2[0]*pow(di,3)+coef2[1]*pow(di,2)+coef2[2]*di+coef2[3]
-        return float(pj)
+        if (MDE[I-1:I+3, J-1:J+3] == nulo).sum() == 0:
+            MatrInv = (mat([[-1, 1, -1, 1], [0, 0, 0, 1], [1, 1, 1, 1], [8, 4, 2, 1]])).I # < Jogar para fora da funcao
+            MAT  = mat([[MDE[I-1, J-1],   MDE[I-1, J],   MDE[I-1, J+1],  MDE[I-2, J+2]],
+                                 [MDE[I, J-1],      MDE[I, J],      MDE[I, J+1],      MDE[I, J+2]],
+                                 [MDE[I+1, J-1],  MDE[I+1, J], MDE[I+1, J+1], MDE[I+1, J+2]],
+                                 [MDE[I+2, J-1],  MDE[I+2, J], MDE[I+2, J+1], MDE[I+2, J+2]]])
+            coef = MatrInv*MAT.transpose()
+            # Horizontal
+            pi = coef[0,:]*pow(dj,3)+coef[1,:]*pow(dj,2)+coef[2,:]*dj+coef[3,:]
+            # Vertical
+            coef2 = MatrInv*pi.transpose()
+            pj = coef2[0]*pow(di,3)+coef2[1]*pow(di,2)+coef2[2]*di+coef2[3]
+            return float(pj)
+        else:
+            return nulo
 
 # Abrir Raster layer como array
 import gdal
 from osgeo import osr
 image = gdal.Open(MDE)
 band = image.GetRasterBand(1).ReadAsArray()
+nulo = image.GetRasterBand(1).GetNoDataValue()
+if nulo == None:
+    nulo =-1e6
 prj=image.GetProjection()
 geotransform = image.GetGeoTransform()
 distance = QgsDistanceArea()
@@ -219,8 +231,9 @@ else:
             for pnt in LIST_PNTS:
                 X = pnt[0]
                 Y = pnt[1]
-                Z = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo)
-                LIST_Z += [Z]
+                Z = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, nulo)
+                if Z != nulo:
+                    LIST_Z += [Z]
             # Verificar se ha apenas um minimo na secao
             Minimo = (array(LIST_Z)).min()
             cont_Min = (array(LIST_Z) == Minimo).sum()
