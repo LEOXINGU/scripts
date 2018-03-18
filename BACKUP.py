@@ -17,7 +17,7 @@
 """
 # BACKUP
 ##2. BACKUP=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Nome_do_BD=string
 ##Local_para_salvar_o_backup=folder
 ##Host=string localhost

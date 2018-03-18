@@ -17,7 +17,7 @@
 """
 # Revisor de atributos
 ##02. Revisor de atributos=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Shapefile_de_Ganchos=output vector
 ##Forcar_Atributos=boolean False
 

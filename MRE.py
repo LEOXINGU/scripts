@@ -17,7 +17,7 @@
 """
 # Metodo dos Retangulos Equivalentes
 ##MRE - Metodo dos Retangulos Equivalentes=name
-##LF7) Qualidade=group
+##LF07) Qualidade=group
 ##Camada_de_Referencia=vector
 ##Camada_de_Teste=vector
 ##Buffer_de_Relacionamento=number 30.0

@@ -17,7 +17,7 @@
 """
 # Consertar Geometrias na propria camada
 ##6. Conserta Geometrias no BD=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_entrada=vector
 ##Comprimento_minimo=number 0.001
 ##Area_minima=number 0.001

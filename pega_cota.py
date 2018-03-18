@@ -17,7 +17,7 @@
 """
 # Pegar Cotas a partir do MDE
 ##4. Calcular cotas=name
-##LF6) Terreno=group
+##LF06) Terreno=group
 ##Modelo_Digital_de_Elevacao=raster
 ##Camada_de_Cotas=vector
 ##Campo_valor_da_cota=field Camada_de_Cotas

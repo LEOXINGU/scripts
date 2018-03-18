@@ -18,7 +18,7 @@
 """
 # Relatorio GPX
 ##5. Relatorio GPX=name
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 ##Arquivo_GPX=file
 ##Shapefile_da_moldura_WGS84_ou_SIRGAS2000=vector
 ##MI_da_moldura=string

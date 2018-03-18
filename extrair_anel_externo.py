@@ -18,7 +18,7 @@
 """
 # Extrair anel externo de poligonos
 ##Extrair anel exterior=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_poligonos=vector
 ##Saida=output vector
 

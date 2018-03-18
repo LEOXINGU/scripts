@@ -20,7 +20,7 @@
 """
 # Transladar Vetor
 ##4. Transladar Vetor=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Entrada=vector
 ##Tipo_de_Deslocamento=selection Azimute e Distancia;Vetor XY
 ##Deslocamento=string

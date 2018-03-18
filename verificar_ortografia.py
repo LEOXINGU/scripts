@@ -17,7 +17,7 @@
 """
 # Verificar Ortografia
 ##03. Verificar Ortografia=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Arquivo_CSV=output file
 
 from PyQt4.QtCore import *

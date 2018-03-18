@@ -17,7 +17,7 @@
 """
 # Separar feicoes multipartes de todas as camadas
 ##01. Colorir Tabelas=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar

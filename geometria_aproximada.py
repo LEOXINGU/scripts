@@ -17,7 +17,7 @@
 """
 # Atualizacao de Geometria Aproximada
 
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##17. Geometria Aproximada=name
 ##Banco_de_Dados_da_Reambulacao=string
 ##Banco_de_Dados_da_Vetorizacao=string

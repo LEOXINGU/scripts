@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 ##15. Relatorio da Revisao da Reambulacao=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Camada_de_observacoes=vector
 ##Campo_de_observacao=field Camada_de_observacoes
 ##Relatorio_CSV=output file

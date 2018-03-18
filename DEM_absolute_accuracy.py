@@ -17,7 +17,7 @@
 """
 # Acuracia Absoluta de MDE
 ##Acuracia Absoluta de MDE=name
-##LF7) Qualidade=group
+##LF07) Qualidade=group
 ##Camada_de_Pontos_de_Referencia=vector
 ##Cota_em_metros=field Camada_de_Pontos_de_Referencia
 ##MDE_Avaliado=raster

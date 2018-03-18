@@ -17,7 +17,7 @@
 """
 # Juntar Camadas de CT em uma Camada
 ##BD para CT=name
-##LF8) EDGV=group
+##LF08) EDGV=group
 ##Banco_de_Dados=string
 ##Cobertura_Terrestre=output vector
 

@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 ##1. Track Points=name
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 ##arquivo_GPX=file
 ##Shapefile_de_saida=output vector
 

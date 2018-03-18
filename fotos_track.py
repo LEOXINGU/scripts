@@ -18,7 +18,7 @@
 # Fotos Nao Geo para Geo
 
 ##3. Fotos com Track=name
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 ##Pasta_com_fotos=folder
 ##Arquivo_GPX=file
 ##Shapefile_de_Fotos=output vector

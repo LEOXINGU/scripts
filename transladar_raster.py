@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Transladar Raster
-##LF5) Raster=group
+##LF05) Raster=group
 ##Transladar Raster=name
 ##Camada_Raster=raster
 ##Ponto_Inicial=string

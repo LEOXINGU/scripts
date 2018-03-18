@@ -18,7 +18,7 @@
 # Gerreferenciar Midia pelo Track
 
 ##4. Midias com Track=name
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 ##Pasta_com_Video_ou_Audio=folder
 ##Padrao_da_DataHora=string YYYY_MM_DD_hh_mm_ss
 ##Arquivo_GPX=file

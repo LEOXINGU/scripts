@@ -18,7 +18,7 @@
 ##2. Fotos Geo=name
 ##Escolha_uma_pasta_de_imagens=optional folder
 ##Shapefile_de_Fotos=output vector
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 
 pasta = str(Escolha_uma_pasta_de_imagens)
 import os

@@ -17,7 +17,7 @@
  ***************************************************************************/
 """
 ##3. Gerador de Cotas=name
-##LF6) Terreno=group
+##LF06) Terreno=group
 ##MDT=raster
 ##Saida=output vector
 ##Escala=selection 1:25.000;1:50.000;1:100.000;1:250.000

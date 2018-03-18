@@ -17,7 +17,7 @@
 """
 # Separar feicoes multipartes
 ##3. Separar Multipartes=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_entrada=vector
 
 from PyQt4.QtCore import *

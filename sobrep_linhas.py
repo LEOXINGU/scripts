@@ -17,7 +17,7 @@
 """
 # Verificar sobreposicao de todas as linhas da lista de camadas
 ##12. Sobrepos de Linhas=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Camada_de_sobreposicao=output vector
 
 saida = Camada_de_sobreposicao

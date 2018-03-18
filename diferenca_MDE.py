@@ -17,7 +17,7 @@
 """
 # Diferenca entre MDE
 ##Diferenca entre MDE=name
-##LF7) Qualidade=group
+##LF07) Qualidade=group
 ##MDE_Avaliado=raster
 ##MDE_de_Referencia=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo

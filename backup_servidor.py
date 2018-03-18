@@ -17,7 +17,7 @@
 """
 # BACKUP DE SERVIDOR
 ##6. BACKUP DE SERVIDOR=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
 ##Arquivo_de_backup=output file

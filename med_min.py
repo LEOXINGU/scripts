@@ -17,7 +17,7 @@
 """
 # Verificacao de medidas minimas
 ##11. Medidas Minimas=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Moldura=vector
 ##Escala=selection 1:25.000;1:50.000
 ##Verificar_Trecho_de_Drenagem=boolean False

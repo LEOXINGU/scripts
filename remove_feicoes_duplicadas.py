@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificar Auto-Intersecao
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##06. Remover Feicoes Duplicadas=name
 
 from PyQt4.QtCore import *

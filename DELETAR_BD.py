@@ -17,7 +17,7 @@
 """
 # DELETAR BD
 ##5. DELETAR BD=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Nome_do_Banco_de_Dados=string
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6

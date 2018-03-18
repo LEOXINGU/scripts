@@ -19,7 +19,7 @@
 """
 # Corta linhas nas intersecoes com os poligonos
 ##2. Retalhar Linhas=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_Linhas=vector
 ##Camada_Recortante_Tipo_Linha_ou_Poligono=vector
 ##Saida=output vector

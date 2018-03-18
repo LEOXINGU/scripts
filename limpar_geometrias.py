@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Limpar geometrias
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##07. Limpar Geometrias=name
 
 from PyQt4.QtCore import *

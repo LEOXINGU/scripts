@@ -17,7 +17,7 @@
 """
 # Verificacao de cobertura terrestre (VAZIOS)
 ##09. Cob Ter Vazios=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Moldura=vector
 ##Tolerancia_area_minima=number 10
 ##Todas_os_poligonos_de_Cob_Ter=output vector

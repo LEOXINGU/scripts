@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Verificar Auto-Intersecao
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##08. Verificar Auto Intersecoes=name
 ##Shapefile_de_Loops=output vector
 

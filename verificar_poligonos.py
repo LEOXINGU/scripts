@@ -19,7 +19,7 @@
 """
 # Verificar Poligonos invalidos (nos duplicados, filetes, e ziguezague)
 ##Verifica Poligonos=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Classe_EDGV_PostGIS=vector
 ##Pontos_com_problemas=output vector
 

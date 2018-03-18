@@ -17,7 +17,7 @@
 """
 # Atualizar Ortografia
 ##04. Atualizar Ortografia=name
-##LF2) Revisao=group
+##LF02) Revisao=group
 ##Arquivo_CSV_corrigido=file
 
 from PyQt4.QtCore import *

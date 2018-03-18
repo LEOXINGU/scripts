@@ -18,7 +18,7 @@
 ##6. Redimensionar Fotos=name
 ##Escolha_uma_pasta_de_imagens=optional folder
 ##Menor_lado=number 900
-##LF3) GPS, Fotos e Midias=group
+##LF03) GPS, Fotos e Midias=group
 
 pasta = str(Escolha_uma_pasta_de_imagens)
 lado = int(Menor_lado)

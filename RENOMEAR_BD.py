@@ -17,7 +17,7 @@
 """
 # RENOMEAR BD
 ##3. RENOMEAR BD=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Nome_antigo=string
 ##Novo_nome=string
 ##Host=string localhost

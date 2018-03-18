@@ -17,7 +17,7 @@
 """
 # Consistencia Topologica de CT
 ##Alimentar banco com banco=name
-##LF8) EDGV=group
+##LF08) EDGV=group
 ##Banco_de_Dados_de_Origem=string
 ##Banco_de_Dados_de_Destino=string
 ##Usuario_PostGIS=string postgres

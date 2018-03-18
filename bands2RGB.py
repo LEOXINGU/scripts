@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 ##Bandas para RGB=name
-##LF5) Raster=group
+##LF05) Raster=group
 ##Band_R=raster
 ##Band_G=raster
 ##Band_B=raster

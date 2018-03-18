@@ -15,9 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 # Consistencia Topologica de CT
 ##Consistencia Topologica de CT=name
-##LF7) Qualidade=group
+##LF09) Validacao=group
 ##Camada_de_linhas=vector
 ##Moldura=vector
 ##Tolerancia=number 0.5

@@ -17,7 +17,7 @@
 """
 # RESTAURAR
 ##1. RESTAURAR=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Arquivo_SQL=file
 ##Host=string localhost
 ##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6

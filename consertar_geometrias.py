@@ -17,7 +17,7 @@
 """
 # Consertar Geometrias
 ##5. Conserta Geometrias=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_entrada=vector
 ##Comprimento_minimo=number 0.001
 ##Area_minima=number 0.001

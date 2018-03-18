@@ -18,7 +18,7 @@
 """
 # Verificar sobreposicao de todas as linhas da lista de camadas
 ##Remover Camadas=name
-##LF9) Outros=group
+##LF11) Outros=group
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar

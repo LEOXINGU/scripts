@@ -20,7 +20,7 @@
 ##arquivo=vector
 ##tolerancia=number 10
 ##saida=output vector
-##LF4) Vetor=group
+##LF04) Vetor=group
 # inputs
 filename = arquivo
 output_name = saida

@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Definir pixels nulos de um MDE
-##LF5) Raster=group
+##LF05) Raster=group
 ##Definir Nulos de MDE=name
 ##Raster_de_entrada=raster
 ##Valor_Minimo=number 350

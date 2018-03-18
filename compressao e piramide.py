@@ -17,7 +17,7 @@
 """
 # COMPRESSAO
 ##Compressao=name
-##LF5) Raster=group
+##LF05) Raster=group
 ##Entrada=raster
 ##Saida=output raster
 ##Tipo_de_Compressao=selection JPEG_PHOTOMETRIC;JPEG;Photometric

@@ -17,7 +17,7 @@
 """
 # Fechar Anel Linear
 ##Fechar Anel Linear=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Camada_de_entrada=vector
 ##Tolerancia=number 10.0
 ##Tipo_de_conexao=selection Ponto Medio;Ligar ultimo ao primeiro;Deslocar ultimo ao primeiro;Deslocar primeiro ao ultimo

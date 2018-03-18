@@ -18,7 +18,7 @@
 
 # Fazer linha de Cumeada
 ##2. Linha de Cumeada=name
-##LF6) Terreno=group
+##LF06) Terreno=group
 ##MDE=raster
 ##Linha_de_Referencia=vector
 ##Distancia_entre_Secoes=number 20.0

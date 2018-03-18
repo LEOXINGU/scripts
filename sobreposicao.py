@@ -18,7 +18,7 @@
 """
 # Verificacao de sobreposicao em uma camada
 ##Verifica Sobreposicao=name
-##LF4) Vetor=group
+##LF04) Vetor=group
 ##Entrada=vector
 ##Saida=output vector
 

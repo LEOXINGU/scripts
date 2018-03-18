@@ -17,7 +17,7 @@
 """
 # CLONAR BD
 ##4. CLONAR BD=name
-##LF1) PostGIS=group
+##LF01) PostGIS=group
 ##Nome_do_BD_original=string
 ##Nome_do_BD_clonado=string
 ##Host=string localhost
