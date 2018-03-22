@@ -28,7 +28,7 @@ import processing
 import time
 
 # Pegando o SRC da camada trecho de drenagem
-layerList = QgsMapLayerRegistry.instance().mapLayersByName('hid_trecho_drenagem_l')
+layerList = QgsMapLayerRegistry.instance().mapLayersByName('aux_moldura_a')
 if layerList:
  layer = layerList[0]
  SRC = layer.crs()
