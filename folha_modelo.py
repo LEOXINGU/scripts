@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
  LEOXINGU
@@ -21,6 +22,7 @@
 ##Moldura=vector
 ##Convergencia_Meridiana=number 0.0
 ##Declinacao_Magnetica=number 0.0
+##Variacao_da_Declinacao_Magnetica=number 0.0
 ##Pasta_com_Figuras=folder
 ##Modelo=output file
 
@@ -30,6 +32,37 @@ from qgis.utils import iface
 from qgis.core import *
 import time
 import processing
+from math import ceil, floor, modf
+
+# Denominador da Escala
+denominador = 25000
+
+# Convergencia Meridiana
+CM = Convergencia_Meridiana
+
+# Rotacao
+if CM < 0:
+    ROTACAO = '%.1f' %(360+CM)
+else:
+    ROTACAO = '%.1f' %CM
+
+# Declinacao Magnetica
+DM = Declinacao_Magnetica
+
+# Variacao da Declinacao Declinacao_Magnetica
+VarDM = Variacao_da_Declinacao_Magnetica
+
+# Transformar graus decimais em GMS (html)
+def dd2dmsHTML(degs):
+    neg = degs < 0
+    degs = (-1) ** neg * degs
+    degs, d_int = modf(degs)
+    mins, m_int = modf(60 * degs)
+    secs        =           60 * mins
+    if neg:
+        return u'-%d&amp;deg;%02d\'%02d&quot' %(int(d_int), int(m_int), int(secs))
+    else:
+        return u'+%d&amp;deg;%02d\'%02d&quot' %(int(d_int), int(m_int), int(secs))
 
 # Abrir camada de CT
 moldura = processing.getObject(Moldura)
@@ -40,7 +73,8 @@ Xmax = float(Extensao[4])
 Ymin = float(Extensao[1])
 Ymax = float(Extensao[3])
 # Sistema de Referencia de Coordenadas do Projeto
-SRC_destino = canvas.mapRenderer().destinationCrs() 
+canvas = iface.mapCanvas()
+SRC_destino = canvas.mapRenderer().destinationCrs()
 
 # Funcao de Transformacao de Coordenadas
 xform = QgsCoordinateTransform(SRC_origem, SRC_destino)
@@ -72,7 +106,6 @@ def reprojetar(geom):
             for pnt in linha:
                 newLine += [xform.transform(pnt)]
             newGeom = QgsGeometry.fromPolyline(newLine)
-    
     elif geom.type() == 2: #Poligono
         if geom.isMultipart():
             poligonos = geom.asMultiPolygon()
@@ -105,19 +138,44 @@ P4 = reprojetar(QgsGeometry.fromPoint(QgsPoint(Xmin, Ymin)))
 
 # Extensao
 tol = 0.2*denominador/1000
-X_ext_max = (P2.asPoint().x()+P3.asPoint().x())/2 +tol
-X_ext_min = (P1.asPoint().x()+P4.asPoint().x())/2 - tol
-Y_ext_max = (P1.asPoint().y()+P2.asPoint().y())/2 +tol
-Y_ext_min = (P3.asPoint().y()+P4.asPoint().y())/2 - tol
+x_ext_max = (P2.asPoint().x()+P3.asPoint().x())/2 + tol
+x_ext_min = (P1.asPoint().x()+P4.asPoint().x())/2 - tol
+y_ext_max = (P1.asPoint().y()+P2.asPoint().y())/2 + tol
+y_ext_min = (P3.asPoint().y()+P4.asPoint().y())/2 - tol
 
 # Tamanho
-largura= ceil(1000*(X_ext_max - X_ext_min)/denominador)
-altura= ceil(1000*(Y_ext_max - Y_ext_min)/denominador)
+largura= ceil(1000*(x_ext_max - x_ext_min)/denominador)
+altura= ceil(1000*(y_ext_max - y_ext_min)/denominador)
 
 # Informacoes da Carta (Nome, INOM, MI)
+features = moldura.getFeatures()
+feat = features.next()
+TITULO_TEXTO = feat['carta_nome']
+IND_NOMENCLATURA = feat['inom']
+MAPA_INDICE = feat['mi']
 
+# Nome do Banco
+NOME_BANCO = (moldura.source()).split("'")[1]
 
-# Criar arquivo
+# Parametros
+parametros=  {'TITULO_TEXTO': TITULO_TEXTO,
+             'IND_NOMENCLATURA': IND_NOMENCLATURA,
+             'MAPA_INDICE': MAPA_INDICE,
+             'CONV_MER': dd2dmsHTML(CM),
+             'DECL_MAGN': dd2dmsHTML(DM),
+             'VAR_DECL_MAGN': dd2dmsHTML(VarDM),
+             'LARGURA': str(largura),
+             'ALTURA': str(altura),
+             'X_EXT_MIN': str(x_ext_min),
+             'Y_EXT_MIN': str(y_ext_min),
+             'X_EXT_MAX': str(x_ext_max),
+             'Y_EXT_MAX': str(y_ext_max),
+             'PASTA_COM_FIGURAS': Pasta_com_Figuras,
+             'NOME_BANCO': NOME_BANCO,
+             'ROTACAO': ROTACAO
+             }
+
+# Arquivo Modelo
 texto = '''<Composer title="Carta Topo" visible="1">
  <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="{699e8201-4b47-4fff-b608-50d59d7cfe76}" alignmentSnap="1" printResolution="300" paperWidth="841" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="5" printAsRaster="1" generateWorldFile="0" paperHeight="594" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
   <symbol alpha="1" clip_to_extent="1" type="fill" name="">
@@ -146,7 +204,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerItemGroup>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="24.2305" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/DECART.png" northOffset="0" pictureHeight="13.4907" mapId="-1" anchorPoint="0">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="24.2305" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/DECART.png" northOffset="0" pictureHeight="13.4907" mapId="-1" anchorPoint="0">
    <ComposerItem pagey="508.381" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="72.1208" y="508.381" visibility="1" zValue="80" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="24.2305" outlineWidth="0.3" excludeFromExports="0" uuid="{744cd524-cb26-4165-b839-397b78f5be00}" height="15.4935" itemRotation="0" frame="false" pagex="72.1208">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -163,8 +221,8 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerItemGroup>
-  <ComposerMap followPreset="false" mapRotation="0.34" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
-   <Extent ymin="9018200.55030773393809795" xmin="252373.65663760609459132" ymax="9032165.55032197758555412" xmax="266338.65665185038233176"/>
+  <ComposerMap followPreset="false" mapRotation="ROTACAO" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
+   <Extent ymin="Y_EXT_MIN" xmin="X_EXT_MIN" ymax="Y_EXT_MAX" xmax="X_EXT_MAX"/>
    <LayerSet/>
    <Grid/>
    <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="1" bottomAnnotationPosition="1" annotationPrecision="0" showAnnotation="1" topFrameDivisions="0" uuid="{5eb0dabc-f198-4053-93df-1e68fc4c99f7}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="3" annotationFontColor="63,63,63,255" intervalX="0.125" gridFrameSideFlags="15" intervalY="0.125" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grade 1" annotationFormat="2" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -359,7 +417,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="INFORMAÃÂÃÂES TÃÂCNICAS DA CARTA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="INFORMAÇÕES TÉCNICAS DA CARTA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="456.639" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="730.967" y="456.639" visibility="1" zValue="71" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="72.7167" outlineWidth="0.3" excludeFromExports="0" uuid="{e0d15219-27c9-4cca-abed-00d041dd2a2c}" height="5.75785" itemRotation="0" frame="false" pagex="730.967">
@@ -368,7 +426,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ETAPAS DE PRODUÃÂÃÂO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ETAPAS DE PRODUÇÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="381.593" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="739.768" y="381.593" visibility="1" zValue="70" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{bc12cb8b-13c0-4d4a-98a7-4a160169cf6a}" height="6.16896" itemRotation="0" frame="false" pagex="739.768">
@@ -377,7 +435,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="10.222" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/BrasÃÂ£o_da_UFPE.png" northOffset="0" pictureHeight="15.1839" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="10.222" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/Brasão_da_UFPE.png" northOffset="0" pictureHeight="15.1839" mapId="1" anchorPoint="4">
    <ComposerItem pagey="508.381" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="44.7784" y="508.381" visibility="1" zValue="63" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="11.0492" outlineWidth="0.3" excludeFromExports="0" uuid="{1353c365-84ea-4fb2-b12e-599db73218df}" height="15.2443" itemRotation="0" frame="false" pagex="44.7784">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -385,7 +443,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="20.2262" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/BDGEx_mobile.png" northOffset="0" pictureHeight="20.2262" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="20.2262" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/BDGEx_mobile.png" northOffset="0" pictureHeight="20.2262" mapId="1" anchorPoint="4">
    <ComposerItem pagey="176.094" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="60.4226" y="176.094" visibility="1" zValue="62" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="20.3459" outlineWidth="0.3" excludeFromExports="0" uuid="{7b90b096-a756-4c5e-b548-5e4a0162f33e}" height="20.5123" itemRotation="0" frame="false" pagex="60.4226">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -402,7 +460,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerItemGroup>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="EDIFICAÃÂÃÂO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="EDIFICAÇÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,7,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="170.897" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="714.594" y="170.897" visibility="1" zValue="60" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="107.776" outlineWidth="0.3" excludeFromExports="0" uuid="{45113fa1-9201-45e0-9fa7-812804d03c8c}" height="4.42097" itemRotation="0" frame="false" pagex="714.594">
@@ -454,7 +512,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerShape>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Combater: Jogos de Guerra / Ajuda HumanitÃÂ¡ria CMNE" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Combater: Jogos de Guerra / Ajuda Humanitária CMNE" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="489.555" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="19.2342" y="489.555" visibility="1" zValue="56" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="100.557" outlineWidth="0.3" excludeFromExports="0" uuid="{8d0339d5-04eb-4ad8-bc24-2db3ce3a2374}" height="7.50554" itemRotation="0" frame="false" pagex="19.2342">
@@ -490,7 +548,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="MINISTÃÂRIO DA DEFESA - EXÃÂRCITO BRASILEIRO&#xa;DEPARTAMENTO DE CIÃÂNCIAS E TECNOLOGIA&#xa;DIRETORIA DE SERVIÃÂO GEOGRÃÂFICO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="MINISTÉRIO DA DEFESA - EXÉRCITO BRASILEIRO&#xa;DEPARTAMENTO DE CIÊNCIAS E TECNOLOGIA&#xa;DIRETORIA DE SERVIÇO GEOGRÁFICO" htmlState="0" halign="4">
    <LabelFont description="Arial,8,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="15.9881" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="25.964" y="15.9881" visibility="1" zValue="51" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="88.2819" outlineWidth="0.3" excludeFromExports="0" uuid="{748c0d53-04ea-4805-a770-b884602290c6}" height="13.5201" itemRotation="0" frame="false" pagex="25.964">
@@ -531,7 +589,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ponto_urbano_p20180305083928233" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ponto_urbano_p&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ponto_urbano_p&quot;)" name="ponto_urbano_p">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ponto_urbano_p20180305083928233" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ponto_urbano_p&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ponto_urbano_p&quot;)" name="ponto_urbano_p">
      <customproperties>
       <property key="legend/title-label" value="Localidade / Aglomerado Rural"/>
      </customproperties>
@@ -563,7 +621,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="0" providerKey="postgres" checked="Qt::Checked" id="curva_nivel_l20180305083928026" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;curva_nivel_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;curva_nivel_l&quot;)" name="curva_nivel_l">
+    <layer-tree-layer expanded="0" providerKey="postgres" checked="Qt::Checked" id="curva_nivel_l20180305083928026" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;curva_nivel_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;curva_nivel_l&quot;)" name="curva_nivel_l">
      <customproperties>
       <property key="legend/title-label" value=""/>
      </customproperties>
@@ -617,14 +675,14 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ferrovia_l20180305083928090" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ferrovia_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ferrovia_l&quot;)" name="ferrovia_l">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ferrovia_l20180305083928090" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ferrovia_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ferrovia_l&quot;)" name="ferrovia_l">
      <customproperties>
       <property key="legend/title-label" value="Ferrovia"/>
      </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="tunel_l20180305083928185" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;tunel_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;tunel_l&quot;)" name="tunel_l">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="tunel_l20180305083928185" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;tunel_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;tunel_l&quot;)" name="tunel_l">
      <customproperties>
-      <property key="legend/title-label" value="TÃÂºnel"/>
+      <property key="legend/title-label" value="Túnel"/>
      </customproperties>
     </layer-tree-layer>
    </layer-tree-group>
@@ -634,7 +692,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLegend>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="36.2932" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/Pe_de_galinha.svg" northOffset="0" pictureHeight="72.5863" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="36.2932" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/Pe_de_galinha.svg" northOffset="0" pictureHeight="72.5863" mapId="1" anchorPoint="4">
    <ComposerItem pagey="265.43" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="721.774" y="265.43" visibility="1" zValue="45" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="94.7245" outlineWidth="0.3" excludeFromExports="0" uuid="{3994c257-8e4b-41e4-8494-ce2e18ed4cb0}" height="72.8004" itemRotation="0" frame="false" pagex="721.774">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -664,7 +722,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
     <layer-tree-group expanded="1" checked="Qt::Checked" name="">
      <customproperties/>
-     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ponte_l20180305083928136" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ponte_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ponte_l&quot;)" name="ponte_l">
+     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="ponte_l20180305083928136" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;ponte_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;ponte_l&quot;)" name="ponte_l">
       <customproperties>
        <property key="legend/label-2" value="Ponte"/>
        <property key="legend/node-order" value="2"/>
@@ -699,7 +757,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="0" providerKey="postgres" checked="Qt::Checked" id="estrada_l__copiar20180305085451130" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;estrada_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;estrada_l&quot;)" name="estrada_l">
+    <layer-tree-layer expanded="0" providerKey="postgres" checked="Qt::Checked" id="estrada_l__copiar20180305085451130" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;estrada_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;estrada_l&quot;)" name="estrada_l">
      <customproperties>
       <property key="legend/node-order" value="0,1,2,3"/>
       <property key="legend/title-label" value=""/>
@@ -712,7 +770,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLegend>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="74.4337" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/Dobradura.svg" northOffset="0" pictureHeight="21.2668" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="74.4337" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/Dobradura.svg" northOffset="0" pictureHeight="21.2668" mapId="1" anchorPoint="4">
    <ComposerItem pagey="556.32" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="27.4383" y="556.32" visibility="1" zValue="42" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="80.6687" outlineWidth="0.3" excludeFromExports="0" uuid="{1e7a77ab-9280-4325-a82f-b60008f78635}" height="21.7081" itemRotation="0" frame="false" pagex="27.4383">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -720,7 +778,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="18.9163" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/DSG.svg" northOffset="0" pictureHeight="18.9163" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="18.9163" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/DSG.svg" northOffset="0" pictureHeight="18.9163" mapId="1" anchorPoint="4">
    <ComposerItem pagey="13.9935" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="107.509" y="13.9935" visibility="1" zValue="41" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="19.1231" outlineWidth="0.3" excludeFromExports="0" uuid="{ded2129f-d65f-4f22-b9dc-bc4a926caf9b}" height="19.0282" itemRotation="0" frame="false" pagex="107.509">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -728,7 +786,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0.34" pictureWidth="16.4161" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/EB.svg" northOffset="0" pictureHeight="16.4161" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="16.4161" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/EB.svg" northOffset="0" pictureHeight="16.4161" mapId="1" anchorPoint="4">
    <ComposerItem pagey="15.1995" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="15.132" y="15.1995" visibility="1" zValue="40" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="16.8041" outlineWidth="0.3" excludeFromExports="0" uuid="{e5eff36f-18fc-4e6b-9421-2516b1375e0f}" height="16.5132" itemRotation="0" frame="false" pagex="15.132">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -736,7 +794,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="CARTA TEMÃÂTICA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="CARTA TEMÁTICA" htmlState="0" halign="4">
    <LabelFont description="Arial,14,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="255" blue="255" green="255"/>
    <ComposerItem pagey="37.5628" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="18.6014" y="37.5628" visibility="1" zValue="39" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="102.158" outlineWidth="0.3" excludeFromExports="0" uuid="{c76d8ee3-6698-459f-8458-3db35d2ffbbd}" height="10.4924" itemRotation="0" frame="false" pagex="18.6014">
@@ -928,7 +986,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="rio_l20180305083928160" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;rio_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;rio_l&quot;)" name="rio_l">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="rio_l20180305083928160" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;rio_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;rio_l&quot;)" name="rio_l">
      <customproperties>
       <property key="legend/node-order" value="0,1,2"/>
       <property key="legend/title-label" value=""/>
@@ -961,9 +1019,9 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
      <customproperties>
-      <property key="legend/label-8" value="VegetaÃÂ§ÃÂ£o Mista"/>
+      <property key="legend/label-8" value="Vegetação Mista"/>
       <property key="legend/node-order" value="0,7,1,8,2"/>
       <property key="legend/title-label" value=""/>
      </customproperties>
@@ -984,7 +1042,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ÃÂNDICE: SC-25-V-A-V-4-NO&#xa;MI: 1449-4-NO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ÍNDICE: IND_NOMENCLATURA&#xa;MI: MAPA_INDICE" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="67.7593" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="31.9361" y="67.7593" visibility="1" zValue="26" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.015" outlineWidth="0.3" excludeFromExports="0" uuid="{a11b5098-6b2a-4164-8200-8169079f276c}" height="13.5201" itemRotation="0" frame="false" pagex="31.9361">
@@ -1002,7 +1060,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIAGRAMA DE CONVERGÃÂNCIA E DECLINAÃÂÃÂO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIAGRAMA DE CONVERGÊNCIA E DECLINAÇÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="260.747" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="714.594" y="260.747" visibility="1" zValue="24" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="109.084" outlineWidth="0.3" excludeFromExports="0" uuid="{c0f688d8-e836-4d81-bea4-e7428e162c33}" height="6.16896" itemRotation="0" frame="false" pagex="714.594">
@@ -1011,7 +1069,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="BARREIROS" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="TITULO_TEXTO" htmlState="0" halign="4">
    <LabelFont description="Arial,20,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="60.0711" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="31.9361" y="60.0711" visibility="1" zValue="23" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.015" outlineWidth="0.3" excludeFromExports="0" uuid="{008c6867-58bd-4728-b7db-a3de4b85e3c6}" height="11.8494" itemRotation="0" frame="false" pagex="31.9361">
@@ -1029,7 +1087,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="A DSG agradece a gentileza da comunicaÃÂ§ÃÂ£o de alteraÃÂ§ÃÂµes,&#xa;falhas ou omissÃÂµes verificadas nessa folha.&#xa;www.dsg.eb.mil.br" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="A DSG agradece a gentileza da comunicação de alterações,&#xa;falhas ou omissões verificadas nessa folha.&#xa;www.dsg.eb.mil.br" htmlState="0" halign="4">
    <LabelFont description="Arial,8,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="541.369" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="25.8228" y="541.369" visibility="1" zValue="21" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.9878" outlineWidth="0.3" excludeFromExports="0" uuid="{f45432f3-e596-464b-9140-ff04c270a97e}" height="15.2195" itemRotation="0" frame="false" pagex="25.8228">
@@ -1038,7 +1096,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="REGIÃÂO NORDESTE DO BRASIL" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="REGIÃO NORDESTE DO BRASIL" htmlState="0" halign="4">
    <LabelFont description="Arial,11,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="53.9021" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="29.8745" y="53.9021" visibility="1" zValue="20" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.015" outlineWidth="0.3" excludeFromExports="0" uuid="{2242fb2a-7d38-4f97-b2d7-4b9245357166}" height="6.16896" itemRotation="0" frame="false" pagex="29.8745">
@@ -1047,7 +1105,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ARTICULAÃÂÃÂO DA FOLHA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ARTICULAÇÃO DA FOLHA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="392.604" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="40.4522" y="392.604" visibility="1" zValue="19" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{ccc23f27-d163-40ea-a982-c29486275351}" height="6.16896" itemRotation="0" frame="false" pagex="40.4522">
@@ -1056,7 +1114,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIVISÃÂO POLÃÂTICA-ADMINISTRATIVA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIVISÃO POLÍTICA-ADMINISTRATIVA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="300.47" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="21.9723" y="300.47" visibility="1" zValue="18" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="97.8188" outlineWidth="0.3" excludeFromExports="0" uuid="{ebf94ef0-b9b3-43ea-a64d-3d0fa448eed5}" height="6.16896" itemRotation="0" frame="false" pagex="21.9723">
@@ -1065,7 +1123,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="LOCALIZAÃÂÃÂO DA FOLHA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="LOCALIZAÇÃO DA FOLHA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="207.214" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="42.303" y="207.214" visibility="1" zValue="17" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{52b21987-22d0-4051-a697-5fbcf435f3db}" height="6.16896" itemRotation="0" frame="false" pagex="42.303">
@@ -1083,7 +1141,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Diretoria de ServiÃÂ§o GeogrÃÂ¡fico" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Diretoria de Serviço Geográfico" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="538.285" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="39.194" y="538.285" visibility="1" zValue="15" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{a1fb24da-b385-452c-b5ef-71f567ec9d9f}" height="6.16896" itemRotation="0" frame="false" pagex="39.194">
@@ -1092,8 +1150,8 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerMap followPreset="false" mapRotation="0.34" keepLayerSet="false" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
-   <Extent ymin="9018248.4460615161806345" xmin="252497.03749297471949831" ymax="9032098.44607564248144627" xmax="266272.03750702523393556"/>
+  <ComposerMap followPreset="false" mapRotation="ROTACAO" keepLayerSet="false" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
+   <Extent ymin="Y_EXT_MIN" xmin="X_EXT_MIN" ymax="Y_EXT_MAX" xmax="X_EXT_MAX"/>
    <LayerSet/>
    <Grid/>
    <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="1" bottomAnnotationPosition="1" annotationPrecision="0" showAnnotation="1" topFrameDivisions="0" uuid="{da609f17-3238-4f97-9397-64cc7e64cbd0}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="1000" gridFrameSideFlags="15" intervalY="1000" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression=" @grid_number  / 1000 " frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.29999999999999999" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grade 1" annotationFormat="8" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -1271,7 +1329,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <annotationFontProperties description="Arial,6,-1,5,50,0,0,0,0,0" style=""/>
    </ComposerMapGrid>
    <AtlasMap scalingMode="2" atlasDriven="0" margin="0"/>
-   <ComposerItem pagey="17.578" page="1" id="" lastValidViewScaleFactor="3.77953" positionMode="0" positionLock="false" x="140.441" y="17.578" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="551" outlineWidth="0.3" excludeFromExports="0" uuid="{699e8201-4b47-4fff-b608-50d59d7cfe76}" height="554" itemRotation="0" frame="true" pagex="140.441">
+   <ComposerItem pagey="17.578" page="1" id="" lastValidViewScaleFactor="3.77953" positionMode="0" positionLock="false" x="140.441" y="17.578" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="LARGURA" outlineWidth="0.3" excludeFromExports="0" uuid="{699e8201-4b47-4fff-b608-50d59d7cfe76}" height="ALTURA" itemRotation="0" frame="true" pagex="140.441">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -1297,11 +1355,11 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </styles>
    <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='comb_barreiros' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
+    <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
      <customproperties>
       <property key="legend/label-3" value="Terreno Exposto"/>
-      <property key="legend/label-4" value="ÃÂrea ÃÂmida"/>
-      <property key="legend/label-5" value="Massa d'ÃÂgua"/>
+      <property key="legend/label-4" value="Área Úmida"/>
+      <property key="legend/label-5" value="Massa d'Água"/>
       <property key="legend/node-order" value="3,4,5,6"/>
       <property key="legend/title-label" value=""/>
      </customproperties>
@@ -1489,7 +1547,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerShape>
-  <ComposerPicture resizeMode="3" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="74.5589" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./Figuras/articulacao.png" northOffset="0" pictureHeight="74.5589" mapId="-1" anchorPoint="4">
+  <ComposerPicture resizeMode="3" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="74.5589" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/articulacao.png" northOffset="0" pictureHeight="74.5589" mapId="-1" anchorPoint="4">
    <ComposerItem pagey="403.318" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="32.1566" y="403.318" visibility="1" zValue="4" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="74.5589" outlineWidth="0.3" excludeFromExports="0" uuid="{6e97f803-f95f-407b-a965-1b6a697970d4}" height="74.5589" itemRotation="0" frame="true" pagex="32.1566">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -1573,7 +1631,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
    </ComposerFrame>
    <customproperties/>
   </ComposerHtml>
-  <ComposerHtml maxBreakDistance="10" contentMode="1" resizeMode="0" url="" useSmartBreaks="true" evaluateExpressions="true" html="&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;>&#xd;&#xa;&lt;html>&#xd;&#xa;&lt;head>&#xd;&#xa;  &lt;meta content=&quot;text/html; charset=ISO-8859-1&quot;&#xd;&#xa; http-equiv=&quot;content-type&quot;>&#xd;&#xa;  &lt;title>&lt;/title>&#xd;&#xa;&lt;/head>&#xd;&#xa;&lt;body style=&quot;width: 336px;&quot;>&#xd;&#xa;&lt;table&#xd;&#xa; style=&quot;text-align: left; margin-left: 0px; margin-right: auto; width: 327px; height: 90px;&quot;&#xd;&#xa; border=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;>&#xd;&#xa;  &lt;tbody>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Converg&amp;ecirc;ncia&#xd;&#xa;Meridiana (CM)&lt;/td>&#xd;&#xa;      &lt;td style=&quot;text-align: center; width: 90px;&quot;>&amp;nbsp;-0&amp;deg;20'8&quot;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Declina&amp;ccedil;&amp;atilde;o&#xd;&#xa;Magn&amp;eacute;tica (DM)&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>-22&amp;deg;19'48&quot;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Taxa&#xd;&#xa;de Varia&amp;ccedil;&amp;atilde;o da DM&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>+0&amp;deg;1'29&quot;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;width: 227px;&quot;>&lt;span&#xd;&#xa; style=&quot;font-family: Arial;&quot;>&amp;nbsp;Ano de&#xd;&#xa;Refer&amp;ecirc;ncia&lt;/span>&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>2018&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;  &lt;/tbody>&#xd;&#xa;&lt;/table>&#xd;&#xa;&lt;div style=&quot;text-align: left;&quot;>&lt;br>&#xd;&#xa;&lt;/div>&#xd;&#xa;&lt;/body>&#xd;&#xa;&lt;/html>" stylesheetEnabled="false" stylesheet="">
+  <ComposerHtml maxBreakDistance="10" contentMode="1" resizeMode="0" url="" useSmartBreaks="true" evaluateExpressions="true" html="&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;>&#xd;&#xa;&lt;html>&#xd;&#xa;&lt;head>&#xd;&#xa;  &lt;meta content=&quot;text/html; charset=ISO-8859-1&quot;&#xd;&#xa; http-equiv=&quot;content-type&quot;>&#xd;&#xa;  &lt;title>&lt;/title>&#xd;&#xa;&lt;/head>&#xd;&#xa;&lt;body style=&quot;width: 336px;&quot;>&#xd;&#xa;&lt;table&#xd;&#xa; style=&quot;text-align: left; margin-left: 0px; margin-right: auto; width: 327px; height: 90px;&quot;&#xd;&#xa; border=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;>&#xd;&#xa;  &lt;tbody>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Converg&amp;ecirc;ncia&#xd;&#xa;Meridiana (CM)&lt;/td>&#xd;&#xa;      &lt;td style=&quot;text-align: center; width: 90px;&quot;>&amp;nbsp;CONV_MER;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Declina&amp;ccedil;&amp;atilde;o&#xd;&#xa;Magn&amp;eacute;tica (DM)&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>DECL_MAGN;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;font-family: Arial; width: 227px;&quot;>&amp;nbsp;Taxa&#xd;&#xa;de Varia&amp;ccedil;&amp;atilde;o da DM&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>VAR_DECL_MAGN;&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;    &lt;tr>&#xd;&#xa;      &lt;td style=&quot;width: 227px;&quot;>&lt;span&#xd;&#xa; style=&quot;font-family: Arial;&quot;>&amp;nbsp;Ano de&#xd;&#xa;Refer&amp;ecirc;ncia&lt;/span>&lt;/td>&#xd;&#xa;      &lt;td style=&quot;width: 90px; text-align: center;&quot;>2018&lt;/td>&#xd;&#xa;    &lt;/tr>&#xd;&#xa;  &lt;/tbody>&#xd;&#xa;&lt;/table>&#xd;&#xa;&lt;div style=&quot;text-align: left;&quot;>&lt;br>&#xd;&#xa;&lt;/div>&#xd;&#xa;&lt;/body>&#xd;&#xa;&lt;/html>" stylesheetEnabled="false" stylesheet="">
    <ComposerFrame sectionWidth="85.4683" sectionHeight="25.2" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
     <ComposerItem pagey="335.387" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="724.592" y="335.387" visibility="1" zValue="65" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.4683" outlineWidth="0.3" excludeFromExports="0" uuid="{904aa28b-03c1-4336-9490-a1dfbc34d5e8}" height="27.0267" itemRotation="0" frame="false" pagex="724.592">
      <FrameColor alpha="255" red="0" blue="0" green="0"/>
@@ -1607,6 +1665,21 @@ texto = '''<Composer title="Carta Topo" visible="1">
  </Composition>
 </Composer>
 '''
+
+texto = texto.decode('utf-8')
+# Inserir Valores
+for item in parametros.keys():
+    texto = texto.replace(item, parametros[item])
+
+# Escrever Arquivo
+if Modelo[-4:] != '.qpt':
+    Modelo += '.qpt'
+
+texto = texto.encode('utf-8')
+arquivo = open(Modelo, 'w')
+arquivo.write(texto)
+arquivo.close()
+
 progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 time.sleep(5)
 iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
