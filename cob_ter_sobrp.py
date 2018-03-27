@@ -52,8 +52,8 @@ CT = [  'hid_massa_dagua_a',
             'veg_vegetacao_a',
             'veg_veg_cultivada_a']
 
-# Pegando o SRC da camada trecho de drenagem
-layerList = QgsMapLayerRegistry.instance().mapLayersByName('hid_trecho_drenagem_l')
+# Pegando o SRC da camada auxiliar moldura
+layerList = QgsMapLayerRegistry.instance().mapLayersByName('aux_moldura_a')
 if layerList:
  layer = layerList[0]
  SRC = layer.crs()
