@@ -42,9 +42,9 @@ CM = Convergencia_Meridiana
 
 # Rotacao
 if CM < 0:
-    ROTACAO = '%.1f' %(360+CM)
+    ROTACAO = '%.1f' %(-1.0*CM)
 else:
-    ROTACAO = '%.1f' %CM
+    ROTACAO = '%.1f' %(360-CM)
 
 # Declinacao Magnetica
 DM = Declinacao_Magnetica
@@ -417,7 +417,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="INFORMAÇÕES TÉCNICAS DA CARTA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="INFORMAÃÃES TÃCNICAS DA CARTA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="456.639" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="730.967" y="456.639" visibility="1" zValue="71" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="72.7167" outlineWidth="0.3" excludeFromExports="0" uuid="{e0d15219-27c9-4cca-abed-00d041dd2a2c}" height="5.75785" itemRotation="0" frame="false" pagex="730.967">
@@ -426,7 +426,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ETAPAS DE PRODUÇÃO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ETAPAS DE PRODUÃÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="381.593" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="739.768" y="381.593" visibility="1" zValue="70" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{bc12cb8b-13c0-4d4a-98a7-4a160169cf6a}" height="6.16896" itemRotation="0" frame="false" pagex="739.768">
@@ -435,7 +435,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="10.222" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/Brasão_da_UFPE.png" northOffset="0" pictureHeight="15.1839" mapId="1" anchorPoint="4">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="ROTACAO" pictureWidth="10.222" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="PASTA_COM_FIGURAS/BrasÃ£o_da_UFPE.png" northOffset="0" pictureHeight="15.1839" mapId="1" anchorPoint="4">
    <ComposerItem pagey="508.381" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="44.7784" y="508.381" visibility="1" zValue="63" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="11.0492" outlineWidth="0.3" excludeFromExports="0" uuid="{1353c365-84ea-4fb2-b12e-599db73218df}" height="15.2443" itemRotation="0" frame="false" pagex="44.7784">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -460,7 +460,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerItemGroup>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="EDIFICAÇÃO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="EDIFICAÃÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,7,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="170.897" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="714.594" y="170.897" visibility="1" zValue="60" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="107.776" outlineWidth="0.3" excludeFromExports="0" uuid="{45113fa1-9201-45e0-9fa7-812804d03c8c}" height="4.42097" itemRotation="0" frame="false" pagex="714.594">
@@ -512,7 +512,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerShape>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Combater: Jogos de Guerra / Ajuda Humanitária CMNE" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Combater: Jogos de Guerra / Ajuda HumanitÃ¡ria CMNE" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="489.555" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="19.2342" y="489.555" visibility="1" zValue="56" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="100.557" outlineWidth="0.3" excludeFromExports="0" uuid="{8d0339d5-04eb-4ad8-bc24-2db3ce3a2374}" height="7.50554" itemRotation="0" frame="false" pagex="19.2342">
@@ -548,7 +548,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="MINISTÉRIO DA DEFESA - EXÉRCITO BRASILEIRO&#xa;DEPARTAMENTO DE CIÊNCIAS E TECNOLOGIA&#xa;DIRETORIA DE SERVIÇO GEOGRÁFICO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="MINISTÃRIO DA DEFESA - EXÃRCITO BRASILEIRO&#xa;DEPARTAMENTO DE CIÃNCIAS E TECNOLOGIA&#xa;DIRETORIA DE SERVIÃO GEOGRÃFICO" htmlState="0" halign="4">
    <LabelFont description="Arial,8,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="15.9881" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="25.964" y="15.9881" visibility="1" zValue="51" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="88.2819" outlineWidth="0.3" excludeFromExports="0" uuid="{748c0d53-04ea-4805-a770-b884602290c6}" height="13.5201" itemRotation="0" frame="false" pagex="25.964">
@@ -682,7 +682,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     </layer-tree-layer>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="tunel_l20180305083928185" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;tunel_l&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;tunel_l&quot;)" name="tunel_l">
      <customproperties>
-      <property key="legend/title-label" value="Túnel"/>
+      <property key="legend/title-label" value="TÃºnel"/>
      </customproperties>
     </layer-tree-layer>
    </layer-tree-group>
@@ -794,7 +794,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="CARTA TEMÁTICA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="CARTA TEMÃTICA" htmlState="0" halign="4">
    <LabelFont description="Arial,14,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="255" blue="255" green="255"/>
    <ComposerItem pagey="37.5628" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="18.6014" y="37.5628" visibility="1" zValue="39" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="102.158" outlineWidth="0.3" excludeFromExports="0" uuid="{c76d8ee3-6698-459f-8458-3db35d2ffbbd}" height="10.4924" itemRotation="0" frame="false" pagex="18.6014">
@@ -1021,7 +1021,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
      <customproperties>
-      <property key="legend/label-8" value="Vegetação Mista"/>
+      <property key="legend/label-8" value="VegetaÃ§Ã£o Mista"/>
       <property key="legend/node-order" value="0,7,1,8,2"/>
       <property key="legend/title-label" value=""/>
      </customproperties>
@@ -1042,7 +1042,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ÍNDICE: IND_NOMENCLATURA&#xa;MI: MAPA_INDICE" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ÃNDICE: IND_NOMENCLATURA&#xa;MI: MAPA_INDICE" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="67.7593" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="31.9361" y="67.7593" visibility="1" zValue="26" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.015" outlineWidth="0.3" excludeFromExports="0" uuid="{a11b5098-6b2a-4164-8200-8169079f276c}" height="13.5201" itemRotation="0" frame="false" pagex="31.9361">
@@ -1060,7 +1060,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIAGRAMA DE CONVERGÊNCIA E DECLINAÇÃO" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIAGRAMA DE CONVERGÃNCIA E DECLINAÃÃO" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="260.747" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="714.594" y="260.747" visibility="1" zValue="24" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="109.084" outlineWidth="0.3" excludeFromExports="0" uuid="{c0f688d8-e836-4d81-bea4-e7428e162c33}" height="6.16896" itemRotation="0" frame="false" pagex="714.594">
@@ -1087,7 +1087,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="A DSG agradece a gentileza da comunicação de alterações,&#xa;falhas ou omissões verificadas nessa folha.&#xa;www.dsg.eb.mil.br" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="A DSG agradece a gentileza da comunicaÃ§Ã£o de alteraÃ§Ãµes,&#xa;falhas ou omissÃµes verificadas nessa folha.&#xa;www.dsg.eb.mil.br" htmlState="0" halign="4">
    <LabelFont description="Arial,8,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="541.369" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="25.8228" y="541.369" visibility="1" zValue="21" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.9878" outlineWidth="0.3" excludeFromExports="0" uuid="{f45432f3-e596-464b-9140-ff04c270a97e}" height="15.2195" itemRotation="0" frame="false" pagex="25.8228">
@@ -1096,7 +1096,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="REGIÃO NORDESTE DO BRASIL" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="REGIÃO NORDESTE DO BRASIL" htmlState="0" halign="4">
    <LabelFont description="Arial,11,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="53.9021" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="29.8745" y="53.9021" visibility="1" zValue="20" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.015" outlineWidth="0.3" excludeFromExports="0" uuid="{2242fb2a-7d38-4f97-b2d7-4b9245357166}" height="6.16896" itemRotation="0" frame="false" pagex="29.8745">
@@ -1105,7 +1105,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ARTICULAÇÃO DA FOLHA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="ARTICULAÃÃO DA FOLHA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="392.604" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="40.4522" y="392.604" visibility="1" zValue="19" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{ccc23f27-d163-40ea-a982-c29486275351}" height="6.16896" itemRotation="0" frame="false" pagex="40.4522">
@@ -1114,7 +1114,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIVISÃO POLÍTICA-ADMINISTRATIVA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="DIVISÃO POLÃTICA-ADMINISTRATIVA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="300.47" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="21.9723" y="300.47" visibility="1" zValue="18" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="97.8188" outlineWidth="0.3" excludeFromExports="0" uuid="{ebf94ef0-b9b3-43ea-a64d-3d0fa448eed5}" height="6.16896" itemRotation="0" frame="false" pagex="21.9723">
@@ -1123,7 +1123,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="LOCALIZAÇÃO DA FOLHA" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="LOCALIZAÃÃO DA FOLHA" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="207.214" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="42.303" y="207.214" visibility="1" zValue="17" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{52b21987-22d0-4051-a697-5fbcf435f3db}" height="6.16896" itemRotation="0" frame="false" pagex="42.303">
@@ -1141,7 +1141,7 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Diretoria de Serviço Geográfico" htmlState="0" halign="4">
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Diretoria de ServiÃ§o GeogrÃ¡fico" htmlState="0" halign="4">
    <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
    <ComposerItem pagey="538.285" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="39.194" y="538.285" visibility="1" zValue="15" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="57.1573" outlineWidth="0.3" excludeFromExports="0" uuid="{a1fb24da-b385-452c-b5ef-71f567ec9d9f}" height="6.16896" itemRotation="0" frame="false" pagex="39.194">
@@ -1358,8 +1358,8 @@ texto = '''<Composer title="Carta Topo" visible="1">
     <layer-tree-layer expanded="1" providerKey="postgres" checked="Qt::Checked" id="cob_ter_a20180305083928280" source="dbname='NOME_BANCO' host=localhost port=5432 user='postgres' key='id' selectatid=false table=&quot;base&quot;.&quot;cob_ter_a&quot; (geom) sql=id in (SELECT id FROM ONLY &quot;base&quot;.&quot;cob_ter_a&quot;)" name="cob_ter_a">
      <customproperties>
       <property key="legend/label-3" value="Terreno Exposto"/>
-      <property key="legend/label-4" value="Área Úmida"/>
-      <property key="legend/label-5" value="Massa d'Água"/>
+      <property key="legend/label-4" value="Ãrea Ãmida"/>
+      <property key="legend/label-5" value="Massa d'Ãgua"/>
       <property key="legend/node-order" value="3,4,5,6"/>
       <property key="legend/title-label" value=""/>
      </customproperties>
