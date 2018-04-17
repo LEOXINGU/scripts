@@ -66,7 +66,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                             geomB = QgsGeometry.fromPolyline(segB)
                             if geomA.crosses(geomB):
                                 point = geomA.intersection(geomB)
-                                if not(point in lista_pnts):
+                                if not(point in lista_pnts or point.asPoint() == coord[0]):
                                     lista_pnts += [point]
                                     feature.setAttributes([nome, feat.id()])
                                     feature.setGeometry(point)
@@ -84,7 +84,7 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
                             PntB = coord[j]
                             if PntA == PntB:
                                 point = QgsGeometry.fromPoint(PntA)
-                                if not(point in lista_pnts):
+                                if not(point in lista_pnts or point.asPoint() == coord[0]):
                                     lista_pnts += [point]
                                     feature.setAttributes([nome, feat.id()])
                                     feature.setGeometry(point)
