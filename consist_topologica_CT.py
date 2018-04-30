@@ -17,7 +17,7 @@
 """
 
 # Consistencia Topologica de CT
-##Consistencia Topologica de CT=name
+##Verificar Linhas de CT=name
 ##LF09) Validacao=group
 ##Camada_de_linhas=vector
 ##Moldura=vector
@@ -49,7 +49,10 @@ feat = moldura.getFeatures().next()
 pol = feat.geometry()
 coord = pol.asMultiPolygon()
 moldura_linha = QgsGeometry.fromMultiPolyline(coord[0])
-moldura_buffer = moldura_linha.buffer(Tolerancia/110000,5)
+if moldura.geographicFlag():
+    moldura_buffer = moldura_linha.buffer(Tolerancia/110000,5)
+else:
+    moldura_buffer = moldura_linha.buffer(Tolerancia,5)
 
 # Criar camada de inconsistencias
 fields = QgsFields()
