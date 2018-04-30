@@ -70,8 +70,13 @@ for i in range(0,tam-1):
         if linA.crosses(linB):
             Intersecao = linA.intersection(linB)
             feature.setAttributes(['Instersecao entre linhas'])
-            feature.setGeometry(Intersecao)
-            writer.addFeature(feature)
+            if Intersecao.isMultipart():
+                for ponto in Intersecao.asMultiPoint():
+                    feature.setGeometry(QgsGeometry.fromPoint(ponto))
+                    writer.addFeature(feature)
+            else:
+                feature.setGeometry(Intersecao)
+                writer.addFeature(feature)
 
 # Checar se uma feicao nao toca outra feicao ou moldura
 progress.setInfo('<b>Verificando se as linhas toca outra feicao ou a moldura...</b><br/>')
