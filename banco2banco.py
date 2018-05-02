@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Consistencia Topologica de CT
+# Alimentar BD com outro BD
 ##Alimentar banco com banco=name
 ##LF08) EDGV=group
 ##Banco_de_Dados_de_Origem=string
