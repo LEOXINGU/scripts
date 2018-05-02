@@ -16,7 +16,7 @@
  ***************************************************************************/
 """
 # Alimentar BD com outro BD
-##Alimentar banco com banco=name
+##Alimentar banco=name
 ##LF08) EDGV=group
 ##Banco_de_Dados_de_Origem=string
 ##Banco_de_Dados_de_Destino=string
