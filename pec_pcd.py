@@ -2,8 +2,8 @@
 /***************************************************************************
  LEOXINGU
                               -------------------
-        begin                : 2017-09-15
-        copyright            : (C) 2017 by Leandro Franca - Cartographic Engineer
+        begin                : 2018-05-19
+        copyright            : (C) 2018 by Leandro Franca - Cartographic Engineer
         email                : geoleandro.franca@gmail.com
  ***************************************************************************/
 
@@ -15,12 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Metodo do Buffer Duplo
-##MBD - Metodo do Buffer Duplo=name
+# Alimentar Camada com outra Camada
+##PEC-PCD=name
 ##LF07) Qualidade=group
 ##Camada_de_Referencia=vector
-##Camada_de_Teste=vector
-##Buffer_de_Relacionamento=number 30.0
+##Camada_Avaliada=vector
+##Buffer_de_Relacionamento=number 300.0
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False
 ##Escala_1_2k=boolean False
@@ -38,7 +38,7 @@ from qgis.utils import iface
 from qgis.core import *
 import time
 import processing
-from numpy import sqrt, pi, array, mean, std
+from numpy import sqrt, array, mean, std
 
 buf = Buffer_de_Relacionamento
 
@@ -53,247 +53,222 @@ PEC = {'1k': {'planim': {'A': {'EM': 0.28, 'EP': 0.17},'B': {'EM': 0.5, 'EP': 0.
             '250k': {'planim': {'A': {'EM': 70, 'EP': 42.5},'B': {'EM': 125, 'EP': 75},'C': {'EM': 200, 'EP': 125},'D': {'EM': 250, 'EP': 150}}, 'altim': {'A': {'EM': 27, 'EP': 16.67},'B': {'EM': 50, 'EP': 33.33},'C': {'EM': 60, 'EP': 40},'D': {'EM': 75, 'EP': 50}}}}
 dicionario = {'1k': '1:1.000', '2k': '1:2.000', '5k': '1:5.000', '10k': '1:10.000', '25k': '1:25.000', '50k': '1:50.000', '100k': '1:100.000', '250k': '1:250.000'}
 
-# Abrir camadas
+# Escalas a serem avaliadas
+Escalas = []
+if Escala_1_1k:
+    Escalas+=['1k']
+if Escala_1_2k:
+    Escalas+=['2k']
+if Escala_1_5k:
+    Escalas+=['5k']
+if Escala_1_10k:
+    Escalas+=['10k']
+if Escala_1_25k:
+    Escalas+=['25k']
+if Escala_1_50k:
+    Escalas+=['50k']
+if Escala_1_100k:
+    Escalas+=['100k']
+if Escala_1_250k:
+    Escalas+=['250k']
+
+valores = ['A', 'B', 'C', 'D']
+
+# Camada de Referencia
 ref = processing.getObject(Camada_de_Referencia)
-teste = processing.getObject(Camada_de_Teste)
+SRC_ref = ref.crs()
 
-# Verificacoes
-# As duas camadas devem estar no mesmo SRC e estarem projetadas
-# As duas camadas devem ser do tipo linha
-crs1 = ref.crs()
-crs2 = teste.crs()
+# Camada Avaliada
+teste = processing.getObject(Camada_Avaliada)
+SRC_teste = teste.crs()
 distance = QgsDistanceArea()
+distance.setSourceCrs(SRC_teste)
 
-# Funcao para Gerar Poligonos
-def GeraPoligono(lin1, lin2):
-    Pfim1 = lin1[-1]
-    Pini2 = lin2[0]
-    Pfim2 = lin2[-1]
-    m1 = distance.measureLine(Pfim1, Pini2)
-    m2 = distance.measureLine(Pfim1, Pfim2)
-    if m1<m2:
-        coord = [lin1+lin2+[lin1[0]]]
-    else:
-        coord = [lin1+lin2[::-1]+[lin1[0]]]
-    return coord
-
-if crs1 == crs2 and not(crs1.geographicFlag()) and ref.geometryType() == QGis.Line and teste.geometryType() == QGis.Line:
+if SRC_ref == SRC_teste and not(SRC_teste.geographicFlag()) and ref.geometryType() == QGis.Point and teste.geometryType() == QGis.Point:
     # Colocar linhas e seus buffers em uma lista
     list_ref = []
     for feat in ref.getFeatures():
         geom = feat.geometry()
         if geom:
-            lin = geom.asPolyline()
-            if not (lin):
-                lin = geom.asMultiPolyline()[0]
-            Buffer = geom.buffer(buf, 5)
-            pol = Buffer.asPolygon()
-            list_ref +=[(lin, pol)]
+            pnt = geom.asPoint()
+            if pnt:
+                Buffer = geom.buffer(buf, 5)
+                pol = Buffer.asPolygon()
+                list_ref +=[(pnt, pol)]
 
     list_teste = []
     for feat in teste.getFeatures():
         geom = feat.geometry()
         if geom:
-            lin = geom.asPolyline()
-            if not (lin):
-                lin = geom.asMultiPolyline()[0]
-            Buffer = geom.buffer(buf, 5)
-            pol = Buffer.asPolygon()
-            list_teste +=[(lin, pol)]
+            pnt = geom.asPoint()
+            if pnt:
+                Buffer = geom.buffer(buf, 5)
+                pol = Buffer.asPolygon()
+                list_teste +=[(pnt, pol)]
 
     # Relacionar Feicoes
     RELACOES = []
+    DISCREP = []
+    DISCREP_X = []
+    DISCREP_Y = []
     tam = len(list_ref)
     for index, item_ref in enumerate(list_ref):
-        lin_ref = QgsGeometry.fromPolyline(item_ref[0])
-        buf_ref = QgsGeometry.fromPolygon(item_ref[1])
-        min_area = 1e9
+        pnt_ref = QgsGeometry.fromPoint(item_ref[0])
+        min_dist = 1e9
         relacao = []
         sentinela = False
         for item_teste in list_teste:
-            lin_teste = QgsGeometry.fromPolyline(item_teste[0])
             buf_teste = QgsGeometry.fromPolygon(item_teste[1])
-            if lin_ref.intersects(buf_teste):
-                if lin_ref.within(buf_teste) and lin_teste.within(buf_ref):
-                    Poligono = QgsGeometry.fromPolygon(GeraPoligono(item_ref[0], item_teste[0]))
-                    Area = Poligono.area()
-                    if Area < min_area:
-                        sentinela = True
-                        min_area = Area
-                        relacao = [item_ref[0], item_teste[0]]
+            if pnt_ref.intersects(buf_teste):
+                Distancia = distance.measureLine(item_ref[0], item_teste[0])
+                if Distancia < min_dist:
+                    sentinela = True
+                    min_dist = Distancia
+                    relacao = [item_ref[0], item_teste[0]]
+                    deltaX = item_teste[0].x() - item_ref[0].x()
+                    deltaY = item_teste[0].y() - item_ref[0].y()
         if sentinela:
             RELACOES += [relacao]
+            DISCREP += [min_dist]
+            DISCREP_X += [deltaX]
+            DISCREP_Y += [deltaY]
         progress.setPercentage(int(((index+1)/float(tam))*100))
-    
-    # Escalas a serem avaliadas
-    Escalas = []
-    if Escala_1_1k:
-        Escalas+=['1k']
-    if Escala_1_2k:
-        Escalas+=['2k']
-    if Escala_1_5k:
-        Escalas+=['5k']
-    if Escala_1_10k:
-        Escalas+=['10k']
-    if Escala_1_25k:
-        Escalas+=['25k']
-    if Escala_1_50k:
-        Escalas+=['50k']
-    if Escala_1_100k:
-        Escalas+=['100k']
-    if Escala_1_250k:
-        Escalas+=['250k']
-    
-    valores = ['A', 'B', 'C', 'D']
-    
-    # Aplicar o Metodo do Buffer Duplo
-    DISCREP = []
-    
-    for item in RELACOES:
-        discrepItem = []
-        for escala in Escalas:
-            discrepEsc = []
-            for valor in valores:
-                buf = PEC[escala]['planim'][valor]['EM']
-                lin1 = QgsGeometry.fromPolyline(item[0])
-                lin2 = QgsGeometry.fromPolyline(item[1])
-                buf1 = lin1.buffer(buf, 5)
-                buf2 = lin2.buffer(buf, 5)
-                Difer = buf1.difference(buf2)
-                A_difer = Difer.area()
-                AB_LT = buf2.area()
-                dm = pi*buf*(A_difer/AB_LT)
-                discrepEsc += [dm]
-            discrepItem += discrepEsc
-        DISCREP += [discrepItem]
 
-    # Criar camada de Saida (Multilines)
+    # Criar camada de Saida (linhas)
     fields = QgsFields()
-    for escala in Escalas:
-        for valor in valores:
-            nome = escala + '_PEC_' + valor
-            fields.append(QgsField(nome, QVariant.Double))
-    fields.append(QgsField('media', QVariant.Double))
-    fields.append(QgsField('desPad', QVariant.Double))
+    fields.append(QgsField("discrep_X", QVariant.Double))
+    fields.append(QgsField("discrep_Y", QVariant.Double))
+    fields.append(QgsField("distancia", QVariant.Double))
     CRS = teste.crs()
     encoding = 'utf-8'
     formato = 'ESRI Shapefile'
     writer = QgsVectorFileWriter(Discrepancias, encoding, fields, QGis.WKBLineString, CRS, formato)
     fet = QgsFeature()
     for index, coord in enumerate(RELACOES):
-        fet.setGeometry(QgsGeometry.fromMultiPolyline(coord))
-        media = float((array(DISCREP[index])).mean())
-        DP = float((array(DISCREP[index])).std())
-        fet.setAttributes(DISCREP[index]+[media, DP])
+        fet.setGeometry(QgsGeometry.fromPolyline(coord))
+        fet.setAttributes([DISCREP_X[index], DISCREP_Y[index], DISCREP[index]])
         writer.addFeature(fet)
     del writer
-    
-    # Comprimento das Linhas de Referencia
-    COMPR = []
-    for relacao in RELACOES:
-        geom = QgsGeometry.fromPolyline(relacao[0])
-        compr = geom.length()
-        COMPR += [compr]
-    
+
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
-    DISCREP = DISCREP.transpose()
-    COMPR = array(COMPR)
-    cont = 0
+    EMQ = sqrt((DISCREP*DISCREP).sum()/len(DISCREP))
     RESULTADOS = {}
     for escala in Escalas:
         mudou = False
         for valor in valores[::-1]:
-            discrep = DISCREP[3-cont%4+4*cont/4]
-            cont +=1
-            EMQ = sqrt((discrep*discrep*COMPR).sum()/COMPR.sum())
             EM = PEC[escala]['planim'][valor]['EM']
             EP = PEC[escala]['planim'][valor]['EP']
-            if (sum((discrep<EM)*COMPR)/sum(COMPR))>0.9 and (EMQ < EP):
+            if (sum(DISCREP<EM)/len(DISCREP))>0.9 and (EMQ < EP):
                 RESULTADOS[escala] = valor
                 mudou = True
         if not mudou:
             RESULTADOS[escala] = 'R'
-    
+
+    DISCREP_X= array(DISCREP_X)
+    DISCREP_Y= array(DISCREP_Y)
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>RESULTADOS:</b><br/>')
-    progress.setInfo('<b>Media das Discrepancias: %.1f m</b><br/>' %DISCREP.mean())
-    progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %sqrt((DISCREP*DISCREP).sum()/(len(DISCREP)*len(DISCREP[0]))))
-    progress.setInfo('<b>Desvio-Padrao: %.1f m</b><br/><br/>' %DISCREP.std())
-    if Escalas:
-        for escala in Escalas:
-            progress.setInfo('<b>Escala 1:%s -> PEC: %s.</b><br/>' %(dicionario[escala], RESULTADOS[escala]))
+    progress.setInfo('<b>EMQ: %.1f m</b><br/><br/>' %EMQ)
+    progress.setInfo('<b>Media dos Erros em X: %.1f m</b><br/><br/>' %DISCREP_X.mean())
+    progress.setInfo('<b>Desvio-Padrao dos Erros em X: %.1f m</b><br/><br/>' %DISCREP_X.std())
+    progress.setInfo('<b>Media dos Erros em Y: %.1f m</b><br/><br/>' %DISCREP_Y.mean())
+    progress.setInfo('<b>Desvio-Padrao dos Erros em Y: %.1f m</b><br/><br/>' %DISCREP_Y.std())
     
     progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
-    time.sleep(8)
+    time.sleep(5)
     
     if Escalas:
         # Criacao do arquivo html com os resultados
         arq = open(Relatorio_para_escalas, 'w')
-        texto = '''
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+        texto = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>MBD</title>
+  <title>ACUR&Aacute;CIA POSICIONAL</title>
+  <meta name="qrichtext" content="1">
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=utf-8">
+  <style type="text/css">
+p, li { white-space: pre-wrap; }
+  </style>
 </head>
-<body  bgcolor="#e5e9a6">
+<body style="background-color: rgb(229, 233, 166);">
 <div style="text-align: center;"><span
- style="font-weight: bold; text-decoration: underline;">M&Eacute;TODO
-DO BUFFER DUPLO</span><br>
+ style="font-weight: bold; text-decoration: underline;">RELAT&Oacute;RIO DE ACUR&Aacute;CIA POSICIONAL</span><br>
 </div>
 <br>
-<span style="font-weight: bold;">1. Camada de
-Refer&ecirc;ncia</span><br>
+<span style="font-weight: bold;">1. Camada de Pontos de Refer&ecirc;ncia</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
-&nbsp;&nbsp;&nbsp; b. total de fei&ccedil;&otilde;es: %d<br>
+&nbsp;&nbsp;&nbsp; b. total de pontos: %d<br>
 <br>
-<span style="font-weight: bold;">2. Camada de Teste</span><br>
+<span style="font-weight: bold;">2. Camada de Pontos Avaliados</span><br>
 &nbsp;&nbsp;&nbsp; a. nome: %s<br>
-&nbsp;&nbsp;&nbsp; b. total de fei&ccedil;&otilde;es: %d<br>
+&nbsp;&nbsp;&nbsp; b. total de pontos: %d<br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
-&nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
-&nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
-&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
-&nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), DISCREP.std(), DISCREP.max(),DISCREP.min())
-        texto += '''<table style="text-align: left; width: 100%;" border="1"
- cellpadding="2" cellspacing="2">
+&nbsp;&nbsp;&nbsp; a.&nbsp;total de pares de pontos hom&oacute;logos: %d<br>
+&nbsp;&nbsp;&nbsp; b. Discrep&acirc;ncias em X:<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; b.1. 
+m&eacute;dia das discrep&acirc;ncias (tend&ecirc;ncia): %.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; b.2. 
+desvio-padr&atilde;o (precis&atilde;o):&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; b.3. 
+discrep&acirc;ncia m&aacute;xima:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; b.4. 
+discrep&acirc;ncia m&iacute;nima:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; c. Discrep&acirc;ncias em Y:<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; c.1. 
+m&eacute;dia das discrep&acirc;ncias
+(tend&ecirc;ncia):&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; c.2. 
+desvio-padr&atilde;o (precis&atilde;o):&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; c.3. 
+discrep&acirc;ncia m&aacute;xima:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; c.4. 
+discrep&acirc;ncia m&iacute;nima:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; d. REMQ:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; e. dist&acirc;ncia m&aacute;xima:&nbsp;%.2f m<br>
+&nbsp;&nbsp;&nbsp; f.&nbsp;dist&acirc;ncia m&iacute;nima:&nbsp;%.2f m<br>
+<br>
+<span style="font-weight: bold;">4. Acur&aacute;cia Posicional (</span><span style="font-weight: bold;">PEC-PCD)<br>
+<br>
+</span>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP_X.mean(), DISCREP_X.std(), DISCREP_X.max(), DISCREP_X.min(), DISCREP_Y.mean(), DISCREP_Y.std(), DISCREP_Y.max(), DISCREP_Y.min(), EMQ, DISCREP.max(), DISCREP.min())
+        texto += '''<table style="margin: 0px;" border="1" cellpadding="2"
+ cellspacing="2">
   <tbody>
-    <tr>''' 
-        for escala in Escalas:
-            texto += '    <td style="text-align: center; font-weight: bold;">%s</td>' %dicionario[escala]
-        texto +='''
-    </tr>
     <tr>'''
         for escala in Escalas:
+            texto += '    <td style="text-align: center; font-weight: bold;">%s</td>' %dicionario[escala]
+        
+        texto +='''
+        </tr>
+        <tr>'''
+        for escala in Escalas:
             texto += '    <td style="text-align: center;">%s</td>' %RESULTADOS[escala]
+        
         texto +='''
     </tr>
   </tbody>
 </table>
 <br>
-<br>
 <hr>
 <address><font size="+l">Leandro Fran&ccedil;a
-2017<br>
+2018<br>
 Eng. Cart&oacute;grafo<br>
 email: geoleandro.franca@gmail.com<br>
 </font>
 </address>
 </body>
-</html>'''
+</html>
+    '''    
         arq.write(texto)
         arq.close()
     iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)
 else:
     progress.setInfo('<b><font  color="#ff0000">Erro nos parametros de entrada. Possiveis erros:</b><br/>')
-    progress.setInfo('<b><font  color="#ff0000"> 1. As camadas devem ser do tipo linha.</b><br/>')
+    progress.setInfo('<b><font  color="#ff0000"> 1. As camadas devem ser do tipo ponto.</b><br/>')
     progress.setInfo('<b><font  color="#ff0000"> 2. As camadas devem ter SRC compat&iacute;veis.</b><br/>')
     progress.setInfo('<b><font  color="#ff0000"> 3. As camadas devem estar com SRC projetado (metros).</b><br/><br/>')
     iface.messageBar().pushMessage(u'Situacao', "Problema com os dados de entrada!", level=QgsMessageBar.WARNING, duration=8)
-
-
