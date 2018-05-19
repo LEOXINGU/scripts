@@ -20,7 +20,7 @@
 ##LF07) Qualidade=group
 ##Camada_de_Referencia=vector
 ##Camada_Avaliada=vector
-##Buffer_de_Relacionamento=number 300.0
+##Buffer_de_Relacionamento=number 200.0
 ##Relatorio_para_escalas=output html
 ##Escala_1_1k=boolean False
 ##Escala_1_2k=boolean False

@@ -86,9 +86,14 @@ else:
     feat = moldura.getFeatures().next()
     pol = feat.geometry()
     coord = pol.asMultiPolygon()
-    moldura_linha = QgsGeometry.fromMultiPolyline(coord[0])
+    if coord:
+        moldura_linha = QgsGeometry.fromMultiPolyline(coord[0])
+    else: 
+        coord = pol.asPolygon()
+        moldura_linha = QgsGeometry.fromMultiPolyline(coord)
     if SRC.geographicFlag():
-        moldura_buffer = moldura_linha.buffer(Tolerancia/110000,5)
+        Tolerancia /= 110000.0
+        moldura_buffer = moldura_linha.buffer(Tolerancia,5)
     else:
         moldura_buffer = moldura_linha.buffer(Tolerancia,5)
 
@@ -153,7 +158,26 @@ else:
                     else:
                         feature.setGeometry(Intersecao.centroid())
                         writer1.addFeature(feature)
-
+            
+    # Verificar linhas nao ligadas
+    progress.setInfo('<b>Verificando lihas nao ligadas...</b><br/>')
+    for i in range(tam):
+        for j in range(tam):
+            if i != j:
+                pA_ini = QgsGeometry.fromPoint(lin_list[i][0])
+                pA_ini_buffer = pA_ini.buffer(Tolerancia, 5)
+                pA_fim = QgsGeometry.fromPoint(lin_list[i][-1])
+                pA_fim_buffer = pA_fim.buffer(Tolerancia, 5)
+                linB = QgsGeometry.fromPolyline(lin_list[j])
+                if linB.intersects(pA_ini_buffer) and lin_list[i][0] != lin_list[j][0] and lin_list[i][0] != lin_list[j][-1]:
+                    feature.setAttributes(['Linha nao ligada'])
+                    feature.setGeometry(pA_ini)
+                    writer1.addFeature(feature)
+                if linB.intersects(pA_fim_buffer) and lin_list[i][-1] != lin_list[j][0] and lin_list[i][-1] != lin_list[j][-1]:
+                    feature.setAttributes(['Linha nao ligada'])
+                    feature.setGeometry(pA_fim)
+                    writer1.addFeature(feature)
+    
     # Verificar Angulos Fechados
     progress.setInfo('<b>Verificando angulos fechados...</b><br/>')
     feature = QgsFeature()
@@ -217,7 +241,7 @@ else:
             writer2.addFeature(feat)
             continue
         else:
-            if not (PJ[id]['coord'] in problem_rede):
+            if not (PJ[id]['coord'] in problem_rede)  and geom.disjoint(moldura_buffer):
                 problem_rede += [PJ[id]['coord']]
                 feat.setAttributes(['problema de rede'])
                 writer1.addFeature(feat)
@@ -238,7 +262,7 @@ else:
         elif len(PM[id]['M'])==0 and len(PM[id]['J'])==1 and not(PM[id]['J'][0][1]): # mudanca de atributo
             continue
         else:
-            if not (PM[id]['coord'] in problem_rede):
+            if not (PM[id]['coord'] in problem_rede) and geom.disjoint(moldura_buffer):
                 problem_rede += [PM[id]['coord']]
                 feat.setAttributes(['problema de rede'])
                 writer1.addFeature(feat)
