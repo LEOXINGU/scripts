@@ -34,7 +34,7 @@ import processing
 
 # Abrir camadas
 origem = processing.getObject(Camada_de_Origem)
-destino = processing.getObject(Campo_de_Destino)
+destino = processing.getObject(Camada_de_Destino)
 tol = Tamanho_do_Buffer
 percentual = Percentual_dentro_do_Buffer/100.0
 att_column = destino.pendingFields().fieldNameIndex(Campo_de_Destino)

@@ -1,4 +1,5 @@
 """
+
 /***************************************************************************
  LEOXINGU
                               -------------------
@@ -20,9 +21,6 @@
 ##LF08) EDGV=group
 ##Banco_de_Dados_de_Origem=string
 ##Banco_de_Dados_de_Destino=string
-##Usuario_PostGIS=string postgres
-##Senha=string postgres
-
 
 from PyQt4.QtCore import *
 from qgis.gui import QgsMessageBar
@@ -31,22 +29,7 @@ from qgis.core import *
 import time
 import processing
 
-# Criar URI do banco de destino
-uri = QgsDataSourceURI()
-
-# Pegar SRC dos bancos de destinos
-uri.setConnection("localhost","5432", Banco_de_Dados_de_Origem, Usuario_PostGIS, Senha)
-uri.setDataSource("public","aux_moldura_a","geom","")
-camada = QgsVectorLayer(uri.uri(), '', "postgres")
-SRC_origem = camada.crs()
-
-uri.setConnection("localhost","5432", Banco_de_Dados_de_Destino, Usuario_PostGIS, Senha)
-uri.setDataSource("public","aux_moldura_a","geom","")
-camada = QgsVectorLayer(uri.uri(), '', "postgres")
-SRC_destino = camada.crs()
-
 # Transformacao entre diferentes SRC
-xform = QgsCoordinateTransform(SRC_origem, SRC_destino)
 def reprojetar(geom):
     if geom.type() == 0: #Ponto
         if geom.isMultipart():
@@ -106,48 +89,62 @@ def reprojetar(geom):
     else:
         return None
 
-
-# Colar feicoes do banco de origem para o banco de destino reprojetando as coordenadas, se necessario
-if SRC_origem == SRC_destino:
-    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
-        if layer.type()==0:
-            try:
-                lyr_source = (layer.source()).split("'")[1]
-                if lyr_source == Banco_de_Dados_de_Origem:
-                    layer_name = layer.name()
-                    progress.setInfo('<br/>Copiando dados da camada %s...' %layer_name)
-                    uri.setDataSource("public", layer_name, "geom","")
-                    camada = QgsVectorLayer(uri.uri(), '', "postgres")
-                    DP = camada.dataProvider()
-                    newFeat = QgsFeature()
-                    for feat in layer.getFeatures():
-                        att = feat.attributes()
-                        newFeat.setGeometry(feat.geometry())
-                        newFeat.setAttributes([None]+att[1:])
-                        ok = DP.addFeatures([newFeat])
-            except:
-                pass
-else:
-    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
-        if layer.type()==0:
-            try:
-                lyr_source = (layer.source()).split("'")[1]
-                if lyr_source == Banco_de_Dados_de_Origem:
-                    layer_name = layer.name()
-                    progress.setInfo('<br/>Copiando dados da camada %s...' %layer_name)
-                    uri.setDataSource("public", layer_name, "geom","")
-                    camada = QgsVectorLayer(uri.uri(), '', "postgres")
-                    DP = camada.dataProvider()
-                    newFeat = QgsFeature()
-                    for feat in layer.getFeatures():
-                        geom = feat.geometry()
-                        newGeom = reprojetar(geom)
-                        att = feat.attributes()
-                        newFeat.setGeometry(newGeom)
-                        newFeat.setAttributes([None]+att[1:])
-                        ok = DP.addFeatures([newFeat])
-            except:
-                pass
+# Colar feicoes das camadas de origem para as camadas de destino reprojetando as coordenadas, se necessario
+feature = QgsFeature()
+for origem in QgsMapLayerRegistry.instance().mapLayers().values():
+    try:
+        BD1 = (origem.source()).split("'")[1]
+        if BD1 == Banco_de_Dados_de_Origem:
+            nome_origem = origem.name()
+            campos_origem = [field.name() for field in origem.pendingFields()]
+            for destino in QgsMapLayerRegistry.instance().mapLayers().values():
+                try:
+                    BD2 = (destino.source()).split("'")[1]
+                    nome_destino = destino.name()
+                    if BD2 == Banco_de_Dados_de_Destino and nome_origem == nome_destino:
+                        DP = destino.dataProvider()
+                        campos_destino = [field.name() for field in destino.pendingFields()]
+                        mapa_campo = []
+                        for campo in campos_destino:
+                            if campo in campos_origem and campo!= 'id':
+                                mapa_campo += [campos_origem.index(campo)]
+                            else:
+                                mapa_campo += [None]
+                        progress.setInfo('<br/>Copiando dados da camada %s...' %nome_origem)
+                        SRC_origem = origem.crs()
+                        SRC_destino = destino.crs()
+                        if SRC_origem == SRC_destino:
+                                for feat in origem.getFeatures():
+                                    att = feat.attributes()
+                                    new_att = []
+                                    for item in mapa_campo:
+                                        if item != None:
+                                            new_att += [att[item]]
+                                        else:
+                                            new_att += [None]
+                                    geom = feat.geometry()
+                                    feature.setAttributes(new_att)
+                                    feature.setGeometry(geom)
+                                    DP.addFeatures([feature])
+                        else:
+                            xform = QgsCoordinateTransform(SRC_origem, SRC_destino)
+                            for feat in origem.getFeatures():
+                                att = feat.attributes()
+                                new_att = []
+                                for item in mapa_campo:
+                                    if item != None:
+                                        new_att += [att[item]]
+                                    else:
+                                        new_att += [None]
+                                geom = feat.geometry()
+                                newGeom = reprojetar(geom)
+                                feature.setAttributes(new_att)
+                                feature.setGeometry(newGeom)
+                                DP.addFeatures([feature])
+                except:
+                    pass
+    except:
+        pass
 
 progress.setInfo('<br/><br/><b>Operacao concluida com sucesso!</b>')
 progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
