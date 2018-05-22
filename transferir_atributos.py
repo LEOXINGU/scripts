@@ -39,6 +39,7 @@ tol = Tamanho_do_Buffer
 percentual = Percentual_dentro_do_Buffer/100.0
 att_column = destino.pendingFields().fieldNameIndex(Campo_de_Destino)
 DP = destino.dataProvider()
+tam = destino.featureCount()
 
 # Transformacao de Unidades
 if origem.crs().geographicFlag():
@@ -50,6 +51,7 @@ if origem.geometryType() != QGis.Line or destino.geometryType() != QGis.Line:
 else:
     # Criar lista de Buffers e atributo
     BUFFERS = []
+    progress.setInfo('<b>Gerando buffers...</b><br/>')
     for feat in origem.getFeatures():
         geom = feat.geometry()
         if geom and feat[Campo_de_Origem] != None:
@@ -57,21 +59,22 @@ else:
             coord = geomBuffer.asPolygon()
             if coord:
                 BUFFERS += [[coord, feat[Campo_de_Origem]]]
-
-    for feat in destino.getFeatures():
-                        geom = feat.geometry()
-                        if geom:
-                            comp = geom.length()
-                            for item in BUFFERS:
-                                geomBuffer = QgsGeometry.fromPolygon(item[0])
-                                if geom.intersects(geomBuffer):
-                                    intersecao = geom.intersection(geomBuffer)
-                                    comp_inter = intersecao.length()
-                                    if (comp_inter/comp) >= percentual:
-                                        newColumnValueMap = {att_column : item[1]}
-                                        newAttributesValuesMap = {feat.id() : newColumnValueMap}
-                                        DP.changeAttributeValues(newAttributesValuesMap)
-
+    progress.setInfo('<b>Realizando consulta espacial...</b><br/>')
+    for k, feat in enumerate(destino.getFeatures()):
+        geom = feat.geometry()
+        if geom:
+            comp = geom.length()
+            for item in BUFFERS:
+                geomBuffer = QgsGeometry.fromPolygon(item[0])
+                if geom.intersects(geomBuffer):
+                    intersecao = geom.intersection(geomBuffer)
+                    comp_inter = intersecao.length()
+                    if (comp_inter/comp) >= percentual:
+                        newColumnValueMap = {att_column : item[1]}
+                        newAttributesValuesMap = {feat.id() : newColumnValueMap}
+                        DP.changeAttributeValues(newAttributesValuesMap)
+        progress.setPercentage(int((k+1)/float(tam)*100))
+        
     progress.setInfo('<b>Operacao concluida!</b><br/><br/>')
     progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
     time.sleep(3)
