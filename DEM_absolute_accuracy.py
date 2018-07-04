@@ -23,6 +23,7 @@
 ##MDE_Avaliado=raster
 ##Tipo_de_Interpolacao=selection Bicubica;Bilinear;Vizinho Mais Proximo
 ##Relatorio_para_escalas=output html
+##Discrepancias=output vector
 ##Escala_1_1k=boolean False
 ##Escala_1_2k=boolean False
 ##Escala_1_5k=boolean False
@@ -188,6 +189,13 @@ if crs != ref.crs() or ref.geometryType() != QGis.Point or not(numerico):
 else:
     DISCREP = []
     total_nulos = 0
+    # Criar camada de discrepancias
+    fields = QgsFields()
+    fields.append(QgsField("discrep", QVariant.Double))
+    CRS = ref.crs()
+    writer = QgsVectorFileWriter(Discrepancias, 'utf-8', fields, QGis.WKBPoint, CRS, 'ESRI Shapefile')
+    fet = QgsFeature()
+    
     # Para cada ponto
         # calcular a discrepancia em relacao ao MDE, caso nao haja pixel nulo
         # armazenar nas somas para gerar (media, desvPad, EMQ, max, min,). quantidade de pontos avaliados, qnt de pontos em pixel nulo
@@ -201,9 +209,14 @@ else:
             cotaTest = Interpolar(X, Y, band, origem, resol_X, resol_Y, metodo, NULO)
             if cotaTest != NULO:
                 DISCREP += [cotaTest - cotaRef]
+                fet.setGeometry(geom)
+                fet.setAttributes([cotaTest - cotaRef])
+                writer.addFeature(fet)
             else:
                 total_nulos +=1
-        
+    
+    del writer
+    
     # Gerar relatorio do metodo
     DISCREP= array(DISCREP)
     EMQ = sqrt((DISCREP*DISCREP).sum()/len(DISCREP))
