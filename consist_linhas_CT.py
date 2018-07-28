@@ -49,8 +49,8 @@ feat = moldura.getFeatures().next()
 pol = feat.geometry()
 coord = pol.asMultiPolygon()
 moldura_linha = QgsGeometry.fromMultiPolyline(coord[0])
-if moldura.geographicFlag():
-    moldura_buffer = moldura_linha.buffer(Tolerancia/110000,5)
+if SRC.geographicFlag():
+    moldura_buffer = moldura_linha.buffer(Tolerancia/110000.0,5)
 else:
     moldura_buffer = moldura_linha.buffer(Tolerancia,5)
 
@@ -59,6 +59,7 @@ fields = QgsFields()
 fields.append(QgsField('problema', QVariant.String))
 writer = QgsVectorFileWriter(Insconsistencias, 'utf-8', fields, QGis.WKBPoint, SRC, 'ESRI Shapefile')
 
+'''
 # Checar se linhas se cruzam
 progress.setInfo('<b>Verificando se as linhas se cruzam...</b><br/>')
 tam = len(lin_list)
@@ -77,9 +78,12 @@ for i in range(0,tam-1):
             else:
                 feature.setGeometry(Intersecao)
                 writer.addFeature(feature)
+'''
 
 # Checar se uma feicao nao toca outra feicao ou moldura
 progress.setInfo('<b>Verificando se as linhas toca outra feicao ou a moldura...</b><br/>')
+tam = len(lin_list)
+feature = QgsFeature()
 for i in range(tam):
     tocaIni = False
     tocaFim = False
