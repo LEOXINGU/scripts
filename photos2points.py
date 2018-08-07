@@ -117,12 +117,12 @@ for index, arquivo in enumerate(lista):
             date_time = data_hora(exif['DateTimeOriginal'])
         if abs(lon)>0.1:
             feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(lon, lat)))
-            feature.setAttributes([arquivo, Az, date_time])
+            feature.setAttributes([pasta + '/' + arquivo, Az, date_time])
             writer.addFeature(feature)
         else:
             progress.setInfo('A imagem %s nao eh GEO!<br/>' %arquivo)
             if not ExistePasta:
-                shutil.copy2(pasta+'\\'+arquivo, pasta+'\\Nao GEO\\'+arquivo)
+                shutil.copy2(pasta +'\\'+ arquivo, pasta+'\\Nao GEO\\'+arquivo)
     progress.setPercentage(int((index/float(tam))*100))
 
 del writer
