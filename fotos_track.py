@@ -75,7 +75,7 @@ for arquivo in lista:
             date_time = data_hora(exif['DateTimeOriginal'])
             imagens += [[arquivo, date_time]]
         elif 'DateTime' in exif:
-            date_time = data_hora(exif['DateTimeOriginal'])
+            date_time = data_hora(exif['DateTime'])
             imagens += [[arquivo, date_time]]
 
 
