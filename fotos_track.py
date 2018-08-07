@@ -175,7 +175,7 @@ for img in imagens:
                 cont +=1
                 geom = LISTA_TRACK[ind][0]
                 feat.setGeometry(geom)
-                att = [cont, nome, str(DT_img), None]
+                att = [cont, pasta + '/' + nome, str(DT_img), None]
                 feat.setAttributes(att)
                 writer.addFeature(feat)
             else:
@@ -187,7 +187,7 @@ for img in imagens:
                 Px = P1 + (difer1/detaT)*(P2-P1)
                 geom = QgsGeometry.fromPoint(QgsPoint(Px[0], Px[1]))
                 feat.setGeometry(geom)
-                att = [cont, nome, str(DT_img), None]
+                att = [cont, pasta + '/' + nome, str(DT_img), None]
                 feat.setAttributes(att)
                 ok = writer.addFeature(feat)
     if not sentinela:
