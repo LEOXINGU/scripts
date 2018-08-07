@@ -114,7 +114,7 @@ for index, arquivo in enumerate(lista):
         if 'DateTimeOriginal' in exif:
             date_time = data_hora(exif['DateTimeOriginal'])
         elif 'DateTime' in exif:
-            date_time = data_hora(exif['DateTimeOriginal'])
+            date_time = data_hora(exif['DateTime'])
         if abs(lon)>0.1:
             feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(lon, lat)))
             feature.setAttributes([pasta + '/' + arquivo, Az, date_time])
