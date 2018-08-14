@@ -148,12 +148,20 @@ if moldA.name()=='aux_moldura_a' and moldB.name()=='aux_moldura_a' and nomeA != 
     feat = moldA.getFeatures().next()
     pol = feat.geometry()
     coord = pol.asMultiPolygon()
-    linA = QgsGeometry.fromMultiPolyline(coord[0])
+    if coord:
+        linA = QgsGeometry.fromMultiPolyline(coord[0])
+    else:
+        coord = pol.asPolygon()
+        linA = QgsGeometry.fromMultiPolyline(coord)
 
     feat = moldB.getFeatures().next()
     pol = feat.geometry()
     coord = pol.asMultiPolygon()
-    linB = QgsGeometry.fromMultiPolyline(coord[0])
+    if coord:
+        linB = QgsGeometry.fromMultiPolyline(coord[0])
+    else:
+        coord = pol.asPolygon()
+        linB = QgsGeometry.fromMultiPolyline(coord)
 
     # Verificar se as molduras se interseptam
     if  linA.intersects(linB):
