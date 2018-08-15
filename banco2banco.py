@@ -29,6 +29,7 @@ from qgis.core import *
 import time
 import processing
 
+
 # Transformacao entre diferentes SRC
 def reprojetar(geom):
     if geom.type() == 0: #Ponto
@@ -125,7 +126,10 @@ for origem in QgsMapLayerRegistry.instance().mapLayers().values():
                                     geom = feat.geometry()
                                     feature.setAttributes(new_att)
                                     feature.setGeometry(geom)
-                                    DP.addFeatures([feature])
+                                    ok = DP.addFeatures([feature])
+                                    if not ok:
+                                        progress.setText('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
+                                        QgsMessageLog.logMessage('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
                         else:
                             xform = QgsCoordinateTransform(SRC_origem, SRC_destino)
                             for feat in origem.getFeatures():
@@ -140,7 +144,10 @@ for origem in QgsMapLayerRegistry.instance().mapLayers().values():
                                 newGeom = reprojetar(geom)
                                 feature.setAttributes(new_att)
                                 feature.setGeometry(newGeom)
-                                DP.addFeatures([feature])
+                                ok = DP.addFeatures([feature])
+                                if not ok:
+                                    progress.setText('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
+                                    QgsMessageLog.logMessage('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
                 except:
                     pass
     except:
