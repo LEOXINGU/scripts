@@ -82,7 +82,7 @@ if not problema:
 
     # Novo geotransform
     g = geotransform
-    geotransform = (float(vetor[0])+g[0], g[1], g[2], float(vetor[0])+g[3], g[4], g[5])
+    geotransform = (float(vetor[0])+g[0], g[1], g[2], float(vetor[1])+g[3], g[4], g[5])
 
     # Create RGB image
     RGB = gdal.GetDriverByName('GTiff').Create(Saida, cols, rows, n_bands, GDT)
