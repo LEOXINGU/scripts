@@ -120,11 +120,11 @@ else:
             for feat in origem.getFeatures():
                 att = feat.attributes()
                 new_att = []
-                for item in mapa_campo:
+                for k, item in enumerate(mapa_campo):
                     if item != None:
                         new_att += [att[item]]
                     else:
-                        new_att += [None]
+                        new_att += [DP.defaultValue(k)]
                 geom = feat.geometry()
                 feature.setAttributes(new_att)
                 feature.setGeometry(geom)
@@ -133,11 +133,11 @@ else:
         for feat in origem.getFeatures():
             att = feat.attributes()
             new_att = []
-            for item in mapa_campo:
+            for k, item in enumerate(mapa_campo):
                 if item != None:
                     new_att += [att[item]]
                 else:
-                    new_att += [None]
+                    new_att += [DP.defaultValue(k)]
             geom = feat.geometry()
             newGeom = reprojetar(geom)
             feature.setAttributes(new_att)
