@@ -186,42 +186,45 @@ if moldA.name()=='aux_moldura_a' and moldB.name()=='aux_moldura_a' and nomeA != 
                     dict_fields[layer.name()] = [field.name() for field in layer.pendingFields()]
                 for feat in layer.getFeatures():
                     geom = feat.geometry()
-                    if geom.intersects(Buffer):
-                        coord = geom.asMultiPolyline()
-                        if coord:
-                            nomeBanco = (layer.source()).split("'")[1]
-                            if nomeBanco == nomeA:
-                                LinA += [[layer.name(), feat.attributes(), coord]]
-                            elif nomeBanco == nomeB:
-                                LinB += [[layer.name(), feat.attributes(), coord]]
+                    if geom:
+                        if geom.intersects(Buffer):
+                            coord = geom.asMultiPolyline()
+                            if coord:
+                                nomeBanco = (layer.source()).split("'")[1]
+                                if nomeBanco == nomeA:
+                                    LinA += [[layer.name(), feat.attributes(), coord]]
+                                elif nomeBanco == nomeB:
+                                    LinB += [[layer.name(), feat.attributes(), coord]]
             # Poligonos
             if layer.type()==0 and layer.name() in poligonos:
                 if not (layer.name() in dict_fields):
                     dict_fields[layer.name()] = [field.name() for field in layer.pendingFields()]
                 for feat in layer.getFeatures():
                     geom = feat.geometry()
-                    if geom.intersects(Buffer):
-                        coord = geom.asMultiPolygon()
-                        if coord:
-                            nomeBanco = (layer.source()).split("'")[1]
-                            if nomeBanco == nomeA:
-                                PolA += [[layer.name(), feat.attributes(), coord]]
-                            elif nomeBanco == nomeB:
-                                PolB += [[layer.name(), feat.attributes(), coord]]
+                    if geom:
+                        if geom.intersects(Buffer):
+                            coord = geom.asMultiPolygon()
+                            if coord:
+                                nomeBanco = (layer.source()).split("'")[1]
+                                if nomeBanco == nomeA:
+                                    PolA += [[layer.name(), feat.attributes(), coord]]
+                                elif nomeBanco == nomeB:
+                                    PolB += [[layer.name(), feat.attributes(), coord]]
             # Cobertura Terrestre (CT)
             if layer.type()==0 and layer.name() in CT:
                 if not (layer.name() in dict_fields):
                     dict_fields[layer.name()] = [field.name() for field in layer.pendingFields()]
                 for feat in layer.getFeatures():
                     geom = feat.geometry()
-                    if geom.intersects(Buffer):
-                        coord = geom.asMultiPolygon()
-                        if coord:
-                            nomeBanco = (layer.source()).split("'")[1]
-                            if nomeBanco == nomeA:
-                                CT_A += [[layer.name(), feat.attributes(), coord]]
-                            elif nomeBanco == nomeB:
-                                CT_B += [[layer.name(), feat.attributes(), coord]]
+                    if geom:
+                        if geom.intersects(Buffer):
+                            coord = geom.asMultiPolygon()
+                            if coord:
+                                nomeBanco = (layer.source()).split("'")[1]
+                                if nomeBanco == nomeA:
+                                    CT_A += [[layer.name(), feat.attributes(), coord]]
+                                elif nomeBanco == nomeB:
+                                    CT_B += [[layer.name(), feat.attributes(), coord]]
 
         # Verificar se a geometria de A toca (ou intersepta) outra geometria de B
         

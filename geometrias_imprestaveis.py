@@ -47,8 +47,8 @@ for layer in QgsMapLayerRegistry.instance().mapLayers().values():
             cont +=1
 
 if cont>0:
-    arquivo.write('Total de %d geometrias imprestaveis\n' %cont)
+    arquivo.write('Total de %d geometrias com problema.\n' %cont)
 else:
-    arquivo.write('Nao existe geometria imprestavel na lista de camadas')
+    arquivo.write('Nao existe geometria imprestavel na lista de camadas.')
 
 arquivo.close()
