@@ -128,7 +128,10 @@ else:
                 geom = feat.geometry()
                 feature.setAttributes(new_att)
                 feature.setGeometry(geom)
-                DP.addFeatures([feature])
+                ok=DP.addFeatures([feature])
+                if not ok:
+                    progress.setText('<br/>Feicao de ID %d nao foi copiada' %feat.id())
+                    QgsMessageLog.logMessage('<br/>Feicao de ID %d nao foi copiada' %feat.id())
     else:
         for feat in origem.getFeatures():
             att = feat.attributes()
@@ -142,8 +145,11 @@ else:
             newGeom = reprojetar(geom)
             feature.setAttributes(new_att)
             feature.setGeometry(newGeom)
-            DP.addFeatures([feature])
-
+            ok=DP.addFeatures([feature])
+            if not ok:
+                progress.setText('<br/>Feicao de ID %d nao foi copiada' %feat.id())
+                QgsMessageLog.logMessage('<br/>Feicao de ID %d nao foi copiada' %feat.id())
+                
     progress.setInfo('<br/><br/><b>Operacao concluida com sucesso!</b>')
     progress.setInfo('<br/><b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
     time.sleep(5)
