@@ -19,13 +19,13 @@
 ##6. BACKUP DE SERVIDOR=name
 ##LF01) PostGIS=group
 ##Host=string localhost
-##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
+##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6;10
 ##Arquivo_de_backup=output file
 ##Usuario=string postgres
 
 # Inputs
 host = str(Host)
-lista = [9.5,9.3,9.4,9.6]
+lista = [9.5,9.3,9.4,9.6,10]
 version = str(lista[Versao_do_PostgreSQL])
 saida = Arquivo_de_backup
 if saida[-4:] != '.sql':

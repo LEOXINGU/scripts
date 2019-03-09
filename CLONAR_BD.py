@@ -21,14 +21,14 @@
 ##Nome_do_BD_original=string
 ##Nome_do_BD_clonado=string
 ##Host=string localhost
-##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6
+##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6;10
 ##Usuario=string postgres
 
 # Inputs
 template = str(Nome_do_BD_original)
 novo = str(Nome_do_BD_clonado)
 host = str(Host)
-lista = [9.5,9.3,9.4,9.6]
+lista = [9.5,9.3,9.4,9.6,10]
 version = str(lista[Versao_do_PostgreSQL])
 
 import os
