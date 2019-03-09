@@ -255,10 +255,10 @@ Refer&ecirc;ncia</span><br>
 <br>
 <span style="font-weight: bold;">3. Relat&oacute;rio</span><br>
 &nbsp;&nbsp;&nbsp; a. n&uacute;mero de fei&ccedil;&otilde;es relacionadas: %d<br>
-&nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.1f<br>
-&nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.1f<br>
-&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.1f<br>
+&nbsp;&nbsp;&nbsp; b. m&eacute;dia das discrep&acirc;ncias (m): %.3f<br>
+&nbsp;&nbsp;&nbsp; c. desvio-padr&atilde;o (m): %.3f<br>
+&nbsp;&nbsp;&nbsp; d. discrep&acirc;ncia m&aacute;xima: %.3f<br>
+&nbsp;&nbsp;&nbsp; e. discrep&acirc;ncia m&iacute;nima: %.3f<br>
 &nbsp;&nbsp;&nbsp; f. <span style="font-weight: bold;">PEC-PCD</span>:<br>''' %(ref.name(), ref.featureCount(), teste.name(), teste.featureCount(), len(RELACOES), DISCREP.mean(), DISCREP.std(), DISCREP.max(),DISCREP.min())
         texto += '''<table style="text-align: left; width: 100%;" border="1"
  cellpadding="2" cellspacing="2">
