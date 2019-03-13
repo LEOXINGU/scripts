@@ -64,6 +64,15 @@ def coordenadas(exif):
     except:
         return 0,0
 
+# Funcao para pegar Azimute
+def azimute(exif):
+    Az = exif['GPSInfo'][17]
+    if isinstance(Az, tuple):
+        Az = Az[0]/float(Az[1])
+        return Az
+    else:
+        return Az
+
 # Funcao para gerar o padrao data-hora
 def data_hora(texto):
     data_hora = texto.replace(' ',':')
@@ -110,7 +119,7 @@ for index, arquivo in enumerate(lista):
         if 'GPSInfo' in exif:
             lat, lon = coordenadas(exif)
         if 17 in exif['GPSInfo']:
-            Az = exif['GPSInfo'][17]
+            Az = azimute(exif)
         if 'DateTimeOriginal' in exif:
             date_time = data_hora(exif['DateTimeOriginal'])
         elif 'DateTime' in exif:
