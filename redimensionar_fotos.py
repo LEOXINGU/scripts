@@ -42,7 +42,8 @@ os.mkdir('Reduzido')
 for index, arquivo in enumerate(lista):
     if (arquivo[-3:]).lower() == 'jpg':
         img = PIL.Image.open(arquivo)
-        exif = img.info['exif']
+        if 'exif' in img.info:
+            exif = img.info['exif']
         altura = img.size[1]
         largura = img.size[0]
         if largura > altura:
@@ -52,7 +53,10 @@ for index, arquivo in enumerate(lista):
             new_width = lado
             new_height =int(lado/float(largura)*altura)
         img = img.resize((new_width, new_height))
-        img.save('Reduzido/'+ arquivo, exif=exif)
+        if 'exif' in img.info:
+            img.save('Reduzido/'+ arquivo, exif=exif)
+        else:
+            img.save('Reduzido/'+ arquivo)
     progress.setPercentage(int((index/float(tam))*100))
 
 

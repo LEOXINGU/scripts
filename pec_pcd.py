@@ -38,7 +38,7 @@ from qgis.utils import iface
 from qgis.core import *
 import time
 import processing
-from numpy import sqrt, array, mean, std
+from numpy import sqrt, array, mean, std, pi, sin
 
 buf = Buffer_de_Relacionamento
 
@@ -84,55 +84,129 @@ SRC_teste = teste.crs()
 distance = QgsDistanceArea()
 distance.setSourceCrs(SRC_teste)
 
-if SRC_ref == SRC_teste and not(SRC_teste.geographicFlag()) and ref.geometryType() == QGis.Point and teste.geometryType() == QGis.Point:
-    # Colocar linhas e seus buffers em uma lista
-    list_ref = []
-    for feat in ref.getFeatures():
-        geom = feat.geometry()
-        if geom:
-            pnt = geom.asPoint()
-            if pnt:
-                Buffer = geom.buffer(buf, 5)
-                pol = Buffer.asPolygon()
-                list_ref +=[(pnt, pol)]
+# Parametros do GRS 80
+a = 6378137
+b = 6356752.3141
+f = 1/298.257222101
+e2 = 0.00669438002290 # primeira excentricidade
 
-    list_teste = []
-    for feat in teste.getFeatures():
-        geom = feat.geometry()
-        if geom:
-            pnt = geom.asPoint()
-            if pnt:
-                Buffer = geom.buffer(buf, 5)
-                pol = Buffer.asPolygon()
-                list_teste +=[(pnt, pol)]
+def distGauss( pnt1, pnt2):
+    x1 = pnt1.x()
+    y1 = pnt1.y()
+    x2 = pnt2.x()
+    y2 = pnt2.y()
+    w = sqrt(1-e2*(sin(((y1+y2)/2)*pi/180))**2)
+    N = a / w
+    M = a *(1- e2) / w**3
+    R = sqrt(M*N)
+    deltaX = ((x2 - x1)*pi/180)*R
+    deltaY = ((y2 - y1)*pi/180)*R
+    dist = sqrt(deltaX**2 + deltaY**2)
+    return (deltaX, deltaY, dist, R)
 
-    # Relacionar Feicoes
-    RELACOES = []
-    DISCREP = []
-    DISCREP_X = []
-    DISCREP_Y = []
-    tam = len(list_ref)
-    for index, item_ref in enumerate(list_ref):
-        pnt_ref = QgsGeometry.fromPoint(item_ref[0])
-        min_dist = 1e9
-        relacao = []
-        sentinela = False
-        for item_teste in list_teste:
-            buf_teste = QgsGeometry.fromPolygon(item_teste[1])
-            if pnt_ref.intersects(buf_teste):
-                Distancia = distance.measureLine(item_ref[0], item_teste[0])
-                if Distancia < min_dist:
-                    sentinela = True
-                    min_dist = Distancia
-                    relacao = [item_ref[0], item_teste[0]]
-                    deltaX = item_teste[0].x() - item_ref[0].x()
-                    deltaY = item_teste[0].y() - item_ref[0].y()
-        if sentinela:
-            RELACOES += [relacao]
-            DISCREP += [min_dist]
-            DISCREP_X += [deltaX]
-            DISCREP_Y += [deltaY]
-        progress.setPercentage(int(((index+1)/float(tam))*100))
+if SRC_ref == SRC_teste and ref.geometryType() == QGis.Point and teste.geometryType() == QGis.Point:
+    if not(SRC_teste.geographicFlag()):
+        # Colocar linhas e seus buffers em uma lista
+        list_ref = []
+        for feat in ref.getFeatures():
+            geom = feat.geometry()
+            if geom:
+                pnt = geom.asPoint()
+                if pnt:
+                    Buffer = geom.buffer(buf, 5)
+                    pol = Buffer.asPolygon()
+                    list_ref +=[(pnt, pol)]
+
+        list_teste = []
+        for feat in teste.getFeatures():
+            geom = feat.geometry()
+            if geom:
+                pnt = geom.asPoint()
+                if pnt:
+                    Buffer = geom.buffer(buf, 5)
+                    pol = Buffer.asPolygon()
+                    list_teste +=[(pnt, pol)]
+
+        # Relacionar Feicoes
+        RELACOES = []
+        DISCREP = []
+        DISCREP_X = []
+        DISCREP_Y = []
+        tam = len(list_ref)
+        for index, item_ref in enumerate(list_ref):
+            pnt_ref = QgsGeometry.fromPoint(item_ref[0])
+            min_dist = 1e9
+            relacao = []
+            sentinela = False
+            for item_teste in list_teste:
+                buf_teste = QgsGeometry.fromPolygon(item_teste[1])
+                if pnt_ref.intersects(buf_teste):
+                    Distancia = distance.measureLine(item_ref[0], item_teste[0])
+                    if Distancia < min_dist:
+                        sentinela = True
+                        min_dist = Distancia
+                        relacao = [item_ref[0], item_teste[0]]
+                        deltaX = item_teste[0].x() - item_ref[0].x()
+                        deltaY = item_teste[0].y() - item_ref[0].y()
+            if sentinela:
+                RELACOES += [relacao]
+                DISCREP += [min_dist]
+                DISCREP_X += [deltaX]
+                DISCREP_Y += [deltaY]
+            progress.setPercentage(int(((index+1)/float(tam))*100))
+    
+    else: # Caso de coordenadas geograficas
+            
+        # Colocar linhas e seus buffers em uma lista
+        buf /= 110000.0
+        list_ref = []
+        for feat in ref.getFeatures():
+            geom = feat.geometry()
+            if geom:
+                pnt = geom.asPoint()
+                if pnt:
+                    Buffer = geom.buffer(buf, 5)
+                    pol = Buffer.asPolygon()
+                    list_ref +=[(pnt, pol)]
+
+        list_teste = []
+        for feat in teste.getFeatures():
+            geom = feat.geometry()
+            if geom:
+                pnt = geom.asPoint()
+                if pnt:
+                    Buffer = geom.buffer(buf, 5)
+                    pol = Buffer.asPolygon()
+                    list_teste +=[(pnt, pol)]
+
+        # Relacionar Feicoes
+        RELACOES = []
+        DISCREP = []
+        DISCREP_X = []
+        DISCREP_Y = []
+        tam = len(list_ref)
+        for index, item_ref in enumerate(list_ref):
+            pnt_ref = QgsGeometry.fromPoint(item_ref[0])
+            min_dist = 1e9
+            relacao = []
+            sentinela = False
+            for item_teste in list_teste:
+                buf_teste = QgsGeometry.fromPolygon(item_teste[1])
+                if pnt_ref.intersects(buf_teste):
+                    Dist_Gauss = distGauss(item_ref[0], item_teste[0])
+                    Distancia = Dist_Gauss[2]
+                    if Distancia < min_dist:
+                        sentinela = True
+                        min_dist = Distancia
+                        relacao = [item_ref[0], item_teste[0]]
+                        deltaX = Dist_Gauss[0]
+                        deltaY = Dist_Gauss[1]
+            if sentinela:
+                RELACOES += [relacao]
+                DISCREP += [min_dist]
+                DISCREP_X += [deltaX]
+                DISCREP_Y += [deltaY]
+            progress.setPercentage(int(((index+1)/float(tam))*100))
 
     # Criar camada de Saida (linhas)
     fields = QgsFields()
@@ -145,9 +219,12 @@ if SRC_ref == SRC_teste and not(SRC_teste.geographicFlag()) and ref.geometryType
     writer = QgsVectorFileWriter(Discrepancias, encoding, fields, QGis.WKBLineString, CRS, formato)
     fet = QgsFeature()
     for index, coord in enumerate(RELACOES):
+        print coord
         fet.setGeometry(QgsGeometry.fromPolyline(coord))
-        fet.setAttributes([DISCREP_X[index], DISCREP_Y[index], DISCREP[index]])
-        writer.addFeature(fet)
+        print [float(DISCREP_X[index]), float(DISCREP_Y[index]), float(DISCREP[index])]
+        fet.setAttributes([float(DISCREP_X[index]), float(DISCREP_Y[index]), float(DISCREP[index])])
+        ok = writer.addFeature(fet)
+        print ok
     del writer
 
     # Gerar relatorio do metodo

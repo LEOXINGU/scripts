@@ -112,7 +112,7 @@ if validacao:
         else:
             ind +=1
 
-    # Mesclar linhas que se tocam e tem a mesma direção (com mesmo atributo)
+    # Mesclar linhas que se tocam e tem a mesma direcao (com mesmo atributo)
     if atributos == 0:
         while len(lista)>1:
             tam = len(lista)
