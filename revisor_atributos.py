@@ -2124,7 +2124,7 @@ if layerList:
  VerificarAtributos(layer, teste)
 
 # loc_aglomerado_rural_isolado_p
-camada = 'loc_aglom_rural_de_ext_urbana_p'
+camada = 'loc_aglomerado_rural_isolado_p'
 layerList = QgsMapLayerRegistry.instance().mapLayersByName(camada)
 if layerList:
  layer = layerList[0]

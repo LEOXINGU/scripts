@@ -163,7 +163,10 @@ else:
                                                         new_att += [None]
                                                 feature.setAttributes(new_att)
                                                 feature.setGeometry(new_geom)
-                                                DP.addFeatures([feature])
+                                                ok = DP.addFeatures([feature])
+                                                if not ok:
+                                                    progress.setText('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
+                                                    QgsMessageLog.logMessage('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
                             else:
                                 xform = QgsCoordinateTransform(SRC_origem, SRC_destino)
                                 for feat in origem.getFeatures():
@@ -181,7 +184,10 @@ else:
                                             reprojGeom = reprojetar(new_geom)
                                             feature.setAttributes(new_att)
                                             feature.setGeometry(reprojGeom)
-                                            DP.addFeatures([feature])
+                                            ok = DP.addFeatures([feature])
+                                            if not ok:
+                                                progress.setText('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
+                                                QgsMessageLog.logMessage('<br/>Feicao da camada %s e ID %d nao foi copiada' %(nome_origem, feat.id()))
                     except:
                         pass
         except:

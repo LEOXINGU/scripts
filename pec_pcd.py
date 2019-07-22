@@ -20,12 +20,12 @@
 ##LF07) Qualidade=group
 ##Camada_de_Referencia=vector
 ##Camada_Avaliada=vector
-##Buffer_de_Relacionamento=number 200.0
+##Buffer_de_Relacionamento=number 1000.0
 ##Relatorio_para_escalas=output html
-##Escala_1_1k=boolean False
-##Escala_1_2k=boolean False
-##Escala_1_5k=boolean False
-##Escala_1_10k=boolean False
+##Escala_1_1k=boolean True
+##Escala_1_2k=boolean True
+##Escala_1_5k=boolean True
+##Escala_1_10k=boolean True
 ##Escala_1_25k=boolean True
 ##Escala_1_50k=boolean True
 ##Escala_1_100k=boolean True
@@ -219,12 +219,9 @@ if SRC_ref == SRC_teste and ref.geometryType() == QGis.Point and teste.geometryT
     writer = QgsVectorFileWriter(Discrepancias, encoding, fields, QGis.WKBLineString, CRS, formato)
     fet = QgsFeature()
     for index, coord in enumerate(RELACOES):
-        print coord
         fet.setGeometry(QgsGeometry.fromPolyline(coord))
-        print [float(DISCREP_X[index]), float(DISCREP_Y[index]), float(DISCREP[index])]
         fet.setAttributes([float(DISCREP_X[index]), float(DISCREP_Y[index]), float(DISCREP[index])])
         ok = writer.addFeature(fet)
-        print ok
     del writer
 
     # Gerar relatorio do metodo

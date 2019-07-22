@@ -91,6 +91,7 @@ fields = QgsFields()
 fields.append(QgsField('file_name', QVariant.String))
 fields.append(QgsField('azimuth', QVariant.Int))
 fields.append(QgsField('date_time', QVariant.String))
+fields.append(QgsField('path_file_name', QVariant.String))
 # Criando o shapefile
 path_name = Shapefile_de_Fotos
 encoding = 'utf-8'
@@ -126,7 +127,7 @@ for index, arquivo in enumerate(lista):
             date_time = data_hora(exif['DateTime'])
         if abs(lon)>0.1:
             feature.setGeometry(QgsGeometry.fromPoint(QgsPoint(lon, lat)))
-            feature.setAttributes([pasta + '/' + arquivo, Az, date_time])
+            feature.setAttributes([arquivo, Az, date_time, pasta + '/' + arquivo])
             writer.addFeature(feature)
         else:
             progress.setInfo('A imagem %s nao eh GEO!<br/>' %arquivo)

@@ -43,7 +43,7 @@ if not SRC.geographicFlag():
     # Transformar Coordenadas Projetadas do sistema UTM para geograficas
     crsDest = QgsCoordinateReferenceSystem()
     crsDest.createFromSrsId(4674)
-    coordinateTransformer = QgsCoordinateTransform(crsSrc, crsDest)
+    coordinateTransformer = QgsCoordinateTransform(SRC, crsDest)
     centroide = coordinateTransformer.transform(centroide)
 
 # Pegar coordenadas do Centroide
