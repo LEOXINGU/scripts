@@ -21,14 +21,14 @@
 ##Nome_antigo=string
 ##Novo_nome=string
 ##Host=string localhost
-##Versao_do_PostgreSQL=selection 9.5;9.3;9.4;9.6;10
+##Versao_do_PostgreSQL=selection 10;9.3;9.4;9.5;9.6
 ##Usuario=string postgres
 
 # Inputs
 antigo = str(Nome_antigo)
 novo = str(Novo_nome)
 host = str(Host)
-lista = [9.5,9.3,9.4,9.6,10]
+lista = [10,9.3,9.4,9.5,9.6]
 version = str(lista[Versao_do_PostgreSQL])
 
 import os
