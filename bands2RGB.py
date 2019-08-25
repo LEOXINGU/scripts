@@ -24,6 +24,11 @@
 
 import numpy, gdal
 from osgeo import osr
+from PyQt4.QtCore import *
+from qgis.gui import QgsMessageBar
+from qgis.utils import iface
+from qgis.core import *
+import time
 
 # Open band R 
 image = gdal.Open(Band_R)
@@ -54,7 +59,6 @@ RGB.FlushCache()                     # write to disk
 RGB = None                           # save, close
 CRS = None
 
-progress.setInfo('<b><font  color="#ff0000">Suas altera&ccedil;&otilde;es ser&atilde;o salvas e seu Projeto QGIS ser&aacute; fechado em 9 segundos.</b><br/><br/>')
 progress.setInfo('<b>Opera&ccedil;&atilde;o conclu&iacute;da!</b><br/><br/>')
 progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
 iface.messageBar().pushMessage(u'Situacao', "Operacao Concluida com Sucesso!", level=QgsMessageBar.INFO, duration=5)

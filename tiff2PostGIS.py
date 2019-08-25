@@ -25,11 +25,15 @@
 ##Versao_do_PostgreSQL=selection 10;9.3;9.4;9.5;9.6
 ##Usuario=string postgres
 ##Host=string localhost
+##Salvar_nome=boolean False
+##Tiling=string 100
 
 # Inputs
 host = str(Host)
 lista = [10,9.3,9.4,9.5,9.6]
 version = str(lista[Versao_do_PostgreSQL])
+sn = ' -F ' if Salvar_nome else ''
+tiling = ' -t '+ Tiling +'x' +Tiling + ' '
 
 import os
 from PyQt4.QtCore import *
@@ -65,14 +69,14 @@ else:
 
 if sentinela:
     arqSQL = 'C:/Users/Public/raster2postgis.sql'
-    comando = 'raster2pgsql -s ' + SRID + ' -I -C -M ' + Raster + ' -F -t 100x100 ' +schema+ '.'+ table + ' > '+ arqSQL
+    comando = 'raster2pgsql -s ' + SRID + ' -I -C -M ' + Raster + sn + tiling +schema+ '.'+ table + ' > '+ arqSQL
     progress.setInfo('<b>Raster para SQL...</b><br/>')
     result = os.system(comando)
-    os.remove(arqSQL)
     if result==0:
         progress.setInfo('<b>Carregando raster no BDGeo...</b><br/>')
         comando2 = 'psql -d ' +database+' -U '+Usuario+' -h '+host+' -p 5432 -f ' + arqSQL
         result2 = os.system(comando2)
+        os.remove(arqSQL)
         if result2 == 0:
             progress.setInfo('<b>Operacao concluida com sucesso!</b><br/><br/>')
             progress.setInfo('<b>Leandro Fran&ccedil;a - Eng Cart</b><br/>')
