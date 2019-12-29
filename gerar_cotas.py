@@ -119,15 +119,15 @@ for poly in lista:
             col_min = coluna
         caminho += [(linha, coluna)]
     p = path.Path(caminho)
-    lin_min = np.floor(lin_min)
-    lin_max = np.floor(lin_max)
-    col_min = np.floor(col_min)
-    col_max = np.floor(col_max)
+    lin_min = int(np.floor(lin_min))
+    lin_max = int(np.floor(lin_max))
+    col_min = int(np.floor(col_min))
+    col_max = int(np.floor(col_max))
     nx, ny = (lin_max-lin_min+1, col_max-col_min+1)
     lin = np.linspace(lin_min, lin_max, nx)
     col = np.linspace(col_min, col_max, ny)
     COL, LIN = np.meshgrid(col, lin)
-    recorte = np.zeros((nx, ny), dtype=bool)
+    recorte = np.zeros((int(nx), int(ny)), dtype=bool)
     for x in range(int(nx)):
         for y in range(int(ny)):
             pixel = (LIN[x][y]+0.5, COL[x][y]+0.5) # 0.5 eh o centro do pixel
@@ -138,6 +138,7 @@ for poly in lista:
     if np.shape(recorte)==np.shape(recorte_img):
         produto = recorte*recorte_img
     else:
+        progress.setInfo('<b>Chegou no recorte...<br/>')
         recorte = recorte[0:np.shape(recorte_img)[0], 0:np.shape(recorte_img)[1]]
         produto = recorte*recorte_img
     min = 1e8
